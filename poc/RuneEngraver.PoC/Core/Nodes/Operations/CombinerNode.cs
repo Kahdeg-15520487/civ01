@@ -24,6 +24,6 @@ public class CombinerNode : RuneNode
         if (!result.IsEmpty)
             yield return $"{Id}: Combined {_in1.CurrentValue} + {_in2.CurrentValue} -> {result}";
         else if (!_in1.CurrentValue.IsEmpty && !_in2.CurrentValue.IsEmpty)
-             yield return $"{Id}: Combination Failed (Qi Deviation)";
+             yield return $"{Id}: Combination Failed [Qi Deviation]";
     }
 }

@@ -36,11 +36,11 @@ public enum ElementType
     Tempest         // Lightning + Wind
 }
 
-public struct QiValue
+public struct QiValue : IEquatable<QiValue>
 {
-    public ElementType Type;
-    public int Magnitude;
-    public int TTL; // Time To Live: 0 = Stable (Primary), >0 = Unstable (Sub)
+    public ElementType Type { get; }
+    public int Magnitude { get; }
+    public int TTL { get; } // Time To Live: 0 = Stable (Primary), >0 = Unstable (Sub)
 
     public QiValue(ElementType type, int magnitude, int ttl = 0)
     {
@@ -51,6 +51,31 @@ public struct QiValue
 
     public bool IsEmpty => Magnitude <= 0 || Type == ElementType.None;
     public bool IsStable => TTL == 0;
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Type, Magnitude, TTL);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is QiValue other && Equals(other);
+    }
+
+    public bool Equals(QiValue other)
+    {
+        return Type == other.Type && Magnitude == other.Magnitude && TTL == other.TTL;
+    }
+
+    public static bool operator ==(QiValue left, QiValue right)
+    {
+        return left.Equals(right);
+    }
+
+    public static bool operator !=(QiValue left, QiValue right)
+    {
+        return !(left == right);
+    }
 
     public override string ToString()
     {

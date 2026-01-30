@@ -6,13 +6,15 @@ namespace RuneEngraver.PoC.Core.Nodes;
 public class ThresholdGate : RuneNode
 {
     private readonly Port _in;
-    private readonly Port _out;
+    private readonly Port _passOut;
+    private readonly Port _blockOut;
     private readonly int _threshold;
 
     public ThresholdGate(string id, int threshold) : base(id)
     {
         _in = AddInput("in");
-        _out = AddOutput("out");
+        _passOut = AddOutput("pass");
+        _blockOut = AddOutput("block");
         _threshold = threshold;
     }
 
@@ -23,12 +25,13 @@ public class ThresholdGate : RuneNode
         {
             if (val.Magnitude >= _threshold)
             {
-                _out.CurrentValue = val;
+                _passOut.CurrentValue = val;
                 yield return $"{Id}: {val} PASSED threshold {_threshold}";
             }
             else
             {
-                 yield return $"{Id}: {val} BLOCKED (Threshold {_threshold})";
+                _blockOut.CurrentValue = val;
+                yield return $"{Id}: {val} BLOCKED (Threshold {_threshold})";
             }
         }
     }

@@ -27,6 +27,9 @@ class Program
             Console.WriteLine("3. Decay Tracing (Steam Decay)");
             Console.WriteLine("4. Loop Accumulation (Feedback Loop)");
             Console.WriteLine("5. Neural Net (3-1-1 Sensor Classifier)");
+            Console.WriteLine("6. Capacitor Burst (Charge -> Discharge)");
+            Console.WriteLine("7. Logic Routing (Yin-Yang & Filter)");
+            Console.WriteLine("8. Splitter Distribution");
             Console.WriteLine("Q. Quit");
             Console.Write("> ");
             
@@ -46,6 +49,9 @@ class Program
             case "3": RunDecayTest(); break;
             case "4": RunLoopTest(); break;
             case "5": RunMatrixMultiplicationTest(); break;
+            case "6": RunCapacitorTest(); break;
+            case "7": RunLogicGateTest(); break;
+            case "8": RunSplitterTest(); break;
             default: Console.WriteLine("Invalid selection."); break;
         }
     }
@@ -53,27 +59,32 @@ class Program
     static void RunMatrixMultiplicationTest() {
         Console.WriteLine("\n--- Test 5: Neural Net (3 Sensors -> 1 Hidden -> 1 Output) ---");
         // Concept: Classify if environment is "Dangerous" based on 3 sensors
-        // Inputs: Heat(10), Wind(5), Gas(0)
-        // Weights: Heat(0.5), Wind(0.2), Gas(0.8)
-        // Hidden Layer Sum: 10*0.5 + 5*0.2 + 0*0.8 = 5 + 1 + 0 = 6
-        // Activation: Threshold 5 (If Sum >= 5, Emit Signal)
+        // Inputs: Wood(10), Wood(5), Wood(0)
+        // Weights: 0.5, 0.2, 0.8
+        // Normalization: Transmute Wood -> Fire to prove we can process the signal
+        // Sum: Fire(5) + Fire(1) + Fire(0) = Fire(6)
         
         var graph = new RuneGraph();
 
-        // 1. Input Layer (Sensors)
-        var s1 = new SpiritStoneSource("Heat_Sensor", new QiValue(ElementType.Fire, 10));
-        var s2 = new SpiritStoneSource("Wind_Sensor", new QiValue(ElementType.Wind, 5));
-        var s3 = new SpiritStoneSource("Gas_Sensor",  new QiValue(ElementType.Wood, 0)); // No Gas
+        // 1. Input Layer (Sensors - All Wood for this test to allow simple normalization)
+        var s1 = new SpiritStoneSource("Sensor_A", new QiValue(ElementType.Wood, 10));
+        var s2 = new SpiritStoneSource("Sensor_B", new QiValue(ElementType.Wood, 5));
+        var s3 = new SpiritStoneSource("Sensor_C", new QiValue(ElementType.Wood, 0));
 
-        // 2. Weights (Scalers)
-        var w1 = new ScalerNode("W_Heat", 0.5f);
-        var w2 = new ScalerNode("W_Wind", 0.2f);
-        var w3 = new ScalerNode("W_Gas",  0.8f);
+        // 2. Weights (Attenuators) - Representing resistance/filtering
+        // Note: Factor must be <= 1.0. 
+        var w1 = new AttenuatorNode("W_A", 0.5f);
+        var w2 = new AttenuatorNode("W_B", 0.2f);
+        var w3 = new AttenuatorNode("W_C", 0.8f);
 
-        // 3. Normalization (Transmuters) - Convert all to Lightning for summation
-        var t1 = new TransmuterNode("T_Heat", ElementType.Lightning);
-        var t2 = new TransmuterNode("T_Wind", ElementType.Lightning);
-        var t3 = new TransmuterNode("T_Gas", ElementType.Lightning);
+        // 3. Normalization (Transmuters) - Convert Wood -> Fire
+        // This proves we can manipulate the signal type before processing
+        var t1 = new TransmuterNode("T_A");
+        var t2 = new TransmuterNode("T_B");
+        var t3 = new TransmuterNode("T_C");
+
+        // 3b. Waste Management (Void Drains) - Handle excess from Attenuators
+        var drain = new VoidDrain("Waste_Drain", 20);
 
         // 4. Summation (Hidden Neuron) - Using SpiritVessel as adder
         var summer = new SpiritVessel("Sum_Hidden");
@@ -87,6 +98,7 @@ class Program
         graph.AddNode(s1); graph.AddNode(s2); graph.AddNode(s3);
         graph.AddNode(w1); graph.AddNode(w2); graph.AddNode(w3);
         graph.AddNode(t1); graph.AddNode(t2); graph.AddNode(t3);
+        graph.AddNode(drain);
         graph.AddNode(summer);
         graph.AddNode(activation);
         graph.AddNode(output);
@@ -102,6 +114,11 @@ class Program
         graph.Connect(w2.Outputs[0], t2.Inputs[0]);
         graph.Connect(w3.Outputs[0], t3.Inputs[0]);
 
+        // Weight Excess -> Drain (Critical to prevent Qi Deviation)
+        graph.Connect(w1.Outputs[1], drain.Inputs[0]); // Using index 1 (excess)
+        graph.Connect(w2.Outputs[1], drain.Inputs[0]);
+        graph.Connect(w3.Outputs[1], drain.Inputs[0]);
+
         // Transmuter -> Summer (All are Lightning now, so they merge additively)
         graph.Connect(t1.Outputs[0], summer.Inputs[0]);
         graph.Connect(t2.Outputs[0], summer.Inputs[0]);
@@ -114,6 +131,86 @@ class Program
         graph.Connect(activation.Outputs[0], output.Inputs[0]);
         
         RunSimulation(graph, 8); // Need more ticks for extra layer
+    }
+
+    static void RunCapacitorTest()
+    {
+        Console.WriteLine("\n--- Test 6: Capacitor Burst ---");
+        var graph = new RuneGraph();
+
+        // Source: Trickle charge (Fire 2)
+        var src = new SpiritStoneSource("Trickle_Charger", new QiValue(ElementType.Fire, 2));
+        
+        // Capacitor: Threshold 10. Should take ~5 ticks to fill.
+        var cap = new QiCapacitor("Capacitor", 10);
+        
+        // Burst Output
+        var emit = new StableEmitter("Burst_Out");
+        
+        graph.AddNode(src);
+        graph.AddNode(cap);
+        graph.AddNode(emit);
+
+        // Wiring
+        graph.Connect(src.Outputs[0], cap.Inputs[0]);
+        // Connect 'full' port to emitter
+        graph.Connect(cap.Outputs[1], emit.Inputs[0]); // Index 1 is 'full'
+
+        RunSimulation(graph, 8);
+    }
+
+    static void RunLogicGateTest()
+    {
+        Console.WriteLine("\n--- Test 7: Logic Routing ---");
+        var graph = new RuneGraph();
+
+        // Source
+        var src = new SpiritStoneSource("Source", new QiValue(ElementType.Water, 5));
+        
+        // Control Signal (Yang/Positive)
+        var ctrl = new SpiritStoneSource("Control_Signal", new QiValue(ElementType.Fire, 1));
+        
+        // Yin-Yang Gate
+        var gate = new YinYangGate("Gate");
+        
+        // Output Paths
+        var trueOut = new StableEmitter("True_Path");
+        var falseOut = new StableEmitter("False_Path");
+
+        graph.AddNode(src); graph.AddNode(ctrl);
+        graph.AddNode(gate);
+        graph.AddNode(trueOut); graph.AddNode(falseOut);
+
+        // Wiring
+        graph.Connect(src.Outputs[0], gate.Inputs[0]);      // In
+        graph.Connect(ctrl.Outputs[0], gate.Inputs[1]);     // Cond
+        
+        graph.Connect(gate.Outputs[0], trueOut.Inputs[0]);  // True
+        graph.Connect(gate.Outputs[1], falseOut.Inputs[0]); // False
+
+        RunSimulation(graph, 3);
+    }
+
+    static void RunSplitterTest()
+    {
+        Console.WriteLine("\n--- Test 8: Splitter ---");
+        var graph = new RuneGraph();
+
+        var src = new SpiritStoneSource("Big_Flow", new QiValue(ElementType.Earth, 10));
+        var split = new SplitterNode("Splitter");
+        var out1 = new StableEmitter("Left");
+        var out2 = new StableEmitter("Right");
+
+        graph.AddNode(src);
+        graph.AddNode(split);
+        graph.AddNode(out1);
+        graph.AddNode(out2);
+
+        graph.Connect(src.Outputs[0], split.Inputs[0]);
+        graph.Connect(split.Outputs[0], out1.Inputs[0]);
+        graph.Connect(split.Outputs[1], out2.Inputs[0]);
+
+        RunSimulation(graph, 3);
     }
 
     static void RunAmplifierTest()

@@ -79,5 +79,27 @@ public class RuneGraph
                 yield return log;
             }
         }
+
+        // 4. dissipation check (Handle unrouted outputs)
+        foreach (var node in Nodes)
+        {
+            foreach (var output in node.Outputs)
+            {
+                if (!output.CurrentValue.IsEmpty && !IsConnected(output))
+                {
+                    yield return $"[Qi Deviation] UNCONTAINED ENERGY! {output.CurrentValue} at {node.Id}.{output.Id} has no route! Node taking damage.";
+                }
+            }
+        }
+    }
+
+    private bool IsConnected(Port output)
+    {
+        // Naive check; optimization: cache connections
+        foreach (var wire in Wires)
+        {
+            if (wire.Source == output) return true;
+        }
+        return false;
     }
 }

@@ -245,6 +245,7 @@ For artifacts requiring massive momentary output.
 | **Attenuator (减幅)** | 1x2 | `in → out, excess` | Reduces to target amplitude; excess goes to second port |
 | **Splitter (分流)** | 1x1 | `in → out1, out2` | Divides magnitude between outputs |
 | **Combiner (合流)** | 1x1 | `in1, in2 → out` | Merges elements → may create sub-element. **Constraint**: Inputs must have **equal magnitude**. Unequal = Qi Deviation. |
+| **Attenuator (减幅)** | 1x2 | `in → out, excess` | Reduces amplitude by a factor (0.0-1.0). Excess Qi is ejected via second port (Conservation of Qi). |
 
 > **Amplifier Example**: Input 5 Fire (primary) + 2 Earth (catalyst). Result = 10 Earth.
 > **Dampener Example**: Input 8 Water (target) + 3 Earth (suppressor). Result = 5 Water.

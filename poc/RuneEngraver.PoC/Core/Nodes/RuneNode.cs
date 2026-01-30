@@ -5,15 +5,14 @@ namespace RuneEngraver.PoC.Core.Nodes;
 
 public class Port
 {
-    public string Name { get; }
+    public string Id { get; }
     public bool IsInput { get; }
-    public QiValue CurrentValue { get; set; }
+    public QiValue CurrentValue { get; set; } = QiValue.Empty;
 
-    public Port(string name, bool isInput)
+    public Port(string id, bool isInput)
     {
-        Name = name;
+        Id = id;
         IsInput = isInput;
-        CurrentValue = QiValue.Empty;
     }
 }
 
