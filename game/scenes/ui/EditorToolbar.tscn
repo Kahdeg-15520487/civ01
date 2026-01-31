@@ -49,7 +49,23 @@ popup/item_1/id = 1
 popup/item_2/text = "Large (12)"
 popup/item_2/id = 2
 
+[node name="VSeparator2" type="VSeparator" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="SimControls" type="HBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="BtnPlay" type="Button" parent="HBoxContainer/SimControls"]
+layout_mode = 2
+text = "Run Simulation"
+
+[node name="BtnStop" type="Button" parent="HBoxContainer/SimControls"]
+layout_mode = 2
+text = "Stop"
+
 [connection signal="pressed" from="HBoxContainer/Tools/BtnSelect" to="." method="_on_select_pressed"]
 [connection signal="pressed" from="HBoxContainer/Tools/BtnPlace" to="." method="_on_place_pressed"]
 [connection signal="pressed" from="HBoxContainer/Tools/BtnRoute" to="." method="_on_route_pressed"]
 [connection signal="item_selected" from="HBoxContainer/RouteOptions/WidthOption" to="." method="_on_width_option_item_selected"]
+[connection signal="pressed" from="HBoxContainer/SimControls/BtnPlay" to="." method="_on_play_pressed"]
+[connection signal="pressed" from="HBoxContainer/SimControls/BtnStop" to="." method="_on_stop_pressed"]

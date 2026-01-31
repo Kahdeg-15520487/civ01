@@ -67,6 +67,7 @@ func extract(board_state: Dictionary, traces: Array[Dictionary]) -> Dictionary:
 	# Graph Nodes = Grid Cells
 	# Graph Edges = Trace segments
 	var trace_adj: Dictionary = {} # grid_pos -> [neighbor_grid_pos]
+	print("Processing %d traces..." % traces.size())
 	
 	for t in traces:
 		var visual = t["visual"]
@@ -75,6 +76,8 @@ func extract(board_state: Dictionary, traces: Array[Dictionary]) -> Dictionary:
 		var world_points = visual.line_2d.points
 		if world_points.size() < 2: continue
 		
+		print("Trace detected with %d points" % world_points.size())
+		
 		# Convert Polyline to grid segments
 		for i in range(world_points.size() - 1):
 			var p1_world = world_points[i]
@@ -82,16 +85,20 @@ func extract(board_state: Dictionary, traces: Array[Dictionary]) -> Dictionary:
 			var p1 = grid_system.world_to_grid(p1_world)
 			var p2 = grid_system.world_to_grid(p2_world)
 			
+			print("  Segment: %s -> %s" % [p1, p2])
+			
 			# Add Edge p1-p2
 			_add_adj(trace_adj, p1, p2)
 			_add_adj(trace_adj, p2, p1)
 			
 			# Walk the line if it spans multiple cells (Manhattan assumed)
-			# If traces are direct lines, intermediate cells are also conductive
 			var cursor = p1
 			var direction = sign(Vector2(p2 - p1)) # (1,0) or (0,1) etc
-			
-			while cursor != p2:
+			if direction == Vector2.ZERO: continue # Same point
+
+			var safety = 0
+			while cursor != p2 and safety < 100:
+				safety += 1
 				var next = cursor + Vector2i(direction)
 				_add_adj(trace_adj, cursor, next)
 				_add_adj(trace_adj, next, cursor)
@@ -120,6 +127,7 @@ func extract(board_state: Dictionary, traces: Array[Dictionary]) -> Dictionary:
 						queue.push_back(neighbor)
 		
 		nets.append(component)
+		print("Net Resolved with %d cells: %s" % [component.size(), component])
 
 	# 4. Resolve Connections from Nets
 	for net in nets:
@@ -129,6 +137,7 @@ func extract(board_state: Dictionary, traces: Array[Dictionary]) -> Dictionary:
 		for cell in net:
 			if port_map.has(cell):
 				connected_ports.append_array(port_map[cell])
+				print("  -> Found Port in Net: %s" % port_map[cell])
 		
 		# Create connections between found ports
 		# Note: RuneGraph is directed.
