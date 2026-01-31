@@ -57,3 +57,5 @@ export_presets.cfg
 # OS Generated
 .DS_Store
 Thumbs.db
+
+.vscode/
