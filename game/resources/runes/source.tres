@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="Rune" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/Rune.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "qi_source"
+display_name = "Qi Source"
+description = "Generates raw Qi."
+type = 0
+qi_cost = 0
+bandwidth_in = 0
+bandwidth_out = 50
+io_definition = {
+"out": Vector2i(1, 0)
+}

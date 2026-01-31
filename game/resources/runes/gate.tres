@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="Rune" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/Rune.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+id = "basic_gate"
+display_name = "Iron Gate"
+description = "Simple logic gate."
+type = 1
+qi_cost = 5
+bandwidth_in = 20
+bandwidth_out = 20
+io_definition = {
+"in": Vector2i(-1, 0),
+"out": Vector2i(1, 0)
+}
