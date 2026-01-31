@@ -125,17 +125,23 @@ func _start_trace(screen_pos: Vector2) -> void:
 	
 	print("Started drawing trace from: ", grid_pos)
 
+var placed_traces: Array[Dictionary] = [] # { "data": QiTrace, "visual": QiTraceVisual }
+
 func _end_trace(screen_pos: Vector2) -> void:
 	if not is_dragging_trace: return
 	
 	var grid_pos = grid_system.world_to_grid(screen_pos)
 	print("Ended trace at: ", grid_pos)
 	
-	# TODO: Validate trace (collision, length)
-	# For now, just leave it there
+	# Store the valid trace
+	placed_traces.append({
+		"data": current_trace_visual.trace_data, # Assuming visual stores data
+		"visual": current_trace_visual
+	})
 	
 	is_dragging_trace = false
 	current_trace_visual = null
+
 
 
 func _handle_click(screen_pos: Vector2) -> void:
@@ -294,7 +300,10 @@ func _on_tool_changed(tool_name: String) -> void:
 
 # ... (Previous code)
 
+var selected_trace_idx: int = -1
+
 func _select_entity_at(grid_pos: Vector2i) -> void:
+	# 1. Check Runes
 	if current_board_state.has(grid_pos):
 		# Handle multi-cell runes: find the main entry
 		var entry = current_board_state[grid_pos]
@@ -306,16 +315,61 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 		print("Selected Entity: %s" % rune.display_name)
 		
 		selected_entity_pos = grid_pos
+		selected_trace_idx = -1
 		properties_panel.setup(rune)
-	else:
-		print("Selected Empty Space")
-		selected_entity_pos = Vector2i(-1, -1)
-		properties_panel.clear()
+		return
+
+	# 2. Check Traces
+	# We check the distance from the mouse position to any trace segment
+	var mouse_pos = get_local_mouse_position()
+	for i in range(placed_traces.size()):
+		var t = placed_traces[i]
+		var visual = t["visual"] as QiTraceVisual
+		var width = t["data"].width
+		
+		# Iterate line segments
+		var points = visual.line_2d.points
+		for j in range(points.size() - 1):
+			var p1 = points[j]
+			var p2 = points[j+1]
+			var closest = Geometry2D.get_closest_point_to_segment(mouse_pos, p1, p2)
+			
+			if mouse_pos.distance_to(closest) < (width / 2.0) + 5.0: # Width + tolerance
+
+				print("Selected Trace (Index %d)" % i)
+				selected_trace_idx = i
+				selected_entity_pos = Vector2i(-1, -1)
+				properties_panel.setup(t["data"])
+				return
+
+	# 3. Nothing selected
+	print("Selected Empty Space")
+	selected_entity_pos = Vector2i(-1, -1)
+	selected_trace_idx = -1
+	properties_panel.clear()
+
 
 func _on_delete_requested() -> void:
 	if selected_entity_pos != Vector2i(-1, -1):
 		_delete_rune_at(selected_entity_pos)
+		selected_entity_pos = Vector2i(-1, -1)
 		properties_panel.clear()
+	elif selected_trace_idx != -1:
+		_delete_trace_at(selected_trace_idx)
+		selected_trace_idx = -1
+		properties_panel.clear()
+
+func _delete_trace_at(idx: int) -> void:
+	if idx < 0 or idx >= placed_traces.size(): return
+	
+	var t = placed_traces[idx]
+	var visual = t["visual"]
+	if is_instance_valid(visual):
+		visual.queue_free()
+	
+	placed_traces.remove_at(idx)
+	print("Deleted trace at index ", idx)
+
 
 func _delete_rune_at(grid_pos: Vector2i) -> void:
 	if not current_board_state.has(grid_pos): return
