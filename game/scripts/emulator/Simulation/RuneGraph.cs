@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
 using Godot;
+using Civ.Emulator.Core.Elements;
+using Civ.Emulator.Core.Nodes;
 
-namespace Civ.Emulator;
+namespace Civ.Emulator.Core.Simulation;
 
 public class Wire
 {
@@ -20,23 +22,13 @@ public class Wire
     {
         var val = Source.CurrentValue;
         
-        // TODO: Apply Decay during transit (Need InteractionManager)
-        // var decayedVal = InteractionManager.ProcessDecay(val);
-        var decayedVal = val; 
+        // Apply Decay during transit
+        var decayedVal = InteractionManager.ProcessDecay(val);
         
-        // Merge with existing value at Target (Additive)
-        // Target.CurrentValue = InteractionManager.Combine(Target.CurrentValue, decayedVal);
-        
-        // Placeholder simple combine for now until InteractionManager is ported
-        if (Target.CurrentValue.IsEmpty) {
-             Target.CurrentValue = decayedVal;
-        } else if (Target.CurrentValue.Type == decayedVal.Type) {
-             Target.CurrentValue = new QiValue(decayedVal.Type, Target.CurrentValue.Magnitude + decayedVal.Magnitude, Math.Max(Target.CurrentValue.TTL, decayedVal.TTL));
-        } else {
-             // Clash! For now, overwrite (simplest collision)
-             // GD.Print($"Qi CLASH at {Target.Id}: {Target.CurrentValue} vs {decayedVal}");
-        }
+        // Merge with existing value at Target (Additive or Combinatorial)
+        Target.CurrentValue = InteractionManager.Combine(Target.CurrentValue, decayedVal);
     }
+
 }
 
 public class RuneGraph

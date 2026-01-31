@@ -1,6 +1,9 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
+using Civ.Emulator.Core.Nodes;
+using Civ.Emulator.Core.Simulation;
+using Civ.Emulator.Core.Nodes.Sources;
 
 namespace Civ.Emulator;
 

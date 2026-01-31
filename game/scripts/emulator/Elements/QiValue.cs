@@ -1,6 +1,6 @@
 using System;
 
-namespace Civ.Emulator;
+namespace Civ.Emulator.Core.Elements;
 
 public enum ElementType
 {

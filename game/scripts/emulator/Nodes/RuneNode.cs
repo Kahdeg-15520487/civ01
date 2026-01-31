@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using Godot;
+using Civ.Emulator.Core.Elements;
 
-namespace Civ.Emulator;
+namespace Civ.Emulator.Core.Nodes;
 
 public class Port
 {
