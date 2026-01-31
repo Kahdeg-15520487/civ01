@@ -31,6 +31,7 @@ func _ready() -> void:
 	_setup_layers()
 	_setup_grid()
 	_setup_ui()
+	_setup_simulation()
 
 func _setup_layers() -> void:
 	# Define rendering order: 
@@ -49,10 +50,6 @@ func _setup_grid() -> void:
 	# Sidebar is 150px wide, so we start grid at 180 to give some padding.
 	grid_system = GridSystem.new(Vector2(grid_size, grid_size), grid_width, grid_height, Vector2(180, 50))
 	queue_redraw() # Trigger _draw
-
-
-
-	
 
 
 func _on_rune_selected(rune: Rune) -> void:
@@ -143,7 +140,6 @@ func _end_trace(screen_pos: Vector2) -> void:
 	current_trace_visual = null
 
 
-
 func _handle_click(screen_pos: Vector2) -> void:
 	var grid_pos = grid_system.world_to_grid(screen_pos)
 	if grid_system.is_valid_pos(grid_pos):
@@ -159,9 +155,6 @@ func _handle_click(screen_pos: Vector2) -> void:
 				_select_entity_at(grid_pos)
 			ToolMode.DRAW_TRACE:
 				pass # Left click in draw mode does nothing (or maybe selects?)
-
-
-
 
 
 ## Checks if a rectangular area on the grid is clear
@@ -200,7 +193,7 @@ func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
 
 func _draw() -> void:
 	if grid_system:
-		grid_system.draw_grid(self)
+		grid_system.draw_grid(self )
 		
 		# Draw Cursor Highlight
 		var mouse_pos = get_local_mouse_position()
@@ -215,7 +208,7 @@ func _draw() -> void:
 				highlight_size_cells = selected_rune_type.size_in_cells
 			
 			var rect_size = Vector2(highlight_size_cells) * grid_system.cell_size.x # Assumes square cells
-			var rect = Rect2(snap_pos - rect_size/2.0, rect_size)
+			var rect = Rect2(snap_pos - rect_size / 2.0, rect_size)
 			
 			var color = Color(1, 1, 0, 0.3)
 			if current_tool == ToolMode.PLACE_RUNE and selected_rune_type:
@@ -226,13 +219,12 @@ func _draw() -> void:
 			draw_rect(rect, color.lightened(0.5), false, 2.0) # Border
 
 
-
-
 const RuneVisualScene = preload("res://scenes/systems/RuneVisual.tscn")
 const QiTraceVisualScene = preload("res://scenes/systems/QiTraceVisual.tscn")
+const NetlistExtractorScript = preload("res://scripts/systems/NetlistExtractor.gd")
 
 # State
-enum ToolMode { PLACE_RUNE, DRAW_TRACE, SELECT }
+enum ToolMode {PLACE_RUNE, DRAW_TRACE, SELECT}
 var current_tool: ToolMode = ToolMode.SELECT # Default to Select
 var is_dragging_trace: bool = false
 var current_trace_visual: QiTraceVisual = null
@@ -264,9 +256,9 @@ func _setup_ui() -> void:
 	# Instantiate Palette (Left)
 	var palette_scene = preload("res://scenes/ui/RunePalette.tscn")
 	rune_palette_ui = palette_scene.instantiate()
-	rune_palette_ui.position.y = 50 
+	rune_palette_ui.position.y = 50
 	ui_layer.add_child(rune_palette_ui)
-	rune_palette_ui.visible = false 
+	rune_palette_ui.visible = false
 	rune_palette_ui.rune_selected.connect(_on_rune_selected)
 	
 	# Instantiate Properties Panel (Right)
@@ -331,11 +323,10 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 		var points = visual.line_2d.points
 		for j in range(points.size() - 1):
 			var p1 = points[j]
-			var p2 = points[j+1]
+			var p2 = points[j + 1]
 			var closest = Geometry2D.get_closest_point_to_segment(mouse_pos, p1, p2)
 			
 			if mouse_pos.distance_to(closest) < (width / 2.0) + 5.0: # Width + tolerance
-
 				print("Selected Trace (Index %d)" % i)
 				selected_trace_idx = i
 				selected_entity_pos = Vector2i(-1, -1)
@@ -397,14 +388,41 @@ func _on_trace_width_changed(width_idx: int) -> void:
 	print("Trace width set to: ", trace_widths[current_trace_width_idx])
 
 
+@onready var sim_manager_cs: Node = null # The C# bridge node
 
 
-
+func _setup_simulation() -> void:
+	# Instantiate the C# Simulation Manager
+	# Assuming SimulationManager.cs is a GlobalClass "SimulationManager"
+	# But in C# GlobalClasses might need full path or manual loading if not appearing in ClassDB yet.
+	# Let's try loading by resource path to be safe.
+	var sim_script = load("res://scripts/emulator/SimulationManager.cs")
+	if sim_script:
+		sim_manager_cs = Node.new()
+		sim_manager_cs.set_script(sim_script)
+		sim_manager_cs.name = "SimulationManager"
+		add_child(sim_manager_cs)
+		print("SimulationManager C# Node Added")
+	else:
+		push_error("Failed to load SimulationManager.cs")
 
 ## Starts the Chi flow simulation
 func start_simulation() -> void:
+	if is_simulating: return
+	
+	print("Starting Simulation...")
 	is_simulating = true
 	emit_signal("simulation_started")
+	
+	# 1. Extract Netlist
+	var extractor = NetlistExtractorScript.new(grid_system)
+	var graph_data = extractor.extract(current_board_state, placed_traces)
+	
+	# 2. Build Graph in C#
+	if sim_manager_cs:
+		sim_manager_cs.call("BuildGraph", graph_data)
+		
+	# 3. Start Tick Loop
 	_run_tick()
 
 func stop_simulation() -> void:
@@ -414,8 +432,9 @@ func stop_simulation() -> void:
 func _run_tick() -> void:
 	if not is_simulating: return
 	
-	print("Simulation Tick")
-	# Propagate Qi through traces and Runes
+	# print("Simulation Tick")
+	if sim_manager_cs:
+		sim_manager_cs.call("RunTick")
 	
 	# Schedule next tick
 	if is_simulating:
