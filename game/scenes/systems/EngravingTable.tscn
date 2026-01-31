@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://clg21lx6vuc40"]
 
-[ext_resource type="Script" path="res://scripts/systems/EngravingTable.gd" id="1"]
+[ext_resource type="Script" uid="uid://g27mxx83d76n" path="res://scripts/systems/EngravingTable.gd" id="1"]
 
-[node name="EngravingTable" type="Node2D"]
+[node name="EngravingTable" type="Node2D" unique_id=1564059072]
 script = ExtResource("1")

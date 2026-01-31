@@ -4,10 +4,10 @@ extends Resource
 ## Base class for all programmable Runes in the game.
 
 enum RuneType {
-	SOURCE,    # Generates Qi
+	SOURCE, # Generates Qi
 	PROCESSOR, # Modifies Qi (Logic gates, Elemental conversion)
-	STORAGE,   # Holds Qi
-	OUTPUT     # Uses Qi (Artifact effect)
+	STORAGE, # Holds Qi
+	OUTPUT # Uses Qi (Artifact effect)
 }
 
 @export_group("Identity")
@@ -18,6 +18,10 @@ enum RuneType {
 
 @export_group("Mechanics")
 @export var type: RuneType = RuneType.PROCESSOR
+@export_group("Simulation")
+@export var simulation_classes: String = "Civ.Emulator.SpiritStoneSource" # C# Class Name
+@export var inputs: Array[Vector2i] = [] # Local grid coords for inputs
+@export var outputs: Array[Vector2i] = [Vector2i(0, 0)] # Local grid coords for outputs
 @export var size_in_cells: Vector2i = Vector2i(4, 4) # Default 4x4 (equivalent to old 1x1)
 @export var qi_cost: int = 1
 @export var bandwidth_in: int = 10
