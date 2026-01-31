@@ -18,9 +18,11 @@ enum RuneType {
 
 @export_group("Mechanics")
 @export var type: RuneType = RuneType.PROCESSOR
+@export var size_in_cells: Vector2i = Vector2i(4, 4) # Default 4x4 (equivalent to old 1x1)
 @export var qi_cost: int = 1
 @export var bandwidth_in: int = 10
 @export var bandwidth_out: int = 10
+
 
 ## Dictionary defining input/output slots.
 ## Format: { "slot_name": Vector2i(grid_x, grid_y) } relative to center.

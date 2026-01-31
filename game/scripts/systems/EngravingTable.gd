@@ -13,11 +13,12 @@ var is_simulating: bool = false
 var current_board_state: Dictionary = {} # Stores placed runes and traces
 
 # Grid Settings
-@export var grid_size: int = 40
-@export var grid_width: int = 20
-@export var grid_height: int = 14 # Reduced to fit 648p screen
+@export var grid_size: int = 10 # Finer grid (Was 40)
+@export var grid_width: int = 80 # 80 * 10 = 800px (Was 20)
+@export var grid_height: int = 56 # 56 * 10 = 560px (Was 14)
 
 var grid_system: GridSystem
+
 var selected_rune_type: Rune = null # The rune currently selected in palette
 var rune_palette_ui: RunePalette
 
@@ -49,23 +50,10 @@ func _setup_grid() -> void:
 	grid_system = GridSystem.new(Vector2(grid_size, grid_size), grid_width, grid_height, Vector2(180, 50))
 	queue_redraw() # Trigger _draw
 
-func _setup_ui() -> void:
-	# Create a CanvasLayer to hold UI so it stays above the game world
-	var ui_layer = CanvasLayer.new()
-	add_child(ui_layer)
-	
-	# Instantiate and anchor the palette
-	var palette_scene = preload("res://scenes/ui/RunePalette.tscn")
-	rune_palette_ui = palette_scene.instantiate()
-	ui_layer.add_child(rune_palette_ui)
-	
-	# Connect signal
-	rune_palette_ui.rune_selected.connect(_on_rune_selected)
+
 
 	
-	# Select first one by default if available
-	if rune_palette_ui.available_runes.size() > 0:
-		selected_rune_type = rune_palette_ui.available_runes[0]
+
 
 func _on_rune_selected(rune: Rune) -> void:
 	print("Selected rune for placement: ", rune.display_name)
@@ -104,11 +92,16 @@ func _input(event: InputEvent) -> void:
 				_handle_click(event.position)
 				
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
-			# Right click to draw traces
-			if event.pressed:
-				_start_trace(event.position)
-			else:
-				_end_trace(event.position)
+			# Right click to draw traces ONLY if in Route mode
+			if current_tool == ToolMode.DRAW_TRACE:
+				if event.pressed:
+					_start_trace(event.position)
+				else:
+					_end_trace(event.position)
+			elif current_tool == ToolMode.PLACE_RUNE:
+				# Maybe clear selection or cancel placement?
+				pass
+
 
 func _start_trace(screen_pos: Vector2) -> void:
 	var grid_pos = grid_system.world_to_grid(screen_pos)
@@ -119,8 +112,9 @@ func _start_trace(screen_pos: Vector2) -> void:
 	
 	# Create Data
 	var trace_data = QiTrace.new()
-	trace_data.width = 10.0 # Default width for now
+	trace_data.width = trace_widths[current_trace_width_idx]
 	trace_data.start_point = grid_system.grid_to_world(grid_pos)
+
 	trace_data.end_point = trace_data.start_point # Initially same
 	
 	# Create Visual
@@ -149,12 +143,54 @@ func _handle_click(screen_pos: Vector2) -> void:
 	if grid_system.is_valid_pos(grid_pos):
 		print("Clicked on cell: ", grid_pos)
 		
-		# Place the selected rune
-		if selected_rune_type:
-			place_rune(selected_rune_type, grid_pos)
-		else:
-			print("No rune selected!")
+		match current_tool:
+			ToolMode.PLACE_RUNE:
+				if selected_rune_type:
+					place_rune(selected_rune_type, grid_pos)
+				else:
+					print("No rune selected!")
+			ToolMode.SELECT:
+				_select_entity_at(grid_pos)
+			ToolMode.DRAW_TRACE:
+				pass # Left click in draw mode does nothing (or maybe selects?)
 
+
+
+
+
+## Checks if a rectangular area on the grid is clear
+func is_area_clear(center_grid: Vector2i, size_in_cells: Vector2i) -> bool:
+	var top_left = center_grid - (size_in_cells / 2)
+	for x in range(size_in_cells.x):
+		for y in range(size_in_cells.y):
+			var check_pos = top_left + Vector2i(x, y)
+			if not grid_system.is_valid_pos(check_pos): return false
+			if current_board_state.has(check_pos): return false
+	return true
+
+## Called when user drags a rune onto the board
+func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
+	if not is_area_clear(grid_position, rune_resource.size_in_cells):
+		print("Area blocked!")
+		return
+		
+	print("Placing rune: %s at %s" % [rune_resource.display_name, grid_position])
+	
+	var visual = RuneVisualScene.instantiate()
+	rune_layer.add_child(visual)
+	visual.setup(rune_resource)
+	visual.position = grid_system.grid_to_world(grid_position)
+	
+	# Mark all cells as occupied
+	var top_left = grid_position - (rune_resource.size_in_cells / 2)
+	for x in range(rune_resource.size_in_cells.x):
+		for y in range(rune_resource.size_in_cells.y):
+			var occupied_pos = top_left + Vector2i(x, y)
+			current_board_state[occupied_pos] = {
+				"rune": rune_resource,
+				"visual": visual,
+				"main_pos": grid_position # Reference to center
+			}
 
 func _draw() -> void:
 	if grid_system:
@@ -166,11 +202,23 @@ func _draw() -> void:
 		
 		if grid_system.is_valid_pos(grid_pos):
 			var snap_pos = grid_system.grid_to_world(grid_pos)
-			# Draw a rect centered on snap_pos
-			var rect_size = grid_system.cell_size
+			
+			# Determine size of highlight based on selected rune or default 1x1
+			var highlight_size_cells = Vector2i(1, 1)
+			if current_tool == ToolMode.PLACE_RUNE and selected_rune_type:
+				highlight_size_cells = selected_rune_type.size_in_cells
+			
+			var rect_size = Vector2(highlight_size_cells) * grid_system.cell_size.x # Assumes square cells
 			var rect = Rect2(snap_pos - rect_size/2.0, rect_size)
-			draw_rect(rect, Color(1, 1, 0, 0.3), true) # Yellow highlight
-			draw_rect(rect, Color(1, 1, 0, 0.8), false, 2.0) # Border
+			
+			var color = Color(1, 1, 0, 0.3)
+			if current_tool == ToolMode.PLACE_RUNE and selected_rune_type:
+				if not is_area_clear(grid_pos, highlight_size_cells):
+					color = Color(1, 0, 0, 0.3) # Red if blocked
+			
+			draw_rect(rect, color, true) # Highlight
+			draw_rect(rect, color.lightened(0.5), false, 2.0) # Border
+
 
 
 
@@ -178,31 +226,125 @@ const RuneVisualScene = preload("res://scenes/systems/RuneVisual.tscn")
 const QiTraceVisualScene = preload("res://scenes/systems/QiTraceVisual.tscn")
 
 # State
-enum ToolMode { PLACE_RUNE, DRAW_TRACE }
-var current_tool: ToolMode = ToolMode.PLACE_RUNE
+enum ToolMode { PLACE_RUNE, DRAW_TRACE, SELECT }
+var current_tool: ToolMode = ToolMode.SELECT # Default to Select
 var is_dragging_trace: bool = false
 var current_trace_visual: QiTraceVisual = null
 var drag_start_grid: Vector2i
 
+# Trace Settings
+var current_trace_width_idx: int = 0
+var trace_widths: Array[float] = [10.0, 40.0, 120.0] # Small (1), Medium (4), Large (12) * 10px
 
-## Called when user drags a rune onto the board
-func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
-	if current_board_state.has(grid_position):
-		print("Cell occupied!")
-		return
+var properties_panel: PropertiesPanel
+var editor_toolbar: EditorToolbar
+var selected_entity_pos: Vector2i = Vector2i(-1, -1)
+
+
+func _setup_ui() -> void:
+	# Create a CanvasLayer to hold UI so it stays above the game world
+	var ui_layer = CanvasLayer.new()
+	add_child(ui_layer)
+	
+	# Instantiate Toolbar (Top)
+	var toolbar_scene = preload("res://scenes/ui/EditorToolbar.tscn")
+	editor_toolbar = toolbar_scene.instantiate()
+	ui_layer.add_child(editor_toolbar)
+	
+	# Connect Toolbar Signals
+	editor_toolbar.tool_changed.connect(_on_tool_changed)
+	editor_toolbar.trace_width_changed.connect(_on_trace_width_changed)
+	
+	# Instantiate Palette (Left)
+	var palette_scene = preload("res://scenes/ui/RunePalette.tscn")
+	rune_palette_ui = palette_scene.instantiate()
+	rune_palette_ui.position.y = 50 
+	ui_layer.add_child(rune_palette_ui)
+	rune_palette_ui.visible = false 
+	rune_palette_ui.rune_selected.connect(_on_rune_selected)
+	
+	# Instantiate Properties Panel (Right)
+	var props_scene = preload("res://scenes/ui/PropertiesPanel.tscn")
+	properties_panel = props_scene.instantiate()
+	properties_panel.anchor_left = 1.0
+	properties_panel.anchor_right = 1.0
+	properties_panel.position = Vector2(get_viewport_rect().size.x - 220, 50) # Approx right alignment
+	properties_panel.visible = false
+	properties_panel.delete_requested.connect(_on_delete_requested)
+	ui_layer.add_child(properties_panel)
+	
+	# Select first one by default if available
+	if rune_palette_ui.available_runes.size() > 0:
+		selected_rune_type = rune_palette_ui.available_runes[0]
+
+func _on_tool_changed(tool_name: String) -> void:
+	print("Switched tool to: ", tool_name)
+	match tool_name:
+		"SELECT":
+			current_tool = ToolMode.SELECT
+			rune_palette_ui.visible = false
+		"PLACE":
+			current_tool = ToolMode.PLACE_RUNE
+			rune_palette_ui.visible = true
+			properties_panel.visible = false
+		"ROUTE":
+			current_tool = ToolMode.DRAW_TRACE
+			rune_palette_ui.visible = false
+			properties_panel.visible = false
+
+# ... (Previous code)
+
+func _select_entity_at(grid_pos: Vector2i) -> void:
+	if current_board_state.has(grid_pos):
+		# Handle multi-cell runes: find the main entry
+		var entry = current_board_state[grid_pos]
+		if entry.has("main_pos"):
+			grid_pos = entry["main_pos"]
+			entry = current_board_state[grid_pos]
+			
+		var rune = entry["rune"] as Rune
+		print("Selected Entity: %s" % rune.display_name)
 		
-	print("Placing rune: %s at %s" % [rune_resource.display_name, grid_position])
-	
-	var visual = RuneVisualScene.instantiate()
-	rune_layer.add_child(visual)
-	visual.setup(rune_resource)
-	visual.position = grid_system.grid_to_world(grid_position)
+		selected_entity_pos = grid_pos
+		properties_panel.setup(rune)
+	else:
+		print("Selected Empty Space")
+		selected_entity_pos = Vector2i(-1, -1)
+		properties_panel.clear()
 
+func _on_delete_requested() -> void:
+	if selected_entity_pos != Vector2i(-1, -1):
+		_delete_rune_at(selected_entity_pos)
+		properties_panel.clear()
+
+func _delete_rune_at(grid_pos: Vector2i) -> void:
+	if not current_board_state.has(grid_pos): return
 	
-	current_board_state[grid_position] = {
-		"rune": rune_resource,
-		"visual": visual
-	}
+	var entry = current_board_state[grid_pos]
+	var rune = entry["rune"] as Rune
+	var visual = entry["visual"]
+	
+	# Remove Visual
+	if is_instance_valid(visual):
+		visual.queue_free()
+		
+	# Clear grid cells
+	var top_left = grid_pos - (rune.size_in_cells / 2)
+	for x in range(rune.size_in_cells.x):
+		for y in range(rune.size_in_cells.y):
+			var occupied_pos = top_left + Vector2i(x, y)
+			current_board_state.erase(occupied_pos)
+			
+	print("Deleted rune at ", grid_pos)
+
+
+func _on_trace_width_changed(width_idx: int) -> void:
+	current_trace_width_idx = width_idx
+	print("Trace width set to: ", trace_widths[current_trace_width_idx])
+
+
+
+
 
 
 ## Starts the Chi flow simulation
