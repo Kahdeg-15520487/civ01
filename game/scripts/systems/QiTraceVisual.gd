@@ -13,6 +13,12 @@ func setup(data: QiTrace) -> void:
 	# Future: Apply color based on Qi Type
 	line_2d.default_color = Color(0.4, 0.8, 0.9, 0.8) # Cyan energy
 
+## Updates the end point of a simple 2-point line
 func update_endpoint(new_end: Vector2) -> void:
-	if line_2d.points.size() > 1:
-		line_2d.set_point_position(1, new_end)
+	if line_2d.points.size() >= 2:
+		line_2d.set_point_position(line_2d.points.size() - 1, new_end)
+
+## Set the full path of the trace (for multi-segment lines)
+func update_path(new_points: PackedVector2Array) -> void:
+	line_2d.points = new_points
+

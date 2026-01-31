@@ -21,10 +21,27 @@ var grid_system: GridSystem
 var selected_rune_type: Rune = null # The rune currently selected in palette
 var rune_palette_ui: RunePalette
 
+# Layers
+var trace_layer: Node2D
+var rune_layer: Node2D
+
 func _ready() -> void:
 	print("Engraving Table Initialized")
+	_setup_layers()
 	_setup_grid()
 	_setup_ui()
+
+func _setup_layers() -> void:
+	# Define rendering order: 
+	# 1. Grid (drawn by self via _draw)
+	# 2. Traces
+	# 3. Runes
+	trace_layer = Node2D.new()
+	add_child(trace_layer)
+	
+	rune_layer = Node2D.new()
+	add_child(rune_layer)
+
 
 func _setup_grid() -> void:
 	# Initialize the grid system logic
@@ -56,11 +73,76 @@ func _on_rune_selected(rune: Rune) -> void:
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
-		# Update cursor position
 		queue_redraw()
+		if is_dragging_trace and current_trace_visual:
+			var mouse_pos = get_local_mouse_position()
+			var grid_pos = grid_system.world_to_grid(mouse_pos)
+			
+			if grid_system.is_valid_pos(grid_pos):
+				# Orthogonal Snapping Logic (Manhattan)
+				# 1. Start point
+				var start_world = grid_system.grid_to_world(drag_start_grid)
+				# 2. End point (Grid center)
+				var end_world = grid_system.grid_to_world(grid_pos)
+				
+				# 3. Calculate intermediate point (Elbow)
+				# Heuristic: Preserve dragging direction? Or simple L-shape.
+				# Let's do simple X-then-Y for now.
+				var elbow_point = Vector2(end_world.x, start_world.y)
+				
+				# Update visual with 3 points
+				# Note: Need to update QiTraceVisual to handle multiple points
+				current_trace_visual.update_path([start_world, elbow_point, end_world])
+			else:
+				# Free drag (fallback)
+				current_trace_visual.update_endpoint(mouse_pos)
+
+
 	elif event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			_handle_click(event.position)
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				_handle_click(event.position)
+				
+		elif event.button_index == MOUSE_BUTTON_RIGHT:
+			# Right click to draw traces
+			if event.pressed:
+				_start_trace(event.position)
+			else:
+				_end_trace(event.position)
+
+func _start_trace(screen_pos: Vector2) -> void:
+	var grid_pos = grid_system.world_to_grid(screen_pos)
+	if not grid_system.is_valid_pos(grid_pos): return
+	
+	is_dragging_trace = true
+	drag_start_grid = grid_pos
+	
+	# Create Data
+	var trace_data = QiTrace.new()
+	trace_data.width = 10.0 # Default width for now
+	trace_data.start_point = grid_system.grid_to_world(grid_pos)
+	trace_data.end_point = trace_data.start_point # Initially same
+	
+	# Create Visual
+	current_trace_visual = QiTraceVisualScene.instantiate()
+	trace_layer.add_child(current_trace_visual)
+	current_trace_visual.setup(trace_data)
+
+	
+	print("Started drawing trace from: ", grid_pos)
+
+func _end_trace(screen_pos: Vector2) -> void:
+	if not is_dragging_trace: return
+	
+	var grid_pos = grid_system.world_to_grid(screen_pos)
+	print("Ended trace at: ", grid_pos)
+	
+	# TODO: Validate trace (collision, length)
+	# For now, just leave it there
+	
+	is_dragging_trace = false
+	current_trace_visual = null
+
 
 func _handle_click(screen_pos: Vector2) -> void:
 	var grid_pos = grid_system.world_to_grid(screen_pos)
@@ -93,6 +175,15 @@ func _draw() -> void:
 
 
 const RuneVisualScene = preload("res://scenes/systems/RuneVisual.tscn")
+const QiTraceVisualScene = preload("res://scenes/systems/QiTraceVisual.tscn")
+
+# State
+enum ToolMode { PLACE_RUNE, DRAW_TRACE }
+var current_tool: ToolMode = ToolMode.PLACE_RUNE
+var is_dragging_trace: bool = false
+var current_trace_visual: QiTraceVisual = null
+var drag_start_grid: Vector2i
+
 
 ## Called when user drags a rune onto the board
 func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
@@ -103,9 +194,10 @@ func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
 	print("Placing rune: %s at %s" % [rune_resource.display_name, grid_position])
 	
 	var visual = RuneVisualScene.instantiate()
-	add_child(visual)
+	rune_layer.add_child(visual)
 	visual.setup(rune_resource)
 	visual.position = grid_system.grid_to_world(grid_position)
+
 	
 	current_board_state[grid_position] = {
 		"rune": rune_resource,
