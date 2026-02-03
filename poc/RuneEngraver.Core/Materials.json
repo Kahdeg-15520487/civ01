@@ -1,0 +1,2961 @@
+{
+    "file_name": "Xianxia Materials Database",
+    "sheets": [
+        {
+            "name": "Ores & Metals",
+            "rows": [
+                [
+                    "ID",
+                    "Material Name",
+                    "Tier",
+                    "Category",
+                    "Rarity",
+                    "Primary Use",
+                    "Special Properties"
+                ],
+                [
+                    "M001",
+                    "Black Iron",
+                    "Mortal",
+                    "Common Metal",
+                    "Common",
+                    "Basic weapons",
+                    "Slightly stronger than normal iron"
+                ],
+                [
+                    "M002",
+                    "Cold Iron (Xuan Iron)",
+                    "Mortal",
+                    "Rare Metal",
+                    "Uncommon",
+                    "Peak mortal weaponry",
+                    "Heavy, icy metal from deep underground"
+                ],
+                [
+                    "M003",
+                    "Hundred-Refined Steel",
+                    "Mortal",
+                    "Refined Metal",
+                    "Common",
+                    "Soldier weapons",
+                    "Steel folded 100 times"
+                ],
+                [
+                    "M004",
+                    "Red Copper",
+                    "Mortal",
+                    "Common Metal",
+                    "Common",
+                    "Fire weapons",
+                    "Conducts heat well"
+                ],
+                [
+                    "M005",
+                    "Blue Silver",
+                    "Mortal",
+                    "Rare Metal",
+                    "Uncommon",
+                    "Flexible weapons",
+                    "Lightweight metal"
+                ],
+                [
+                    "M006",
+                    "Deep Sea Silver",
+                    "Spirit",
+                    "Rare Metal",
+                    "Rare",
+                    "Water weapons",
+                    "Resists corrosion and pressure"
+                ],
+                [
+                    "M007",
+                    "Violet Gold",
+                    "Spirit",
+                    "Precious Metal",
+                    "Uncommon",
+                    "Low-level magic tools",
+                    "Gold infused with spiritual energy"
+                ],
+                [
+                    "M008",
+                    "Star-Meteoric Iron",
+                    "Spirit",
+                    "Celestial Metal",
+                    "Rare",
+                    "Heavy weapons",
+                    "Extremely heavy, from fallen stars"
+                ],
+                [
+                    "M009",
+                    "Flaming Essence Copper",
+                    "Spirit",
+                    "Elemental Metal",
+                    "Uncommon",
+                    "Alchemy cauldrons",
+                    "Radiates heat naturally"
+                ],
+                [
+                    "M010",
+                    "Bloodstone",
+                    "Spirit",
+                    "Demonic Ore",
+                    "Rare",
+                    "Demonic weapons",
+                    "Absorbs blood on contact"
+                ],
+                [
+                    "M011",
+                    "Obsidian Essence",
+                    "Spirit",
+                    "Volcanic Glass",
+                    "Uncommon",
+                    "Sharp weapons",
+                    "Harder than diamond when refined"
+                ],
+                [
+                    "M012",
+                    "Wind Copper",
+                    "Spirit",
+                    "Elemental Metal",
+                    "Rare",
+                    "Flying artifacts",
+                    "So light it floats"
+                ],
+                [
+                    "M013",
+                    "Myriad-Year Cold Iron",
+                    "Immortal",
+                    "Ancient Metal",
+                    "Epic",
+                    "Freeze weapons",
+                    "Frozen for 10000 years"
+                ],
+                [
+                    "M014",
+                    "Phoenix Blood Gold",
+                    "Immortal",
+                    "Legendary Metal",
+                    "Legendary",
+                    "Self-repairing weapons",
+                    "Formed where Phoenix died"
+                ],
+                [
+                    "M015",
+                    "Heavenly River Sand",
+                    "Immortal",
+                    "Celestial Material",
+                    "Epic",
+                    "Heavy weapons",
+                    "Each grain weighs 1000kg"
+                ],
+                [
+                    "M016",
+                    "Void Spirit Crystal",
+                    "Immortal",
+                    "Space Element",
+                    "Epic",
+                    "Storage rings",
+                    "Mined from void between worlds"
+                ],
+                [
+                    "M017",
+                    "Nine-Heavens Divine Iron",
+                    "Immortal",
+                    "Divine Metal",
+                    "Legendary",
+                    "Peak weapons",
+                    "Bathed in celestial lightning"
+                ],
+                [
+                    "M018",
+                    "Draconic Stone",
+                    "Immortal",
+                    "Beast Material",
+                    "Epic",
+                    "Dragon weapons",
+                    "Near True Dragon for centuries"
+                ],
+                [
+                    "M019",
+                    "Soul-Weeping Metal",
+                    "Immortal",
+                    "Cursed Metal",
+                    "Legendary",
+                    "Soul weapons",
+                    "Emits wailing sound, attacks soul"
+                ],
+                [
+                    "M020",
+                    "Time-Lapse Gold",
+                    "Immortal",
+                    "Temporal Metal",
+                    "Legendary",
+                    "Aging weapons",
+                    "Rusts everything by accelerating time"
+                ],
+                [
+                    "M021",
+                    "Abyssal Dark Steel",
+                    "Immortal",
+                    "Underworld Metal",
+                    "Epic",
+                    "Darkness weapons",
+                    "Absorbs all light"
+                ],
+                [
+                    "M022",
+                    "Sun-Core Rock",
+                    "Immortal",
+                    "Stellar Material",
+                    "Legendary",
+                    "Fire artifacts",
+                    "Fragment from sun surface"
+                ],
+                [
+                    "M023",
+                    "Chaos Stone",
+                    "God/World",
+                    "Primordial Material",
+                    "Mythic",
+                    "World creation",
+                    "Formed before universe existed"
+                ],
+                [
+                    "M024",
+                    "Grandmist Ore",
+                    "God/World",
+                    "Genesis Material",
+                    "Mythic",
+                    "Creation artifacts",
+                    "Contains laws of creation"
+                ],
+                [
+                    "M025",
+                    "Source of All Metal",
+                    "God/World",
+                    "Conceptual Material",
+                    "Mythic",
+                    "Ultimate forging",
+                    "Mother of all metals"
+                ],
+                [
+                    "M026",
+                    "Eternal Stardust",
+                    "God/World",
+                    "Universal Material",
+                    "Mythic",
+                    "Reality manipulation",
+                    "Dust from destroyed universe"
+                ],
+                [
+                    "M027",
+                    "Magnetite Essence",
+                    "Spirit",
+                    "Magnetic Ore",
+                    "Uncommon",
+                    "Magnetic weapons",
+                    "Pulls metal objects"
+                ],
+                [
+                    "M028",
+                    "Singing Sand",
+                    "Spirit",
+                    "Sonic Material",
+                    "Rare",
+                    "Sound weapons",
+                    "Vibrates with sound Qi"
+                ],
+                [
+                    "M029",
+                    "Rainbow Glass",
+                    "Spirit",
+                    "Illusion Material",
+                    "Rare",
+                    "Array cores",
+                    "Refracts light into illusions"
+                ],
+                [
+                    "M030",
+                    "Volcanic Ash Crystal",
+                    "Spirit",
+                    "Explosive Material",
+                    "Uncommon",
+                    "Grenades",
+                    "Compressed ash that explodes"
+                ],
+                [
+                    "M031",
+                    "Spirit-Sealing Stone",
+                    "Spirit",
+                    "Suppression Material",
+                    "Rare",
+                    "Prisoner shackles",
+                    "Dampens all energy"
+                ],
+                [
+                    "M032",
+                    "Moonstone",
+                    "Spirit",
+                    "Luminous Ore",
+                    "Common",
+                    "Lighting",
+                    "Glows in darkness"
+                ],
+                [
+                    "M033",
+                    "Gravity Stone",
+                    "Spirit",
+                    "Spatial Ore",
+                    "Rare",
+                    "Gravity weapons",
+                    "Reversed or intensified gravity"
+                ],
+                [
+                    "M034",
+                    "Space-Tearing Rock",
+                    "Immortal",
+                    "Spatial Material",
+                    "Legendary",
+                    "Dimension weapons",
+                    "Cuts dimensional barriers"
+                ],
+                [
+                    "M035",
+                    "Heavenly Tears Crystal",
+                    "Immortal",
+                    "Purification Material",
+                    "Epic",
+                    "Cleansing artifacts",
+                    "Solidified celestial raindrops"
+                ],
+                [
+                    "M036",
+                    "Hellfire Brimstone",
+                    "Immortal",
+                    "Demonic Ore",
+                    "Epic",
+                    "Cursed weapons",
+                    "Burns with inextinguishable black fire"
+                ],
+                [
+                    "M037",
+                    "Origin Stone",
+                    "Immortal",
+                    "Adaptive Material",
+                    "Legendary",
+                    "Elemental weapons",
+                    "Takes any elemental property"
+                ],
+                [
+                    "M038",
+                    "Star Core Fragment",
+                    "Immortal",
+                    "Stellar Material",
+                    "Legendary",
+                    "Dense weapons",
+                    "Remains of collapsed star"
+                ],
+                [
+                    "M039",
+                    "Divine Gold of Seven Hells",
+                    "Immortal",
+                    "Cursed Metal",
+                    "Legendary",
+                    "Curse weapons",
+                    "Forged in underworld"
+                ],
+                [
+                    "M040",
+                    "Ethereal Cloud Iron",
+                    "Immortal",
+                    "Phasing Metal",
+                    "Epic",
+                    "Intangible weapons",
+                    "Can turn intangible"
+                ],
+                [
+                    "M041",
+                    "Samsara Stone",
+                    "Immortal",
+                    "Reincarnation Material",
+                    "Legendary",
+                    "Soul artifacts",
+                    "Controls reincarnation cycles"
+                ],
+                [
+                    "M042",
+                    "Grandmist Clay",
+                    "God/World",
+                    "Creation Material",
+                    "Mythic",
+                    "Life creation",
+                    "Molded into living beings"
+                ],
+                [
+                    "M043",
+                    "Five-Colored Divine Earth",
+                    "God/World",
+                    "Growth Material",
+                    "Mythic",
+                    "Spirit farming",
+                    "Grows anything instantly"
+                ],
+                [
+                    "M044",
+                    "Chalcedony",
+                    "Spirit",
+                    "Carving Stone",
+                    "Common",
+                    "Seals and stamps",
+                    "Milky stone for inscription"
+                ],
+                [
+                    "M045",
+                    "Black Pearl",
+                    "Spirit",
+                    "Ocean Treasure",
+                    "Rare",
+                    "Yin artifacts",
+                    "Deep ocean, heavily Yin-aligned"
+                ],
+                [
+                    "M046",
+                    "Sunstone",
+                    "Spirit",
+                    "Solar Material",
+                    "Uncommon",
+                    "Fire formations",
+                    "Radiates constant heat"
+                ],
+                [
+                    "M047",
+                    "Tungsten Essence",
+                    "Spirit",
+                    "Heavy Metal",
+                    "Rare",
+                    "Dense weapons",
+                    "Extremely heavy and hard"
+                ],
+                [
+                    "M048",
+                    "Titanium Spirit Metal",
+                    "Spirit",
+                    "Advanced Metal",
+                    "Rare",
+                    "Lightweight armor",
+                    "Light but indestructible"
+                ],
+                [
+                    "M049",
+                    "Meteorite Copper",
+                    "Spirit",
+                    "Astral Metal",
+                    "Rare",
+                    "Astral weapons",
+                    "Conducts astral energy"
+                ],
+                [
+                    "M050",
+                    "Deep Sea Coral",
+                    "Spirit",
+                    "Ocean Material",
+                    "Uncommon",
+                    "Water staffs",
+                    "Hard as rock"
+                ],
+                [
+                    "M051",
+                    "Soul Crystal Ore",
+                    "Spirit",
+                    "Underworld Material",
+                    "Rare",
+                    "Soul storage",
+                    "Stores soul energy"
+                ],
+                [
+                    "M052",
+                    "Ice Crystal",
+                    "Spirit",
+                    "Frozen Material",
+                    "Uncommon",
+                    "Cold storage",
+                    "Never melts"
+                ],
+                [
+                    "M053",
+                    "Thunder Stone",
+                    "Spirit",
+                    "Lightning Ore",
+                    "Rare",
+                    "Lightning rods",
+                    "Attracts lightning"
+                ],
+                [
+                    "M054",
+                    "Blood Amber",
+                    "Spirit",
+                    "Fossilized Material",
+                    "Uncommon",
+                    "Blood artifacts",
+                    "Contains ancient blood"
+                ],
+                [
+                    "M055",
+                    "Wind-Singing Rock",
+                    "Spirit",
+                    "Sonic Material",
+                    "Rare",
+                    "Sound arrays",
+                    "Whistles in wind"
+                ],
+                [
+                    "M056",
+                    "Gravity Sand",
+                    "Spirit",
+                    "Heavy Material",
+                    "Rare",
+                    "Weight artifacts",
+                    "100x heavier than normal sand"
+                ],
+                [
+                    "M057",
+                    "Mirage Stone",
+                    "Spirit",
+                    "Illusion Ore",
+                    "Rare",
+                    "Illusion arrays",
+                    "Creates natural illusions"
+                ],
+                [
+                    "M058",
+                    "Echo Crystal",
+                    "Spirit",
+                    "Recording Material",
+                    "Uncommon",
+                    "Sound storage",
+                    "Records and replays sounds"
+                ],
+                [
+                    "M059",
+                    "Shadow Oil",
+                    "Spirit",
+                    "Darkness Liquid",
+                    "Rare",
+                    "Light suppression",
+                    "Extinguishes light sources"
+                ],
+                [
+                    "M060",
+                    "Pristine Vial Material",
+                    "Spirit",
+                    "Glass",
+                    "Common",
+                    "Alchemy containers",
+                    "Holds volatile liquids"
+                ]
+            ]
+        },
+        {
+            "name": "Herbs & Plants",
+            "rows": [
+                [
+                    "ID",
+                    "Material Name",
+                    "Tier",
+                    "Category",
+                    "Rarity",
+                    "Primary Use",
+                    "Special Properties"
+                ],
+                [
+                    "H001",
+                    "Blood Ginseng",
+                    "Mortal",
+                    "Medicinal Herb",
+                    "Common",
+                    "Vitality pills",
+                    "Boosts martial artist vitality"
+                ],
+                [
+                    "H002",
+                    "Ironwood",
+                    "Mortal",
+                    "Spirit Wood",
+                    "Uncommon",
+                    "Staves and shields",
+                    "Wood as hard as iron"
+                ],
+                [
+                    "H003",
+                    "Spirit Rice",
+                    "Mortal",
+                    "Spiritual Food",
+                    "Common",
+                    "Cultivation food",
+                    "Contains trace Qi"
+                ],
+                [
+                    "H004",
+                    "Moonlight Grass",
+                    "Mortal",
+                    "Lunar Herb",
+                    "Common",
+                    "Yin pills",
+                    "Glows at night, absorbs lunar energy"
+                ],
+                [
+                    "H005",
+                    "Seven-Leaf Flower",
+                    "Mortal",
+                    "Healing Herb",
+                    "Common",
+                    "Basic healing",
+                    "Cures cuts and bruises"
+                ],
+                [
+                    "H006",
+                    "Thousand-Year Ginseng",
+                    "Spirit",
+                    "Ancient Herb",
+                    "Rare",
+                    "Life extension",
+                    "Extends life by 50 years"
+                ],
+                [
+                    "H007",
+                    "Vermilion Fruit",
+                    "Spirit",
+                    "Fire Fruit",
+                    "Uncommon",
+                    "Fire cultivation",
+                    "Boosts fire Qi dramatically"
+                ],
+                [
+                    "H008",
+                    "Snow Lotus",
+                    "Spirit",
+                    "Ice Herb",
+                    "Rare",
+                    "Antidote",
+                    "Cures most poisons"
+                ],
+                [
+                    "H009",
+                    "Dragon Whisker Root",
+                    "Spirit",
+                    "Healing Root",
+                    "Rare",
+                    "Meridian repair",
+                    "Knits broken meridians"
+                ],
+                [
+                    "H010",
+                    "Soul-Nourishing Grass",
+                    "Spirit",
+                    "Soul Herb",
+                    "Rare",
+                    "Soul repair",
+                    "Repairs damaged souls"
+                ],
+                [
+                    "H011",
+                    "Thunderstruck Bamboo",
+                    "Spirit",
+                    "Lightning Wood",
+                    "Rare",
+                    "Lightning artifacts",
+                    "Stores lightning naturally"
+                ],
+                [
+                    "H012",
+                    "Golden Lotus",
+                    "Spirit",
+                    "Fire Flower",
+                    "Epic",
+                    "Heat immunity",
+                    "Grows in lava"
+                ],
+                [
+                    "H013",
+                    "Ghost Face Flower",
+                    "Spirit",
+                    "Poison Herb",
+                    "Uncommon",
+                    "Poisons and hallucinations",
+                    "Looks like screaming face"
+                ],
+                [
+                    "H014",
+                    "Spirit Gathering Grass",
+                    "Spirit",
+                    "Qi Herb",
+                    "Common",
+                    "Qi density",
+                    "Attracts environmental Qi"
+                ],
+                [
+                    "H015",
+                    "Five-Color Fruit",
+                    "Spirit",
+                    "Elemental Fruit",
+                    "Rare",
+                    "Qi balancing",
+                    "Contains five elements"
+                ],
+                [
+                    "H016",
+                    "Stone-Skin Bark",
+                    "Spirit",
+                    "Defense Herb",
+                    "Uncommon",
+                    "Defense pills",
+                    "Temporarily hardens skin"
+                ],
+                [
+                    "H017",
+                    "Bodhi Root",
+                    "Immortal",
+                    "Enlightenment Herb",
+                    "Legendary",
+                    "Dao comprehension",
+                    "Enhances enlightenment"
+                ],
+                [
+                    "H018",
+                    "Resurrection Lily",
+                    "Immortal",
+                    "Revival Flower",
+                    "Legendary",
+                    "Resurrection",
+                    "Revives dead under 7 days"
+                ],
+                [
+                    "H019",
+                    "Nine-Heavens Peach",
+                    "Immortal",
+                    "Immortal Fruit",
+                    "Epic",
+                    "Lifespan extension",
+                    "Adds 500 years life"
+                ],
+                [
+                    "H020",
+                    "Nirvana Flame Flower",
+                    "Immortal",
+                    "Rebirth Flower",
+                    "Legendary",
+                    "Body reforging",
+                    "Burns eternally"
+                ],
+                [
+                    "H021",
+                    "Void Flower",
+                    "Immortal",
+                    "Space Herb",
+                    "Epic",
+                    "Space pills",
+                    "Roots in empty space"
+                ],
+                [
+                    "H022",
+                    "Dao Fruit",
+                    "Immortal",
+                    "Law Fruit",
+                    "Legendary",
+                    "Law comprehension",
+                    "Contains crystallized law"
+                ],
+                [
+                    "H023",
+                    "World Tree Branch",
+                    "Immortal",
+                    "Divine Wood",
+                    "Legendary",
+                    "Space artifacts",
+                    "Contains space laws"
+                ],
+                [
+                    "H024",
+                    "Ancient Tea of Enlightenment",
+                    "Immortal",
+                    "Wisdom Herb",
+                    "Epic",
+                    "Technique learning",
+                    "Induces learning trance"
+                ],
+                [
+                    "H025",
+                    "Yin-Yang Herb",
+                    "Immortal",
+                    "Dual Herb",
+                    "Epic",
+                    "Balance pills",
+                    "Balances life and death"
+                ],
+                [
+                    "H026",
+                    "Immortal Slaying Vine",
+                    "Immortal",
+                    "Parasitic Plant",
+                    "Legendary",
+                    "Immortal traps",
+                    "Drains immortals"
+                ],
+                [
+                    "H027",
+                    "Primordial Chaos Lotus",
+                    "God/World",
+                    "Creation Flower",
+                    "Mythic",
+                    "World creation",
+                    "Born in primordial chaos"
+                ],
+                [
+                    "H028",
+                    "Fruit of Good and Evil",
+                    "God/World",
+                    "Duality Fruit",
+                    "Mythic",
+                    "Entity splitting",
+                    "Grants duality nature"
+                ],
+                [
+                    "H029",
+                    "Life Source Sap",
+                    "God/World",
+                    "Immortality Liquid",
+                    "Mythic",
+                    "True immortality",
+                    "Blood of universe"
+                ],
+                [
+                    "H030",
+                    "Ghost Weeping Willow",
+                    "Spirit",
+                    "Spirit Wood",
+                    "Uncommon",
+                    "Spirit tools",
+                    "Attracts minor spirits"
+                ],
+                [
+                    "H031",
+                    "Blood-Drinker Vine",
+                    "Spirit",
+                    "Parasitic Plant",
+                    "Rare",
+                    "Binding traps",
+                    "Grows redder with kills"
+                ],
+                [
+                    "H032",
+                    "Iron-Bone Pine",
+                    "Spirit",
+                    "Weapon Wood",
+                    "Uncommon",
+                    "Hidden weapons",
+                    "Needles hard as steel"
+                ],
+                [
+                    "H033",
+                    "Seven-Star Grass",
+                    "Spirit",
+                    "Astral Herb",
+                    "Rare",
+                    "Astrology arrays",
+                    "Reflects constellations"
+                ],
+                [
+                    "H034",
+                    "Corpse Mushroom",
+                    "Spirit",
+                    "Death Fungus",
+                    "Rare",
+                    "Necromancy pills",
+                    "Grows on graves"
+                ],
+                [
+                    "H035",
+                    "Sunfire Flower",
+                    "Spirit",
+                    "Solar Flower",
+                    "Rare",
+                    "Fire pills",
+                    "Blooms only at noon"
+                ],
+                [
+                    "H036",
+                    "Fragrant Dream Moss",
+                    "Spirit",
+                    "Sleep Herb",
+                    "Uncommon",
+                    "Sleep poison",
+                    "Causes hallucinations"
+                ],
+                [
+                    "H037",
+                    "Jade-Marrow Mushroom",
+                    "Spirit",
+                    "Healing Fungus",
+                    "Rare",
+                    "Bone healing",
+                    "Looks like carved jade"
+                ],
+                [
+                    "H038",
+                    "Lightning-Struck Jujube Wood",
+                    "Spirit",
+                    "Exorcism Wood",
+                    "Rare",
+                    "Ghost banishing",
+                    "Struck by natural lightning"
+                ],
+                [
+                    "H039",
+                    "Dragon's Tongue Herb",
+                    "Spirit",
+                    "Vocal Herb",
+                    "Uncommon",
+                    "Sound techniques",
+                    "Boosts roar attacks"
+                ],
+                [
+                    "H040",
+                    "Shadowless Flower",
+                    "Spirit",
+                    "Invisible Flower",
+                    "Rare",
+                    "Invisibility pills",
+                    "Transparent in sunlight"
+                ],
+                [
+                    "H041",
+                    "Ice-Heart Lotus",
+                    "Spirit",
+                    "Cooling Flower",
+                    "Rare",
+                    "Deviation cure",
+                    "Freezes water within 10m"
+                ],
+                [
+                    "H042",
+                    "Spider-Silk Grass",
+                    "Spirit",
+                    "Defense Plant",
+                    "Uncommon",
+                    "Defensive robes",
+                    "Extremely tough fibers"
+                ],
+                [
+                    "H043",
+                    "Demonic Face Orchid",
+                    "Spirit",
+                    "Rage Flower",
+                    "Rare",
+                    "Berserker pills",
+                    "Pattern like demon face"
+                ],
+                [
+                    "H044",
+                    "Moonlight Bamboo",
+                    "Spirit",
+                    "Lunar Wood",
+                    "Uncommon",
+                    "Flutes",
+                    "Stores moonlight"
+                ],
+                [
+                    "H045",
+                    "Nirvana Phoenix Tree",
+                    "Immortal",
+                    "Rebirth Wood",
+                    "Legendary",
+                    "Phoenix artifacts",
+                    "Burns and regrows every 1000 years"
+                ],
+                [
+                    "H046",
+                    "Void Spirit Grass",
+                    "Immortal",
+                    "Space Herb",
+                    "Epic",
+                    "Bypass pills",
+                    "Roots in void"
+                ],
+                [
+                    "H047",
+                    "Heaven-Mending Mushroom",
+                    "Immortal",
+                    "Repair Fungus",
+                    "Legendary",
+                    "Base repair",
+                    "Repairs cultivation damage"
+                ],
+                [
+                    "H048",
+                    "Tree of Wisdom Leaves",
+                    "Immortal",
+                    "Intelligence Herb",
+                    "Epic",
+                    "Genius pills",
+                    "Grants temporary genius"
+                ],
+                [
+                    "H049",
+                    "Chaos Grain",
+                    "God/World",
+                    "Primordial Food",
+                    "Mythic",
+                    "Foundation food",
+                    "One grain weighs 100 tons"
+                ],
+                [
+                    "H050",
+                    "Soul-Severing Thorn",
+                    "Immortal",
+                    "Cursed Plant",
+                    "Legendary",
+                    "Soul weapons",
+                    "Cuts body-soul connection"
+                ],
+                [
+                    "H051",
+                    "Ancient Tea of Reincarnation",
+                    "Immortal",
+                    "Memory Herb",
+                    "Epic",
+                    "Past life vision",
+                    "Experience past life in dream"
+                ],
+                [
+                    "H052",
+                    "World-Suppressing Banyan",
+                    "Immortal",
+                    "Sealing Wood",
+                    "Legendary",
+                    "Dimensional seals",
+                    "Heavy enough to seal rifts"
+                ],
+                [
+                    "H053",
+                    "Nine-Underworlds Flower",
+                    "Immortal",
+                    "Hell Flower",
+                    "Legendary",
+                    "Death pills",
+                    "Grows in hell"
+                ],
+                [
+                    "H054",
+                    "Celestial Peach of Immortality",
+                    "Immortal",
+                    "Ascension Fruit",
+                    "Mythic",
+                    "Instant ascension",
+                    "Grants immediate ascension"
+                ],
+                [
+                    "H055",
+                    "Jade Marrow Ganoderma",
+                    "Spirit",
+                    "Bone Fungus",
+                    "Rare",
+                    "Bone strengthening",
+                    "Improves bone density"
+                ],
+                [
+                    "H056",
+                    "Purple Monkey Flower",
+                    "Spirit",
+                    "Agility Herb",
+                    "Uncommon",
+                    "Speed pills",
+                    "Looks like monkey face"
+                ],
+                [
+                    "H057",
+                    "Dragon Scale Fruit",
+                    "Spirit",
+                    "Defense Fruit",
+                    "Rare",
+                    "Armor pills",
+                    "Skin like dragon scales"
+                ],
+                [
+                    "H058",
+                    "Fire Pomegranate",
+                    "Spirit",
+                    "Fire Fruit",
+                    "Uncommon",
+                    "Qi purification",
+                    "Explodes with burning juice"
+                ],
+                [
+                    "H059",
+                    "Ice Spirit Fruit",
+                    "Spirit",
+                    "Cooling Fruit",
+                    "Rare",
+                    "Demon calming",
+                    "Freezes stomach, calms heart"
+                ],
+                [
+                    "H060",
+                    "Heavenly Spirit Fruit",
+                    "Spirit",
+                    "XP Fruit",
+                    "Uncommon",
+                    "Cultivation boost",
+                    "Generic power boost"
+                ],
+                [
+                    "H061",
+                    "Earth Pear",
+                    "Spirit",
+                    "Stability Fruit",
+                    "Uncommon",
+                    "Grounding pills",
+                    "Makes one heavier/stable"
+                ],
+                [
+                    "H062",
+                    "Rainbow Skirt Grass",
+                    "Spirit",
+                    "Weaving Herb",
+                    "Rare",
+                    "Defensive clothes",
+                    "Colorful defensive fibers"
+                ],
+                [
+                    "H063",
+                    "Bodhi Flower",
+                    "Spirit",
+                    "Wisdom Flower",
+                    "Epic",
+                    "Enlightenment",
+                    "Grants temporary enlightenment"
+                ],
+                [
+                    "H064",
+                    "Sagacity Fruit",
+                    "Spirit",
+                    "Intelligence Fruit",
+                    "Rare",
+                    "Wisdom pills",
+                    "Increases intelligence"
+                ],
+                [
+                    "H065",
+                    "Prism Lotus",
+                    "Spirit",
+                    "Light Flower",
+                    "Rare",
+                    "Invisibility",
+                    "Refracts light"
+                ],
+                [
+                    "H066",
+                    "Crimson Fruit",
+                    "Spirit",
+                    "Fire Fruit",
+                    "Common",
+                    "Fire cultivation",
+                    "Standard fire element boost"
+                ],
+                [
+                    "H067",
+                    "Gnarled Vine",
+                    "Spirit",
+                    "Tough Wood",
+                    "Common",
+                    "Binding",
+                    "Knotty and tough"
+                ],
+                [
+                    "H068",
+                    "Ocher Essence",
+                    "Spirit",
+                    "Earth Material",
+                    "Uncommon",
+                    "Earth pills",
+                    "Edible earth paste"
+                ],
+                [
+                    "H069",
+                    "Heavenly Silkworm Potato",
+                    "Spirit",
+                    "Joke Item",
+                    "Rare",
+                    "Nutrition",
+                    "Looks like cocoon"
+                ],
+                [
+                    "H070",
+                    "Human-Face Peach",
+                    "Immortal",
+                    "Cursed Fruit",
+                    "Epic",
+                    "Soul pills",
+                    "Wails when bitten"
+                ]
+            ]
+        },
+        {
+            "name": "Beast Materials",
+            "rows": [
+                [
+                    "ID",
+                    "Material Name",
+                    "Tier",
+                    "Source Beast",
+                    "Rarity",
+                    "Primary Use",
+                    "Special Properties"
+                ],
+                [
+                    "B001",
+                    "Monster Core Tier 1",
+                    "Spirit",
+                    "Low Spirit Beast",
+                    "Common",
+                    "Low-grade weapons",
+                    "Basic elemental energy"
+                ],
+                [
+                    "B002",
+                    "Monster Core Tier 2",
+                    "Spirit",
+                    "Mid Spirit Beast",
+                    "Uncommon",
+                    "Mid-grade weapons",
+                    "Moderate elemental power"
+                ],
+                [
+                    "B003",
+                    "Monster Core Tier 3",
+                    "Spirit",
+                    "High Spirit Beast",
+                    "Rare",
+                    "High-grade weapons",
+                    "Strong elemental essence"
+                ],
+                [
+                    "B004",
+                    "Steel-Back Boar Tusk",
+                    "Mortal",
+                    "Steel-Back Boar",
+                    "Common",
+                    "Daggers",
+                    "Naturally sharp"
+                ],
+                [
+                    "B005",
+                    "Wind Wolf Pelt",
+                    "Spirit",
+                    "Wind Wolf",
+                    "Uncommon",
+                    "Speed boots",
+                    "Movement speed increase"
+                ],
+                [
+                    "B006",
+                    "Iron-Beak Eagle Feather",
+                    "Spirit",
+                    "Iron-Beak Eagle",
+                    "Uncommon",
+                    "Armor-piercing arrows",
+                    "Extremely sharp"
+                ],
+                [
+                    "B007",
+                    "Snake Gallbladder",
+                    "Mortal",
+                    "Spirit Snake",
+                    "Common",
+                    "Antitoxin pills",
+                    "Potent antitoxin organ"
+                ],
+                [
+                    "B008",
+                    "Tiger Bone Glue",
+                    "Mortal",
+                    "Spirit Tiger",
+                    "Uncommon",
+                    "Bone strengthening",
+                    "Strengthens skeleton"
+                ],
+                [
+                    "B009",
+                    "Silkworm King Thread",
+                    "Spirit",
+                    "Silkworm King",
+                    "Rare",
+                    "Binding weapons",
+                    "Uncuttable thread"
+                ],
+                [
+                    "B010",
+                    "Turtle Shell Essence",
+                    "Spirit",
+                    "Spirit Turtle",
+                    "Uncommon",
+                    "Defense pills",
+                    "Ground shell powder"
+                ],
+                [
+                    "B011",
+                    "Vampire Bat Fangs",
+                    "Spirit",
+                    "Vampire Bat",
+                    "Uncommon",
+                    "Bleeding weapons",
+                    "Causes continuous bleeding"
+                ],
+                [
+                    "B012",
+                    "Lightning Eel Skin",
+                    "Spirit",
+                    "Lightning Eel",
+                    "Rare",
+                    "Insulation gear",
+                    "Resists electricity"
+                ],
+                [
+                    "B013",
+                    "Dragon Scale",
+                    "Immortal",
+                    "True Dragon",
+                    "Legendary",
+                    "Ultimate armor",
+                    "Impervious to non-divine attacks"
+                ],
+                [
+                    "B014",
+                    "Phoenix Feather",
+                    "Immortal",
+                    "Phoenix",
+                    "Legendary",
+                    "Fire weapons",
+                    "Burns eternally"
+                ],
+                [
+                    "B015",
+                    "Qilin Horn",
+                    "Immortal",
+                    "Qilin",
+                    "Legendary",
+                    "Fate formations",
+                    "Brings auspicious luck"
+                ],
+                [
+                    "B016",
+                    "Kun Peng Bone",
+                    "Immortal",
+                    "Kun Peng",
+                    "Legendary",
+                    "Wind/Water weapons",
+                    "Contains dual laws"
+                ],
+                [
+                    "B017",
+                    "Golden Crow Eye",
+                    "Immortal",
+                    "Golden Crow",
+                    "Legendary",
+                    "Detection artifacts",
+                    "Sees through illusions"
+                ],
+                [
+                    "B018",
+                    "Nine-Tailed Fox Heart",
+                    "Immortal",
+                    "Nine-Tailed Fox",
+                    "Legendary",
+                    "Charm artifacts",
+                    "Ultimate charm power"
+                ],
+                [
+                    "B019",
+                    "Thunderbird Beak",
+                    "Immortal",
+                    "Thunderbird",
+                    "Epic",
+                    "Space weapons",
+                    "Pierces space and lightning"
+                ],
+                [
+                    "B020",
+                    "Black Tortoise Shell",
+                    "Immortal",
+                    "Black Tortoise",
+                    "Legendary",
+                    "Divination tools",
+                    "Predicts future"
+                ],
+                [
+                    "B021",
+                    "White Tiger Claw",
+                    "Immortal",
+                    "White Tiger",
+                    "Legendary",
+                    "Barrier weapons",
+                    "Cuts through barriers"
+                ],
+                [
+                    "B022",
+                    "Leviathan Oil",
+                    "Immortal",
+                    "Leviathan",
+                    "Epic",
+                    "Eternal lamps",
+                    "Burns for 10000 years"
+                ],
+                [
+                    "B023",
+                    "Ancestral Dragon Blood Essence",
+                    "God/World",
+                    "Ancestral Dragon",
+                    "Mythic",
+                    "Bloodline refinement",
+                    "One drop weighs a mountain"
+                ],
+                [
+                    "B024",
+                    "Primordial God Bone",
+                    "God/World",
+                    "Primordial God",
+                    "Mythic",
+                    "Divine weapons",
+                    "Radiates killing pressure"
+                ],
+                [
+                    "B025",
+                    "Eye of Void Beast",
+                    "God/World",
+                    "Void Beast",
+                    "Mythic",
+                    "Space destruction",
+                    "Contains black hole"
+                ],
+                [
+                    "B026",
+                    "Green Wind Wolf Fang",
+                    "Spirit",
+                    "Green Wind Wolf",
+                    "Common",
+                    "Wind daggers",
+                    "Adds wind speed"
+                ],
+                [
+                    "B027",
+                    "Fire Python Tiger Skin",
+                    "Spirit",
+                    "Fire Python Tiger",
+                    "Uncommon",
+                    "Fire armor",
+                    "Fire resistance"
+                ],
+                [
+                    "B028",
+                    "Black Steel Panther Claw",
+                    "Spirit",
+                    "Black Steel Panther",
+                    "Uncommon",
+                    "Armor-piercing",
+                    "Tears through iron"
+                ],
+                [
+                    "B029",
+                    "Devil Alligator Scales",
+                    "Spirit",
+                    "Devil Alligator",
+                    "Uncommon",
+                    "Water armor",
+                    "Tough muddy scales"
+                ],
+                [
+                    "B030",
+                    "Mist Leopard Eye",
+                    "Spirit",
+                    "Mist Leopard",
+                    "Rare",
+                    "Vision artifacts",
+                    "Sees through fog"
+                ],
+                [
+                    "B031",
+                    "Rock Bear Gallbladder",
+                    "Spirit",
+                    "Rock Bear",
+                    "Uncommon",
+                    "Strength pills",
+                    "Permanently increases strength"
+                ],
+                [
+                    "B032",
+                    "Shadow Scorpion Stinger",
+                    "Spirit",
+                    "Shadow Scorpion",
+                    "Rare",
+                    "Paralysis weapons",
+                    "Neurotoxin tip"
+                ],
+                [
+                    "B033",
+                    "Iron-Winged Crane Feather",
+                    "Spirit",
+                    "Iron-Winged Crane",
+                    "Uncommon",
+                    "Throwing weapons",
+                    "Sharp as knife"
+                ],
+                [
+                    "B034",
+                    "Vampire Bat Membrane",
+                    "Spirit",
+                    "Vampire Bat",
+                    "Uncommon",
+                    "Gliding cloaks",
+                    "Allows gliding"
+                ],
+                [
+                    "B035",
+                    "Lava Lizard Tail",
+                    "Spirit",
+                    "Lava Lizard",
+                    "Rare",
+                    "Healing burns",
+                    "Regenerates when cut"
+                ],
+                [
+                    "B036",
+                    "Golden-Back Beetle Shell",
+                    "Spirit",
+                    "Golden-Back Beetle",
+                    "Uncommon",
+                    "Reflective armor",
+                    "Reflects minor attacks"
+                ],
+                [
+                    "B037",
+                    "Sonic Bat Ear",
+                    "Spirit",
+                    "Sonic Bat",
+                    "Rare",
+                    "Eavesdropping tools",
+                    "Enhanced hearing"
+                ],
+                [
+                    "B038",
+                    "Frost Spider Silk",
+                    "Spirit",
+                    "Frost Spider",
+                    "Rare",
+                    "Slowing traps",
+                    "Sticky and freezing"
+                ],
+                [
+                    "B039",
+                    "Horned Rabbit Horn",
+                    "Mortal",
+                    "Horned Rabbit",
+                    "Common",
+                    "Beginner weapons",
+                    "Surprisingly sharp"
+                ],
+                [
+                    "B040",
+                    "Lightning Rat Tail",
+                    "Spirit",
+                    "Lightning Rat",
+                    "Uncommon",
+                    "Shock whips",
+                    "Shocks on contact"
+                ],
+                [
+                    "B041",
+                    "Sky Fire Wyvern Heart",
+                    "Immortal",
+                    "Sky Fire Wyvern",
+                    "Epic",
+                    "City defenses",
+                    "Pumps liquid fire"
+                ],
+                [
+                    "B042",
+                    "Thunder Crystal Beast Core",
+                    "Immortal",
+                    "Thunder Beast",
+                    "Epic",
+                    "Lightning battery",
+                    "Pure lightning storage"
+                ],
+                [
+                    "B043",
+                    "Void Dragon Sinew",
+                    "Immortal",
+                    "Void Dragon",
+                    "Legendary",
+                    "Bow strings",
+                    "God-slaying bows"
+                ],
+                [
+                    "B044",
+                    "Nine-Nether Bird Beak",
+                    "Immortal",
+                    "Nine-Nether Bird",
+                    "Legendary",
+                    "Soul weapons",
+                    "Pecks souls"
+                ],
+                [
+                    "B045",
+                    "Titan Ape Bone",
+                    "Immortal",
+                    "Titan Ape",
+                    "Epic",
+                    "Heavy weapons",
+                    "10000kg per meter"
+                ],
+                [
+                    "B046",
+                    "Dream-Eater Tapir Snout",
+                    "Immortal",
+                    "Dream-Eater Tapir",
+                    "Epic",
+                    "Sleep incense",
+                    "Causes deep sleep"
+                ],
+                [
+                    "B047",
+                    "Celestial Silkworm Cocoon",
+                    "Immortal",
+                    "Celestial Silkworm",
+                    "Legendary",
+                    "Ultimate robes",
+                    "Impervious to elements"
+                ],
+                [
+                    "B048",
+                    "Abyssal Hydra Head",
+                    "Immortal",
+                    "Abyssal Hydra",
+                    "Legendary",
+                    "Multi-element weapons",
+                    "Each head retains element"
+                ],
+                [
+                    "B049",
+                    "Golden Crow Sun-Feather",
+                    "Immortal",
+                    "Golden Crow",
+                    "Legendary",
+                    "Eternal flames",
+                    "Burns without fuel"
+                ],
+                [
+                    "B050",
+                    "Moon-Swallowing Wolf Fang",
+                    "Immortal",
+                    "Moon Wolf",
+                    "Epic",
+                    "Lunar weapons",
+                    "Sharpens in moonlight"
+                ],
+                [
+                    "B051",
+                    "Iron-Hide Bull Leather",
+                    "Mortal",
+                    "Iron-Hide Bull",
+                    "Common",
+                    "Heavy armor",
+                    "Standard tough leather"
+                ],
+                [
+                    "B052",
+                    "Shadow Cat Claws",
+                    "Spirit",
+                    "Shadow Cat",
+                    "Uncommon",
+                    "Silent weapons",
+                    "Daggers make no sound"
+                ],
+                [
+                    "B053",
+                    "Poison Toad Sac",
+                    "Spirit",
+                    "Poison Toad",
+                    "Uncommon",
+                    "Acid grenades",
+                    "Burst releases acid"
+                ],
+                [
+                    "B054",
+                    "Spirit Rat Whiskers",
+                    "Spirit",
+                    "Spirit Rat",
+                    "Common",
+                    "Treasure compasses",
+                    "Sensitive sensors"
+                ],
+                [
+                    "B055",
+                    "Siren's Throat Bone",
+                    "Spirit",
+                    "Siren",
+                    "Rare",
+                    "Sound amplifiers",
+                    "Boosts sonic attacks"
+                ],
+                [
+                    "B056",
+                    "Flame Eagle Beak",
+                    "Spirit",
+                    "Flame Eagle",
+                    "Uncommon",
+                    "Fire weapons",
+                    "Retains high heat"
+                ],
+                [
+                    "B057",
+                    "Ice-Bear Fur",
+                    "Spirit",
+                    "Ice Bear",
+                    "Rare",
+                    "Cold weather gear",
+                    "Keeps warm in absolute zero"
+                ],
+                [
+                    "B058",
+                    "Centipede Carapace",
+                    "Spirit",
+                    "Giant Centipede",
+                    "Uncommon",
+                    "Flexible armor",
+                    "Segmented plates"
+                ],
+                [
+                    "B059",
+                    "Shark-Tooth Sword Material",
+                    "Spirit",
+                    "Spirit Shark",
+                    "Common",
+                    "Serrated weapons",
+                    "Causes bleeding"
+                ],
+                [
+                    "B060",
+                    "Chameleon Skin",
+                    "Spirit",
+                    "Spirit Chameleon",
+                    "Rare",
+                    "Invisibility cloaks",
+                    "Visual invisibility only"
+                ],
+                [
+                    "B061",
+                    "Nine-Headed Hydra Blood",
+                    "Immortal",
+                    "Nine-Headed Hydra",
+                    "Legendary",
+                    "Regeneration pills",
+                    "Regrows limbs, causes madness"
+                ],
+                [
+                    "B062",
+                    "Void Whale Skin",
+                    "Immortal",
+                    "Void Whale",
+                    "Legendary",
+                    "Storage bags",
+                    "Stretches infinitely"
+                ],
+                [
+                    "B063",
+                    "Golden Roc Wing",
+                    "Immortal",
+                    "Golden Roc",
+                    "Legendary",
+                    "Speed artifacts",
+                    "Teleportation-like speed"
+                ],
+                [
+                    "B064",
+                    "True Dragon Reverse Scale",
+                    "Immortal",
+                    "True Dragon",
+                    "Mythic",
+                    "Rage weapons",
+                    "Contains full dragon rage"
+                ],
+                [
+                    "B065",
+                    "Celestial Dog Tooth",
+                    "Immortal",
+                    "Celestial Dog",
+                    "Epic",
+                    "Ghost weapons",
+                    "Bites intangible beings"
+                ],
+                [
+                    "B066",
+                    "Black Tortoise Shell Fragment",
+                    "Immortal",
+                    "Black Tortoise",
+                    "Legendary",
+                    "Ultimate shields",
+                    "Blocks divination"
+                ],
+                [
+                    "B067",
+                    "Demon God's Horn",
+                    "Immortal",
+                    "Demon God",
+                    "Legendary",
+                    "Corruption weapons",
+                    "Corrupts but empowers"
+                ],
+                [
+                    "B068",
+                    "Phoenix Tear",
+                    "Immortal",
+                    "Phoenix",
+                    "Legendary",
+                    "Instant healing",
+                    "Heals any wound"
+                ],
+                [
+                    "B069",
+                    "Qilin Hoof",
+                    "Immortal",
+                    "Qilin",
+                    "Legendary",
+                    "Exorcism powder",
+                    "Tramples evil spirits"
+                ],
+                [
+                    "B070",
+                    "Ancestral Ape Hair",
+                    "Immortal",
+                    "Ancestral Ape",
+                    "Epic",
+                    "Clone artifacts",
+                    "Creates user clones"
+                ]
+            ]
+        },
+        {
+            "name": "Liquids & Essences",
+            "rows": [
+                [
+                    "ID",
+                    "Material Name",
+                    "Tier",
+                    "Category",
+                    "Rarity",
+                    "Primary Use",
+                    "Special Properties"
+                ],
+                [
+                    "L001",
+                    "Spirit Stone (Low)",
+                    "Spirit",
+                    "Energy Crystal",
+                    "Common",
+                    "Currency and cultivation",
+                    "Crystallized low Qi"
+                ],
+                [
+                    "L002",
+                    "Spirit Stone (Mid)",
+                    "Spirit",
+                    "Energy Crystal",
+                    "Uncommon",
+                    "Currency and cultivation",
+                    "Crystallized mid Qi"
+                ],
+                [
+                    "L003",
+                    "Spirit Stone (High)",
+                    "Spirit",
+                    "Energy Crystal",
+                    "Rare",
+                    "Currency and cultivation",
+                    "Crystallized high Qi"
+                ],
+                [
+                    "L004",
+                    "Stalactite Milk",
+                    "Spirit",
+                    "Cave Liquid",
+                    "Rare",
+                    "Instant energy restore",
+                    "Milky white fluid"
+                ],
+                [
+                    "L005",
+                    "Earth Core Flame",
+                    "Spirit",
+                    "Living Fire",
+                    "Epic",
+                    "Alchemy furnaces",
+                    "Living fire from underground"
+                ],
+                [
+                    "L006",
+                    "Heavy Water",
+                    "Spirit",
+                    "Dense Liquid",
+                    "Rare",
+                    "Weight training",
+                    "10x heavier than mercury"
+                ],
+                [
+                    "L007",
+                    "Morning Dew Essence",
+                    "Spirit",
+                    "Pure Water",
+                    "Uncommon",
+                    "Pure pill making",
+                    "Collected at sunrise"
+                ],
+                [
+                    "L008",
+                    "Beast Blood Ink",
+                    "Spirit",
+                    "Inscription Material",
+                    "Common",
+                    "Talismans and scrolls",
+                    "Blood from spirit beasts"
+                ],
+                [
+                    "L009",
+                    "Ambergris",
+                    "Spirit",
+                    "Whale Material",
+                    "Rare",
+                    "Mind stabilization",
+                    "Fragrant waxy substance"
+                ],
+                [
+                    "L010",
+                    "Immortal Jade",
+                    "Immortal",
+                    "Energy Crystal",
+                    "Epic",
+                    "Immortal currency",
+                    "Contains Immortal Qi"
+                ],
+                [
+                    "L011",
+                    "Origin Magnetic Essence",
+                    "Immortal",
+                    "Magnetic Light",
+                    "Legendary",
+                    "Metal disruption",
+                    "Disrupts all metal"
+                ],
+                [
+                    "L012",
+                    "Samadhi True Fire",
+                    "Immortal",
+                    "Soul Fire",
+                    "Legendary",
+                    "Soul forging",
+                    "Generated by mind/soul"
+                ],
+                [
+                    "L013",
+                    "Lunar Essence",
+                    "Immortal",
+                    "Moon Liquid",
+                    "Epic",
+                    "Soul freezing",
+                    "Liquid moonlight"
+                ],
+                [
+                    "L014",
+                    "Solar Essence",
+                    "Immortal",
+                    "Sun Liquid",
+                    "Epic",
+                    "Metal melting",
+                    "Liquid sunlight"
+                ],
+                [
+                    "L015",
+                    "Nine-Colored Divine Light",
+                    "Immortal",
+                    "Purification Light",
+                    "Legendary",
+                    "Universal cleansing",
+                    "Brushes away anything"
+                ],
+                [
+                    "L016",
+                    "Fountain of Youth Water",
+                    "Immortal",
+                    "Age-Reversing Liquid",
+                    "Legendary",
+                    "Appearance reversal",
+                    "Reverses aging appearance"
+                ],
+                [
+                    "L017",
+                    "Forgetfulness Water",
+                    "Immortal",
+                    "Memory Liquid",
+                    "Epic",
+                    "Memory erasure",
+                    "From River of Lethe"
+                ],
+                [
+                    "L018",
+                    "Thunder Tribulation Liquid",
+                    "Immortal",
+                    "Lightning Essence",
+                    "Epic",
+                    "Body tempering",
+                    "From lightning storms"
+                ],
+                [
+                    "L019",
+                    "Grandmist Purple Qi",
+                    "God/World",
+                    "Origin Energy",
+                    "Mythic",
+                    "Godhood",
+                    "Breath of universe origin"
+                ],
+                [
+                    "L020",
+                    "Primal Chaos Air",
+                    "God/World",
+                    "Destructive Gas",
+                    "Mythic",
+                    "Reality erosion",
+                    "Erodes reality itself"
+                ],
+                [
+                    "L021",
+                    "Corpse Water",
+                    "Spirit",
+                    "Death Liquid",
+                    "Uncommon",
+                    "Flesh melting",
+                    "Yellow rotting fluid"
+                ],
+                [
+                    "L022",
+                    "Hundred-Poison Ichor",
+                    "Spirit",
+                    "Compound Poison",
+                    "Rare",
+                    "Ultimate poison",
+                    "Mix of 100 venoms"
+                ],
+                [
+                    "L023",
+                    "Golden Buddha Oil",
+                    "Spirit",
+                    "Holy Oil",
+                    "Rare",
+                    "Demon suppression",
+                    "Suppresses inner demons"
+                ],
+                [
+                    "L024",
+                    "Liquid Lightning",
+                    "Spirit",
+                    "Elemental Liquid",
+                    "Epic",
+                    "Body tempering",
+                    "Unstable, high death rate"
+                ],
+                [
+                    "L025",
+                    "Myriad-Flower Nectar",
+                    "Spirit",
+                    "Attraction Liquid",
+                    "Rare",
+                    "Beast bait",
+                    "Attracts spirit beasts"
+                ],
+                [
+                    "L026",
+                    "Dragon Saliva",
+                    "Spirit",
+                    "Hardening Agent",
+                    "Rare",
+                    "Soil hardening",
+                    "Turns soil to rock"
+                ],
+                [
+                    "L027",
+                    "Underworld River Water",
+                    "Immortal",
+                    "Death Water",
+                    "Legendary",
+                    "Soul freezing",
+                    "Erases living memories"
+                ],
+                [
+                    "L028",
+                    "Celestial Dew",
+                    "Immortal",
+                    "Heaven Water",
+                    "Epic",
+                    "Mental clarity",
+                    "From highest leaves"
+                ],
+                [
+                    "L029",
+                    "Demon Blood Ink",
+                    "Spirit",
+                    "Cursed Ink",
+                    "Rare",
+                    "Forbidden contracts",
+                    "Ink that moves on paper"
+                ],
+                [
+                    "L030",
+                    "Maiden's Tears",
+                    "Spirit",
+                    "Emotional Essence",
+                    "Rare",
+                    "Emotional pills",
+                    "Ingredient for heart pills"
+                ],
+                [
+                    "L031",
+                    "Drunken God Wine",
+                    "Immortal",
+                    "Alcoholic Elixir",
+                    "Legendary",
+                    "Deep sleep",
+                    "Knocks out immortals 100 years"
+                ],
+                [
+                    "L032",
+                    "Soup of Oblivion",
+                    "Immortal",
+                    "Memory Poison",
+                    "Legendary",
+                    "Total memory loss",
+                    "Meng Po's soup"
+                ],
+                [
+                    "L033",
+                    "Sea of Blood Water",
+                    "Immortal",
+                    "Slaughter Essence",
+                    "Epic",
+                    "Killing artifacts",
+                    "From realm of slaughter"
+                ],
+                [
+                    "L034",
+                    "Aether",
+                    "Spirit",
+                    "Void Gas",
+                    "Rare",
+                    "Flying ship fuel",
+                    "Crystallized air/void"
+                ],
+                [
+                    "L035",
+                    "Fish Fin Extract",
+                    "Spirit",
+                    "Aquatic Material",
+                    "Common",
+                    "Water artifacts",
+                    "From spirit fish"
+                ],
+                [
+                    "L036",
+                    "Bottled Lightning",
+                    "Spirit",
+                    "Elemental Grenade",
+                    "Uncommon",
+                    "Explosive weapon",
+                    "Lightning in jar"
+                ],
+                [
+                    "L037",
+                    "Captured Moonlight",
+                    "Spirit",
+                    "Light Material",
+                    "Rare",
+                    "Flashbang effect",
+                    "Light stored in jar"
+                ],
+                [
+                    "L038",
+                    "Essence of First Sunrise",
+                    "Immortal",
+                    "Pure Light",
+                    "Legendary",
+                    "Darkness dispelling",
+                    "First ray of light"
+                ],
+                [
+                    "L039",
+                    "Breath of Dying Star",
+                    "Immortal",
+                    "Gravity Gas",
+                    "Legendary",
+                    "Gravity manipulation",
+                    "Heavy gravity effect"
+                ],
+                [
+                    "L040",
+                    "Starlight Dust",
+                    "Immortal",
+                    "Celestial Material",
+                    "Epic",
+                    "Light weapons",
+                    "Residue from shooting star"
+                ],
+                [
+                    "L041",
+                    "Moonlight Dew",
+                    "Spirit",
+                    "Lunar Liquid",
+                    "Uncommon",
+                    "Yin cultivation",
+                    "Collected under full moon"
+                ],
+                [
+                    "L042",
+                    "Aurora Thread",
+                    "Immortal",
+                    "Light Material",
+                    "Epic",
+                    "Weaving artifacts",
+                    "Woven northern lights"
+                ],
+                [
+                    "L043",
+                    "Cloud Essence",
+                    "Spirit",
+                    "Sky Material",
+                    "Rare",
+                    "Soft armor",
+                    "Solidified cloud"
+                ],
+                [
+                    "L044",
+                    "Void Dust",
+                    "Immortal",
+                    "Space Material",
+                    "Epic",
+                    "Space artifacts",
+                    "Settles in empty space"
+                ],
+                [
+                    "L045",
+                    "Time Sand",
+                    "Immortal",
+                    "Temporal Material",
+                    "Legendary",
+                    "Time manipulation",
+                    "Flows backward"
+                ],
+                [
+                    "L046",
+                    "Tribulation Lightning Liquid",
+                    "Immortal",
+                    "Lightning Essence",
+                    "Epic",
+                    "Body refinement",
+                    "After lightning trial"
+                ],
+                [
+                    "L047",
+                    "Essence of Five Elements",
+                    "Spirit",
+                    "Elemental Energy",
+                    "Rare",
+                    "Element weapons",
+                    "Pure raw elements"
+                ],
+                [
+                    "L048",
+                    "Breath of Dragon God",
+                    "Immortal",
+                    "Divine Gas",
+                    "Legendary",
+                    "Dragon transformation",
+                    "Grants dragon traits"
+                ],
+                [
+                    "L049",
+                    "Tear of Goddess",
+                    "Immortal",
+                    "Divine Liquid",
+                    "Legendary",
+                    "Massive healing",
+                    "Gem of divine tears"
+                ],
+                [
+                    "L050",
+                    "Blood of Demon Lord",
+                    "Immortal",
+                    "Corruption Blood",
+                    "Legendary",
+                    "Weapon corruption",
+                    "Corrupts to strengthen"
+                ]
+            ]
+        },
+        {
+            "name": "Special Materials",
+            "rows": [
+                [
+                    "ID",
+                    "Material Name",
+                    "Tier",
+                    "Category",
+                    "Rarity",
+                    "Primary Use",
+                    "Special Properties"
+                ],
+                [
+                    "S001",
+                    "Cold-Jade Bed",
+                    "Spirit",
+                    "Cultivation Furniture",
+                    "Epic",
+                    "Cultivation speed",
+                    "Carved jade bed, 2x speed"
+                ],
+                [
+                    "S002",
+                    "Blood-Soaked Earth",
+                    "Spirit",
+                    "Battlefield Soil",
+                    "Rare",
+                    "Killing intent",
+                    "Radiates killing intent"
+                ],
+                [
+                    "S003",
+                    "Fossilized Dragon Dung",
+                    "Spirit",
+                    "Fertilizer",
+                    "Uncommon",
+                    "Spirit gardens",
+                    "Excellent for spirit plants"
+                ],
+                [
+                    "S004",
+                    "Infant Skull",
+                    "Spirit",
+                    "Forbidden Material",
+                    "Rare",
+                    "Resentment arrays",
+                    "Generates resentment energy"
+                ],
+                [
+                    "S005",
+                    "Virgin's Blood",
+                    "Spirit",
+                    "Ritual Material",
+                    "Uncommon",
+                    "Yin rituals",
+                    "Catalyst for yin arts"
+                ],
+                [
+                    "S006",
+                    "Cultivator's Nascent Soul",
+                    "Immortal",
+                    "Soul Material",
+                    "Legendary",
+                    "Soul devouring",
+                    "Literal cultivator soul"
+                ],
+                [
+                    "S007",
+                    "Skin of the Living",
+                    "Spirit",
+                    "Cursed Material",
+                    "Epic",
+                    "Curse scrolls",
+                    "Parchment from living victim"
+                ],
+                [
+                    "S008",
+                    "Ghost King's Core",
+                    "Immortal",
+                    "Undead Material",
+                    "Legendary",
+                    "Undead armies",
+                    "Heart of ghost ruler"
+                ],
+                [
+                    "S009",
+                    "Bone Flame",
+                    "Immortal",
+                    "Soul Fire",
+                    "Epic",
+                    "Torture weapons",
+                    "Burns bones, leaves skin"
+                ],
+                [
+                    "S010",
+                    "Resentment Pearl",
+                    "Spirit",
+                    "Death Material",
+                    "Rare",
+                    "Curse artifacts",
+                    "Dying breath crystallized"
+                ],
+                [
+                    "S011",
+                    "Heart-Eating Gu",
+                    "Spirit",
+                    "Parasite",
+                    "Rare",
+                    "Mind control",
+                    "Beetle raised in heart"
+                ],
+                [
+                    "S012",
+                    "Nine-Sons-Mother Demon",
+                    "Immortal",
+                    "Forbidden Artifact",
+                    "Legendary",
+                    "Spying and assassination",
+                    "Fetus-like artifact"
+                ],
+                [
+                    "S013",
+                    "Primordial Violet Gas",
+                    "God/World",
+                    "Ultimate Energy",
+                    "Mythic",
+                    "Godhood cultivation",
+                    "Highest quality Qi"
+                ],
+                [
+                    "S014",
+                    "Chaotic Soil",
+                    "God/World",
+                    "Creation Earth",
+                    "Mythic",
+                    "God-tier farming",
+                    "Heavy as mountain"
+                ],
+                [
+                    "S015",
+                    "Starlight Essence",
+                    "Immortal",
+                    "Stellar Liquid",
+                    "Legendary",
+                    "Body of light",
+                    "Liquid stars"
+                ],
+                [
+                    "S016",
+                    "Heavenly Dao Fragment",
+                    "God/World",
+                    "Law Material",
+                    "Mythic",
+                    "Law comprehension",
+                    "Physical piece of Dao"
+                ],
+                [
+                    "S017",
+                    "Origin Source Code",
+                    "God/World",
+                    "Meta Material",
+                    "Mythic",
+                    "Universe manipulation",
+                    "Fundamental code of reality"
+                ],
+                [
+                    "S018",
+                    "Heaven and Earth Roots",
+                    "God/World",
+                    "Dimensional Anchor",
+                    "Mythic",
+                    "Reality stabilization",
+                    "Anchors dimensions"
+                ],
+                [
+                    "S019",
+                    "Will of the World",
+                    "God/World",
+                    "Consciousness Material",
+                    "Mythic",
+                    "Planetary control",
+                    "Planet's consciousness"
+                ],
+                [
+                    "S020",
+                    "Fragment of Broken Vow",
+                    "Spirit",
+                    "Metaphysical Item",
+                    "Rare",
+                    "Karma hexes",
+                    "Used in karma curses"
+                ],
+                [
+                    "S021",
+                    "Crystalized Rage",
+                    "Spirit",
+                    "Emotional Crystal",
+                    "Uncommon",
+                    "Attack power boost",
+                    "Red gems from berserkers"
+                ],
+                [
+                    "S022",
+                    "Solidified Time",
+                    "Immortal",
+                    "Temporal Material",
+                    "Legendary",
+                    "Stasis artifacts",
+                    "Pauses anything inside"
+                ],
+                [
+                    "S023",
+                    "Shard of the Void",
+                    "Immortal",
+                    "Deletion Material",
+                    "Legendary",
+                    "Erasure weapons",
+                    "Piece of nothingness"
+                ],
+                [
+                    "S024",
+                    "Memory Orb",
+                    "Spirit",
+                    "Recording Crystal",
+                    "Rare",
+                    "Knowledge transfer",
+                    "Contains scene or technique"
+                ],
+                [
+                    "S025",
+                    "Will of the Sword",
+                    "Spirit",
+                    "Abstract Energy",
+                    "Epic",
+                    "Weapon enhancement",
+                    "Harvested from sword masters"
+                ],
+                [
+                    "S026",
+                    "Rainbow Bridge Fragment",
+                    "Immortal",
+                    "Spatial Material",
+                    "Legendary",
+                    "Dimensional bridges",
+                    "Shattered bifrost piece"
+                ],
+                [
+                    "S027",
+                    "World Core Shard",
+                    "Immortal",
+                    "Planetary Material",
+                    "Legendary",
+                    "World creation",
+                    "Destroyed planet's center"
+                ],
+                [
+                    "S028",
+                    "Divine Spark",
+                    "God/World",
+                    "Authority Crystal",
+                    "Mythic",
+                    "Divinity",
+                    "Dead god's authority"
+                ],
+                [
+                    "S029",
+                    "Faith Beads",
+                    "Immortal",
+                    "Prayer Material",
+                    "Epic",
+                    "Power amplification",
+                    "Formed from mortal prayers"
+                ],
+                [
+                    "S030",
+                    "Merit Golden Light",
+                    "Immortal",
+                    "Virtue Energy",
+                    "Epic",
+                    "Protective shields",
+                    "Earned by good deeds"
+                ],
+                [
+                    "S031",
+                    "Karma Thread",
+                    "Spirit",
+                    "Fate Material",
+                    "Rare",
+                    "Relationship tracking",
+                    "Red string of fate"
+                ],
+                [
+                    "S032",
+                    "Space Fragment",
+                    "Immortal",
+                    "Reality Shard",
+                    "Legendary",
+                    "Dimensional weapons",
+                    "Hole in reality"
+                ],
+                [
+                    "S033",
+                    "Eye of Truth",
+                    "Immortal",
+                    "Detection Artifact",
+                    "Legendary",
+                    "Lie detection",
+                    "Reveals all deceptions"
+                ],
+                [
+                    "S034",
+                    "Bone of Saint",
+                    "Immortal",
+                    "Holy Material",
+                    "Legendary",
+                    "Evil suppression",
+                    "Radiates holy pressure"
+                ],
+                [
+                    "S035",
+                    "Dragon Liver & Phoenix Marrow",
+                    "Immortal",
+                    "Delicacy",
+                    "Mythic",
+                    "Vitality boost",
+                    "Ultimate food"
+                ],
+                [
+                    "S036",
+                    "Human-Face Peach",
+                    "Immortal",
+                    "Cursed Fruit",
+                    "Epic",
+                    "Soul pills",
+                    "Fruit with trapped soul"
+                ],
+                [
+                    "S037",
+                    "Gu Poison (Insect)",
+                    "Spirit",
+                    "Parasite",
+                    "Rare",
+                    "Internal damage",
+                    "Eats organs from inside"
+                ],
+                [
+                    "S038",
+                    "Henbane Powder",
+                    "Spirit",
+                    "Hallucinogen",
+                    "Uncommon",
+                    "Confusion poison",
+                    "See friends as demons"
+                ],
+                [
+                    "S039",
+                    "Zhen Bird Poison",
+                    "Immortal",
+                    "Legendary Toxin",
+                    "Legendary",
+                    "Flesh dissolution",
+                    "Dissolves flesh instantly"
+                ],
+                [
+                    "S040",
+                    "Gelsemium (Heartbreak Grass)",
+                    "Spirit",
+                    "Heart Poison",
+                    "Rare",
+                    "Assassination",
+                    "Stops heart in minutes"
+                ],
+                [
+                    "S041",
+                    "Aconite (Wolfsbane)",
+                    "Spirit",
+                    "Numbing Poison",
+                    "Uncommon",
+                    "Paralysis",
+                    "Cardiac arrest inducer"
+                ],
+                [
+                    "S042",
+                    "Realgar Wine",
+                    "Spirit",
+                    "Protective Liquid",
+                    "Common",
+                    "Evil repelling",
+                    "Repels snakes and spirits"
+                ],
+                [
+                    "S043",
+                    "Corpse Rot Water",
+                    "Spirit",
+                    "Disease Liquid",
+                    "Uncommon",
+                    "Necrosis poison",
+                    "Causes flesh decay"
+                ],
+                [
+                    "S044",
+                    "Soul-Melting Mist",
+                    "Immortal",
+                    "Soul Poison",
+                    "Epic",
+                    "Cultivation destruction",
+                    "Attacks cultivation base"
+                ],
+                [
+                    "S045",
+                    "Love Potion",
+                    "Spirit",
+                    "Aphrodisiac",
+                    "Uncommon",
+                    "Plot device",
+                    "Standard love drug"
+                ],
+                [
+                    "S046",
+                    "Silence Powder",
+                    "Spirit",
+                    "Throat Poison",
+                    "Rare",
+                    "Speech prevention",
+                    "Swells throat shut"
+                ],
+                [
+                    "S047",
+                    "Blindness Dust",
+                    "Spirit",
+                    "Vision Poison",
+                    "Rare",
+                    "Blinding",
+                    "Permanently blinds"
+                ],
+                [
+                    "S048",
+                    "Qi-Dispersing Powder",
+                    "Spirit",
+                    "Cultivation Poison",
+                    "Rare",
+                    "Power negation",
+                    "Disables Qi usage"
+                ],
+                [
+                    "S049",
+                    "Seven-Step Snake Venom",
+                    "Spirit",
+                    "Deadly Poison",
+                    "Epic",
+                    "Quick assassination",
+                    "Death after 7 steps"
+                ],
+                [
+                    "S050",
+                    "Golden Silkworm Gu",
+                    "Immortal",
+                    "Parasitic Artifact",
+                    "Legendary",
+                    "Invulnerability",
+                    "Grants defense, eats lifespan"
+                ],
+                [
+                    "S051",
+                    "Five-Poison Elixir",
+                    "Spirit",
+                    "Risky Pill",
+                    "Epic",
+                    "Poison immunity",
+                    "Survive to gain immunity"
+                ],
+                [
+                    "S052",
+                    "Eternal Flame",
+                    "Immortal",
+                    "Primordial Fire",
+                    "Mythic",
+                    "Soul burning",
+                    "First fire before universe"
+                ],
+                [
+                    "S053",
+                    "Absolute Zero Ice Essence",
+                    "Immortal",
+                    "Primordial Ice",
+                    "Mythic",
+                    "Time freezing",
+                    "Freezes time and space"
+                ],
+                [
+                    "S054",
+                    "Divine Earth Soil",
+                    "God/World",
+                    "Creation Soil",
+                    "Mythic",
+                    "World building",
+                    "Expands to mountain ranges"
+                ],
+                [
+                    "S055",
+                    "Pangu Banner",
+                    "God/World",
+                    "Creation Artifact",
+                    "Mythic",
+                    "Heaven opening",
+                    "Splits heaven and earth"
+                ],
+                [
+                    "S056",
+                    "Taiji Diagram",
+                    "God/World",
+                    "Supreme Treasure",
+                    "Mythic",
+                    "Yin-Yang control",
+                    "Supreme balance artifact"
+                ],
+                [
+                    "S057",
+                    "World Tree Branch",
+                    "Immortal",
+                    "Cosmic Wood",
+                    "Legendary",
+                    "Dimensional support",
+                    "Holds up realms"
+                ],
+                [
+                    "S058",
+                    "Dragon Ancestor Bone",
+                    "God/World",
+                    "Primordial Material",
+                    "Mythic",
+                    "Dragon artifacts",
+                    "First True Dragon remains"
+                ],
+                [
+                    "S059",
+                    "Life Source Sap",
+                    "God/World",
+                    "Immortality Liquid",
+                    "Mythic",
+                    "True immortality",
+                    "Universe's blood"
+                ],
+                [
+                    "S060",
+                    "Fruit of Good and Evil",
+                    "God/World",
+                    "Duality Fruit",
+                    "Mythic",
+                    "Entity splitting",
+                    "Splits into two beings"
+                ]
+            ]
+        },
+        {
+            "name": "Crafting Tiers Reference",
+            "rows": [
+                [
+                    "Tier Name",
+                    "Cultivation Level",
+                    "Material Grade",
+                    "Artifact Grade",
+                    "Typical Power Level"
+                ],
+                [
+                    "Mortal",
+                    "Martial Artist - Qi Gathering",
+                    "Common - Rare",
+                    "Mortal Relics",
+                    "Cuts steel, basic energy"
+                ],
+                [
+                    "Spirit",
+                    "Foundation - Core Formation",
+                    "Uncommon - Epic",
+                    "Treasure - Spirit Relic",
+                    "Energy channeling, elemental powers"
+                ],
+                [
+                    "Immortal",
+                    "Nascent Soul - Immortal",
+                    "Epic - Legendary",
+                    "Divine Relic - Sacred Relic",
+                    "Law manipulation, reality warping"
+                ],
+                [
+                    "God/World",
+                    "True God - Primordial",
+                    "Legendary - Mythic",
+                    "World Artifacts",
+                    "Universe creation/destruction"
+                ],
+                [
+                    "",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Material Rarity Scale",
+                    "",
+                    "",
+                    "",
+                    ""
+                ],
+                [
+                    "Common",
+                    "Found everywhere",
+                    "Low value",
+                    "Basic crafting",
+                    "White color code"
+                ],
+                [
+                    "Uncommon",
+                    "Regional availability",
+                    "Moderate value",
+                    "Standard crafting",
+                    "Green color code"
+                ],
+                [
+                    "Rare",
+                    "Hard to find",
+                    "High value",
+                    "Advanced crafting",
+                    "Blue color code"
+                ],
+                [
+                    "Epic",
+                    "Very rare",
+                    "Very high value",
+                    "Master crafting",
+                    "Purple color code"
+                ],
+                [
+                    "Legendary",
+                    "Extremely rare",
+                    "Priceless",
+                    "Grandmaster crafting",
+                    "Orange color code"
+                ],
+                [
+                    "Mythic",
+                    "One-of-a-kind",
+                    "Beyond value",
+                    "Divine crafting",
+                    "Red/Gold color code"
+                ]
+            ]
+        }
+    ]
+}
