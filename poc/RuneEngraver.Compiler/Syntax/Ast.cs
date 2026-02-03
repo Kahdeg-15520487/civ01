@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace RuneEngraver.Compiler.Syntax;
 
@@ -20,6 +21,9 @@ public record FormationDefinition(
 
 
 
+[JsonDerivedType(typeof(PortDefinition), typeDiscriminator: "Port")]
+[JsonDerivedType(typeof(NodeDefinition), typeDiscriminator: "Node")]
+[JsonDerivedType(typeof(ConnectionDefinition), typeDiscriminator: "Connection")]
 public abstract record Statement : AstNode;
 
 public record PortDefinition(
@@ -31,6 +35,9 @@ public record PortDefinition(
 
 public enum PortDirection { Input, Output }
 
+[JsonDerivedType(typeof(ExactAmplitude), typeDiscriminator: "Exact")]
+[JsonDerivedType(typeof(MinAmplitude), typeDiscriminator: "Min")]
+[JsonDerivedType(typeof(RangeAmplitude), typeDiscriminator: "Range")]
 public abstract record AmplitudeSpec : AstNode;
 public record ExactAmplitude(int Value) : AmplitudeSpec;
 public record MinAmplitude(int Value) : AmplitudeSpec;

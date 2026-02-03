@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using RuneEngraver.Compiler.Syntax;
 
 namespace RuneEngraver.Cli;
@@ -35,13 +37,12 @@ formation CapacitorStrike {
         {
             Console.WriteLine("Parse Successful!");
             var unit = result.Value;
-            Console.WriteLine($"Package: {unit.Package.QualifiedId}");
-            Console.WriteLine($"Imports: {unit.Imports.Count()}");
-            foreach(var formation in unit.Formations)
-            {
-                Console.WriteLine($"Formation: {formation.Name}");
-                Console.WriteLine($"Statements: {formation.Statements.Count()}");
-            }
+            var options = new JsonSerializerOptions 
+            { 
+                WriteIndented = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+            Console.WriteLine(JsonSerializer.Serialize(unit, options));
         }
         else
         {
