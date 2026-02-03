@@ -6,10 +6,12 @@ namespace RuneEngraver.Core.Core.Nodes;
 public class EffectEmitter : RuneNode
 {
     private readonly Port _in;
+    private readonly Port _out;
 
     public EffectEmitter(string id) : base(id)
     {
         _in = AddInput("in");
+        _out = AddOutput("out");
     }
 
     public override IEnumerable<string> Process()
@@ -28,7 +30,16 @@ public class EffectEmitter : RuneNode
                 case ElementType.Lightning: effect = "Arc Discharge (Shock)"; break;
                 default: effect = $"Raw {val.Type} Release"; break;
             }
+
+            // Create QiEffect with the tag
+            var qiEffect = new QiEffect(val.Type, val.Magnitude, effect, val.TTL);
+            _out.CurrentValue = qiEffect;
+
             yield return $"{Id}: ACTIVATED > {effect} [Power: {val.Magnitude}]";
+        }
+        else
+        {
+             _out.CurrentValue = QiValue.Empty;
         }
     }
 }

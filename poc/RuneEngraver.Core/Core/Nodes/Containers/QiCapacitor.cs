@@ -46,6 +46,7 @@ public class QiCapacitor : RuneNode
         {
             // Discharge!
             _fullSig.CurrentValue = _storedQi;
+            _out.CurrentValue = _storedQi; // Also set output so BurstTrigger gets the load
             yield return $"{Id}: DISCHARGE! {_storedQi} (Threshold {_threshold} reached)";
             // Reset after discharge? Usually yes for a pulse capacitor.
             _storedQi = QiValue.Empty; 

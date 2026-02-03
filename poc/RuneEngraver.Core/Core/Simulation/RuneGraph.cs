@@ -71,6 +71,15 @@ public class RuneGraph
             wire.Transfer();
         }
 
+        // 2b. Clear Outputs after transfer (so values don't persist indefinitely)
+        foreach (var node in Nodes)
+        {
+            foreach (var output in node.Outputs)
+            {
+                output.CurrentValue = QiValue.Empty;
+            }
+        }
+
         // 3. Process Nodes (Calculate new Outputs based on fresh Inputs)
         foreach (var node in Nodes)
         {

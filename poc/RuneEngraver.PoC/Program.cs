@@ -69,12 +69,12 @@ class Program
 package runic.examples;
 
 formation CapacitorStrike {
-    input Fire ignition [5+];
+    input Fire ignition [2+];
     output Effect fire_ball;
 
-    node SpiritStoneSocket power_source ( element: Wood, grade: High );
+    node SpiritStoneSocket power_source ( element: Wood, grade: Medium );
     node Amplifier amp;
-    node QiCapacitor cap;
+    node QiCapacitor cap ( capacity: 50 );
     node BurstTrigger trigger;
     node EffectEmitter strike ( type: ""Fireball"" );
 
@@ -131,7 +131,7 @@ formation CapacitorStrike {
                 var runGraph = loader.Load(json);
 
                 Console.WriteLine("--- Simulation Start ---");
-                RunSimulation(runGraph, 10);
+                RunSimulation(runGraph, 15);
             }
         }
         else

@@ -6,15 +6,14 @@ WORKDIR /app
 COPY poc/RuneEngraver.PoC/RuneEngraver.PoC.csproj poc/RuneEngraver.PoC/
 COPY poc/Tests/Tests.csproj poc/Tests/
 COPY poc/RuneEngraver.Compiler/RuneEngraver.Compiler.csproj poc/RuneEngraver.Compiler/
+COPY poc/RuneEngraver.Core/RuneEngraver.Core.csproj poc/RuneEngraver.Core/
 RUN dotnet restore poc/RuneEngraver.PoC/RuneEngraver.PoC.csproj
 RUN dotnet restore poc/Tests/Tests.csproj
 RUN dotnet restore poc/RuneEngraver.Compiler/RuneEngraver.Compiler.csproj
+RUN dotnet restore poc/RuneEngraver.Core/RuneEngraver.Core.csproj
 
 # Copy the remaining source code
 COPY poc/ poc/
-
-# Build the application
-RUN dotnet build poc/RuneEngraver.PoC/RuneEngraver.PoC.csproj -c Release -o /app/build
 
 # Run tests
 RUN dotnet test poc/Tests/Tests.csproj -c Release --logger:trx

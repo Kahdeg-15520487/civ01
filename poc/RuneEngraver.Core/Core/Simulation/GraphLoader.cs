@@ -90,7 +90,7 @@ public class GraphLoader
             "FormationOutput" => new StableEmitter(data.Id), // Treat outputs as Sinks
             "BurstTrigger" => new BurstTrigger(data.Id),
             "Transmuter" => new TransmuterNode(data.Id), // Needs param fix later
-            "EffectEmitter" => new StableEmitter(data.Id), // Mapping Effect to Stable for now
+            "EffectEmitter" => new EffectEmitter(data.Id), 
             _ => throw new NotSupportedException($"Unknown node type: {data.Type}")
         };
     }

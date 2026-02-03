@@ -36,7 +36,7 @@ public enum ElementType
     Tempest         // Lightning + Wind
 }
 
-public struct QiValue : IEquatable<QiValue>
+public class QiValue : IEquatable<QiValue>
 {
     public ElementType Type { get; }
     public int Magnitude { get; }
@@ -49,7 +49,7 @@ public struct QiValue : IEquatable<QiValue>
         TTL = ttl;
     }
 
-    public bool IsEmpty => Magnitude <= 0 || Type == ElementType.None;
+    public virtual bool IsEmpty => Magnitude <= 0 || Type == ElementType.None;
     public bool IsStable => TTL == 0;
 
     public override int GetHashCode()
@@ -59,20 +59,24 @@ public struct QiValue : IEquatable<QiValue>
 
     public override bool Equals(object? obj)
     {
-        return obj is QiValue other && Equals(other);
+        return Equals(obj as QiValue);
     }
 
-    public bool Equals(QiValue other)
+    public virtual bool Equals(QiValue? other)
     {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        if (GetType() != other.GetType()) return false;
         return Type == other.Type && Magnitude == other.Magnitude && TTL == other.TTL;
     }
 
-    public static bool operator ==(QiValue left, QiValue right)
+    public static bool operator ==(QiValue? left, QiValue? right)
     {
+        if (left is null) return right is null;
         return left.Equals(right);
     }
 
-    public static bool operator !=(QiValue left, QiValue right)
+    public static bool operator !=(QiValue? left, QiValue? right)
     {
         return !(left == right);
     }
@@ -82,5 +86,5 @@ public struct QiValue : IEquatable<QiValue>
         return $"{Type}({Magnitude}){(TTL > 0 ? $"[TTL:{TTL}]" : "")}";
     }
 
-    public static QiValue Empty => new QiValue(ElementType.None, 0);
+    public static readonly QiValue Empty = new QiValue(ElementType.None, 0);
 }

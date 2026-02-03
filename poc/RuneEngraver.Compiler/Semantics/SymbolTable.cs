@@ -53,7 +53,7 @@ public class SymbolTable
 
         // Sink Nodes
         _formations["core.QiReceptacle"] = CreateMockNode("QiReceptacle", new[] { "in" });
-        _formations["core.EffectEmitter"] = CreateMockNode("EffectEmitter", new[] { "in" });
+        _formations["core.EffectEmitter"] = CreateMockNode("EffectEmitter", new[] { "in", "out" });
         _formations["core.VoidDrain"] = CreateMockNode("VoidDrain", new[] { "in" });
         _formations["core.HeatSink"] = CreateMockNode("HeatSink", new[] { "in" });
         _formations["core.GroundingRod"] = CreateMockNode("GroundingRod", new[] { "in" });
