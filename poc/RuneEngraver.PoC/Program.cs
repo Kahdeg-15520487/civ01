@@ -70,18 +70,17 @@ package runic.examples;
 
 formation CapacitorStrike {
     input Fire ignition [5+];
-    output Earth magma_flow;
+    output Fire fire_ball;
 
-    node SpiritStoneSocket power_source ( element: Fire, grade: Medium );
+    node SpiritStoneSocket power_source ( element: Wood, grade: High );
     node Amplifier amp ( factor: 2 );
-    node Transmuter trans ( from: Fire, to: Earth );
     node QiCapacitor cap ( capacity: 50 );
     node BurstTrigger trigger;
     node EffectEmitter strike ( type: ""Fireball"" );
 
     power_source.out -> amp.primary;
-    amp.out -> trans.in;
-    trans.out -> cap.in;
+    ignition -> amp.catalyst;
+    amp.out -> cap.in;
     cap.full -> trigger.trigger;
     cap.out -> trigger.capacitor;
     trigger.out -> strike.in;
@@ -114,6 +113,24 @@ formation CapacitorStrike {
             else
             {
                 Console.WriteLine("Validation Successful!");
+
+                // 2. Build Graph (Synthesis)
+                Console.WriteLine("\nSynthesizing Graph...");
+                var builder = new RuneEngraver.Compiler.Synthesis.GraphBuilder(table);
+                // Note: Only building the first formation "CapacitorStrike"
+                var graphDef = builder.Build(unit.Formations.First(), unit);
+                
+                var json = JsonSerializer.Serialize(graphDef, options);
+                Console.WriteLine("Generated JSON:");
+                Console.WriteLine(json);
+
+                // 3. Load & Run (Runtime)
+                Console.WriteLine("\nLoading and Running Simulation...");
+                var loader = new GraphLoader();
+                var runGraph = loader.Load(json);
+
+                Console.WriteLine("--- Simulation Start ---");
+                RunSimulation(runGraph, 10);
             }
         }
         else

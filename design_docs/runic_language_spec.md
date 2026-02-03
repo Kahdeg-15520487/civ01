@@ -179,10 +179,10 @@ For artifacts powered by consumable spirit stones.
 **Stone Grades & Sizes:**
 | Grade | Amplitude | Base Duration | Size | Capacity Multiplier |
 |-------|-----------|---------------|------|---------------------|
-| Low (下品) | 1-3 | 100 cycles | Small (碎) | ×1 |
-| Medium (中品) | 4-7 | 80 cycles | Standard (整) | ×5 |
-| High (上品) | 8-12 | 60 cycles | Large (块) | ×20 |
-| Supreme (极品) | 13-20 | 40 cycles | Massive (晶) | ×100 |
+| Low (下品) | 1 | 100 cycles | Small (碎) | ×1 |
+| Medium (中品) | 4 | 80 cycles | Standard (整) | ×5 |
+| High (上品) | 8 | 60 cycles | Large (块) | ×20 |
+| Supreme (极品) | 16 | 40 cycles | Massive (晶) | ×100 |
 
 *Total Qi available = Amplitude × Base Duration × Capacity Multiplier*
 

@@ -142,8 +142,8 @@ public static class RunicParser
     // Statements
     private static readonly Parser<char, Statement> Statement =
         OneOf(
-            PortDef.Cast<Statement>(),
-            NodeDef.Cast<Statement>(),
+            Try(PortDef).Cast<Statement>(),
+            Try(NodeDef).Cast<Statement>(),
             Connection.Cast<Statement>()
         );
 
