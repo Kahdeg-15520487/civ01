@@ -1,9 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using RuneEngraver.Compiler.Semantics;
+using RuneEngraver.Compiler.Syntax;
 using RuneEngraver.Core.Core.Elements;
 using RuneEngraver.Core.Core.Nodes;
 using RuneEngraver.Core.Core.Simulation;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace RuneEngraver.Core;
 
@@ -12,7 +16,7 @@ class Program
     static void Main(string[] args)
     {
         Console.WriteLine("=== Rune Engraver PoC ===");
-        
+
         if (args.Length > 0)
         {
             RunTest(args[0]);
@@ -32,10 +36,10 @@ class Program
             Console.WriteLine("8. Splitter Distribution");
             Console.WriteLine("Q. Quit");
             Console.Write("> ");
-            
+
             var key = Console.ReadLine()?.Trim().ToUpper();
             if (key == "Q") break;
-            
+
             RunTest(key);
         }
     }
@@ -53,7 +57,69 @@ class Program
             case "6": RunCapacitorTest(); break;
             case "7": RunLogicGateTest(); break;
             case "8": RunSplitterTest(); break;
+            case "9": RunSynthesizerTest(); break;
             default: Console.WriteLine("Invalid selection."); break;
+        }
+    }
+
+    static void RunSynthesizerTest()
+    {
+
+        var input = @"
+package runic.examples;
+
+formation CapacitorStrike {
+    input Fire ignition [5+];
+    output Earth magma_flow;
+
+    node SpiritStoneSocket power_source ( element: Fire, grade: Medium );
+    node Amplifier amp ( factor: 2 );
+    node Transmuter trans ( from: Fire, to: Earth );
+    node QiCapacitor cap ( capacity: 50 );
+    node BurstTrigger trigger;
+    node EffectEmitter strike ( type: ""Fireball"" );
+
+    power_source.out -> amp.primary;
+    amp.out -> trans.in;
+    trans.out -> cap.in;
+    cap.full -> trigger.trigger;
+    cap.out -> trigger.capacitor;
+    trigger.out -> strike.in;
+}";
+
+        Console.WriteLine("Parsing RunicHDL...");
+        var result = RunicParser.Parse(input);
+
+        if (result.Success)
+        {
+            Console.WriteLine("Parse Successful!");
+            var unit = result.Value;
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+            Console.WriteLine(JsonSerializer.Serialize(unit, options));
+
+            Console.WriteLine("\nValidating Semantics...");
+            var table = new SymbolTable(); // Loads mock built-ins
+            var validator = new RunicValidator(table);
+            var errors = validator.Validate(unit);
+
+            if (errors.Any())
+            {
+                Console.WriteLine("Validation Failed:");
+                foreach (var err in errors) Console.WriteLine($"- {err}");
+            }
+            else
+            {
+                Console.WriteLine("Validation Successful!");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Parse Failed!");
+            Console.WriteLine(result.Error);
         }
     }
 
@@ -69,14 +135,15 @@ class Program
         RunSplitterTest();
     }
 
-    static void RunMatrixMultiplicationTest() {
+    static void RunMatrixMultiplicationTest()
+    {
         Console.WriteLine("\n--- Test 5: Neural Net (3 Sensors -> 1 Hidden -> 1 Output) ---");
         // Concept: Classify if environment is "Dangerous" based on 3 sensors
         // Inputs: Wood(10), Wood(5), Wood(0)
         // Weights: 0.5, 0.2, 0.8
         // Normalization: Transmute Wood -> Fire to prove we can process the signal
         // Sum: Fire(5) + Fire(1) + Fire(0) = Fire(6)
-        
+
         var graph = new RuneGraph();
 
         // 1. Input Layer (Sensors - All Wood for this test to allow simple normalization)
@@ -104,7 +171,7 @@ class Program
 
         // 5. Activation (Relu/Threshold)
         var activation = new ThresholdGate("Activation", 5);
-        
+
         // 6. Output
         var output = new StableEmitter("Alert_System");
 
@@ -142,7 +209,7 @@ class Program
 
         // Activation -> Output
         graph.Connect(activation.Outputs[0], output.Inputs[0]);
-        
+
         RunSimulation(graph, 8); // Need more ticks for extra layer
     }
 
@@ -153,13 +220,13 @@ class Program
 
         // Source: Trickle charge (Fire 2)
         var src = new SpiritStoneSource("Trickle_Charger", new QiValue(ElementType.Fire, 2));
-        
+
         // Capacitor: Threshold 10. Should take ~5 ticks to fill.
         var cap = new QiCapacitor("Capacitor", 10);
-        
+
         // Burst Output
         var emit = new StableEmitter("Burst_Out");
-        
+
         graph.AddNode(src);
         graph.AddNode(cap);
         graph.AddNode(emit);
@@ -179,13 +246,13 @@ class Program
 
         // Source
         var src = new SpiritStoneSource("Source", new QiValue(ElementType.Water, 5));
-        
+
         // Control Signal (Yang/Positive)
         var ctrl = new SpiritStoneSource("Control_Signal", new QiValue(ElementType.Fire, 1));
-        
+
         // Yin-Yang Gate
         var gate = new YinYangGate("Gate");
-        
+
         // Output Paths
         var trueOut = new StableEmitter("True_Path");
         var falseOut = new StableEmitter("False_Path");
@@ -197,7 +264,7 @@ class Program
         // Wiring
         graph.Connect(src.Outputs[0], gate.Inputs[0]);      // In
         graph.Connect(ctrl.Outputs[0], gate.Inputs[1]);     // Cond
-        
+
         graph.Connect(gate.Outputs[0], trueOut.Inputs[0]);  // True
         graph.Connect(gate.Outputs[1], falseOut.Inputs[0]); // False
 
@@ -280,17 +347,17 @@ class Program
 
         // Source emits Steam directly (cheating for test) to see it decay
         var steamSrc = new SpiritStoneSource("Src_Steam", new QiValue(ElementType.Steam, 8, 3));
-        
+
         // Chain of "Wire Segments" (using dummy Repeaters/Emitters) to simulate time/distance
         // Actually, just looping it through logic nodes adds tick delay.
         // Let's just have Source -> Emit. 
         // Tick 1: Source emits Steam(TTL3).
         // Tick 2: Wire transfers -> decays to TTL2 -> Emitter receives TTL2.
-        
+
         var emit = new StableEmitter("Emit");
         graph.AddNode(steamSrc);
         graph.AddNode(emit);
-        
+
         graph.Connect(steamSrc.Outputs[0], emit.Inputs[0]);
 
         // We run for more ticks to see steady state
@@ -304,11 +371,11 @@ class Program
 
         // Source: Constant Fire(1)
         var src = new SpiritStoneSource("Src", new QiValue(ElementType.Fire, 1));
-        
+
         // Node: Spirit Vessel acting as buffer/adder
         // It receives Input (from Source) AND its own Output (via feedback)
         var buffer = new SpiritVessel("Buffer");
-        
+
         var emit = new StableEmitter("Emit");
 
         graph.AddNode(src);
@@ -341,7 +408,7 @@ class Program
             var logs = graph.Tick().ToList();
             if (logs.Count == 0) Console.WriteLine("(No Activity)");
             else foreach (var log in logs) Console.WriteLine(log);
-            
+
             // Wait for user or auto
             // System.Threading.Thread.Sleep(500);
         }

@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\RuneEngraver.Compiler\RuneEngraver.Compiler.csproj" />
     <ProjectReference Include="..\RuneEngraver.Core\RuneEngraver.Core.csproj" />
   </ItemGroup>
 

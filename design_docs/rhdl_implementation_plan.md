@@ -43,10 +43,16 @@ The compiler will be a C# Class Library (`RuneEngraver.Compiler`) with a CLI wra
 3.  Implement `Parser` using `Pidgin` combinators to produce AST.
 4.  **Verification**: Parse a basic `.rhdl` file and inspect the AST.
 
-### Phase 2: Semantics & Imports
-1.  Implement `PackageResolver` to handle `import`.
-2.  Implement `TypeChecker` for element compatibility.
-3.  **Verification**: Validation report for "broken" circuits.
+### Phase 2: Semantics & Core Primitives
+1.  **Symbol Table**:
+    *   Create `SymbolTable` to map `QualifiedId` -> `FormationDefinition`.
+2.  **Intrinsic Registration**:
+    *   Hardcode signatures for all Core Nodes defined in `Runic Language Specification`.
+    *   Remove `std.*` usage for now (focus on low-level primitives).
+3.  **Type Checking (`TypeChecker.cs`)**:
+    *   **Element Compatibility**: Verify `Source.Element == Target.Element` OR `Target.Element == Any`.
+    *   **Port Existence**: Verify referenced ports exist on the instantiated node type.
+4.  **Verification**: Validation report for circuits using only core nodes.
 
 ### Phase 3: Synthesis
 1.  Implement `GraphBuilder` to flatten AST.
