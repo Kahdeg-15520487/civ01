@@ -70,11 +70,11 @@ package runic.examples;
 
 formation CapacitorStrike {
     input Fire ignition [5+];
-    output Fire fire_ball;
+    output Effect fire_ball;
 
     node SpiritStoneSocket power_source ( element: Wood, grade: High );
-    node Amplifier amp ( factor: 2 );
-    node QiCapacitor cap ( capacity: 50 );
+    node Amplifier amp;
+    node QiCapacitor cap;
     node BurstTrigger trigger;
     node EffectEmitter strike ( type: ""Fireball"" );
 
@@ -84,6 +84,7 @@ formation CapacitorStrike {
     cap.full -> trigger.trigger;
     cap.out -> trigger.capacitor;
     trigger.out -> strike.in;
+    strike.out -> fire_ball;
 }";
 
         Console.WriteLine("Parsing RunicHDL...");
