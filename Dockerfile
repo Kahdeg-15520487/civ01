@@ -5,14 +5,19 @@ WORKDIR /app
 # Copy csproj files and restore dependencies
 COPY poc/RuneEngraver.PoC/RuneEngraver.PoC.csproj poc/RuneEngraver.PoC/
 COPY poc/Tests/Tests.csproj poc/Tests/
+COPY poc/RuneEngraver.Compiler/RuneEngraver.Compiler.csproj poc/RuneEngraver.Compiler/
+COPY poc/RuneEngraver.Cli/RuneEngraver.Cli.csproj poc/RuneEngraver.Cli/
 RUN dotnet restore poc/RuneEngraver.PoC/RuneEngraver.PoC.csproj
 RUN dotnet restore poc/Tests/Tests.csproj
+RUN dotnet restore poc/RuneEngraver.Compiler/RuneEngraver.Compiler.csproj
+RUN dotnet restore poc/RuneEngraver.Cli/RuneEngraver.Cli.csproj
 
 # Copy the remaining source code
 COPY poc/ poc/
 
 # Build the application
 RUN dotnet build poc/RuneEngraver.PoC/RuneEngraver.PoC.csproj -c Release -o /app/build
+RUN dotnet build poc/RuneEngraver.Cli/RuneEngraver.Cli.csproj -c Release -o /app/build_cli
 
 # Run tests
 RUN dotnet test poc/Tests/Tests.csproj -c Release --logger:trx
@@ -25,4 +30,5 @@ RUN dotnet publish poc/RuneEngraver.PoC/RuneEngraver.PoC.csproj -c Release -o /a
 FROM mcr.microsoft.com/dotnet/runtime:8.0 AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+COPY --from=build /app/build_cli ./cli
 ENTRYPOINT ["dotnet", "RuneEngraver.PoC.dll"]
