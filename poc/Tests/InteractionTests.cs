@@ -1,7 +1,7 @@
 using Xunit;
-using RuneEngraver.PoC.Core.Elements;
+using RuneEngraver.Core.Core.Elements;
 
-namespace RuneEngraver.PoC.Tests.Core;
+namespace RuneEngraver.Core.Tests.Core;
 
 public class InteractionTests
 {

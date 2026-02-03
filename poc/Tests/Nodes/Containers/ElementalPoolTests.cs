@@ -1,9 +1,9 @@
 using System.Linq;
 using Xunit;
-using RuneEngraver.PoC.Core.Elements;
-using RuneEngraver.PoC.Core.Nodes;
+using RuneEngraver.Core.Core.Elements;
+using RuneEngraver.Core.Core.Nodes;
 
-namespace RuneEngraver.PoC.Tests.Nodes.Containers;
+namespace RuneEngraver.Core.Tests.Nodes.Containers;
 
 public class ElementalPoolTests
 {

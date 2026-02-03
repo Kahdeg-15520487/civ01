@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using RuneEngraver.PoC.Core.Elements;
-using RuneEngraver.PoC.Core.Nodes;
-using RuneEngraver.PoC.Core.Simulation;
+using RuneEngraver.Core.Core.Elements;
+using RuneEngraver.Core.Core.Nodes;
+using RuneEngraver.Core.Core.Simulation;
 
-namespace RuneEngraver.PoC;
+namespace RuneEngraver.Core;
 
 class Program
 {
