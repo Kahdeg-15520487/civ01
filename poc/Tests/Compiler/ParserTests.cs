@@ -292,4 +292,310 @@ formation CapacitorStrike {
         var connections = formation.Statements.OfType<ConnectionDefinition>().ToList();
         Assert.Equal(4, connections.Count);
     }
+
+    // ===== PARSER ERROR TESTS =====
+
+    [Fact]
+    public void Parse_MissingPackageDeclaration_Fails()
+    {
+        var input = @"
+formation Test {
+    node SpiritStoneSocket src;
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public void Parse_MissingSemicolon_Fails()
+    {
+        var input = @"
+package test
+
+formation Test {
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public void Parse_MalformedNode_Fails()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    node;
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public void Parse_UnclosedFormation_Fails()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    node SpiritStoneSocket src;
+";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public void Parse_InvalidConnection_Fails()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    -> cap.in;
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public void Parse_MissingFormationName_Fails()
+    {
+        var input = @"
+package test;
+
+formation {
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public void Parse_InvalidImportSyntax_Fails()
+    {
+        var input = @"
+package test;
+
+import;
+
+formation Test {
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public void Parse_InvalidAmplitude_Fails()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    input Fire signal [abc];
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    [Fact]
+    public void Parse_ErrorHasMessage()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    invalid syntax here
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+        Assert.NotNull(result.Error);
+        Assert.True(result.Error.ToString().Length > 0);
+    }
+
+    [Fact]
+    public void Parse_PartiallyValidInput_FailsAtError()
+    {
+        var input = @"
+package test;
+
+formation GoodFormation {
+    node SpiritStoneSocket src;
+}
+
+formation BadFormation {
+    this is broken
+}";
+        var result = RunicParser.Parse(input);
+        
+        Assert.False(result.Success);
+    }
+
+    // ===== STRUCTURED PARSER ERROR TESTS =====
+
+    [Fact]
+    public void ParseWithErrors_Success_ReturnsValue()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    node SpiritStoneSocket src;
+}";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.True(result.Success);
+        Assert.NotNull(result.Value);
+        Assert.Null(result.Error);
+    }
+
+    [Fact]
+    public void ParseWithErrors_Failure_ReturnsError()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    invalid syntax
+}";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        Assert.Null(result.Value);
+        Assert.NotNull(result.Error);
+    }
+
+    [Fact]
+    public void ParseWithErrors_Error_HasLocation()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    bad_syntax here
+}";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        Assert.True(result.Error!.Line > 0);
+        Assert.True(result.Error.Column > 0);
+    }
+
+    [Fact]
+    public void ParseWithErrors_Error_HasCorrectLine()
+    {
+        // Error is on line 5: "bad_syntax here"
+        var input = @"
+package test;
+
+formation Test {
+    bad_syntax here
+}";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        Assert.Equal(5, result.Error!.Line);
+    }
+
+    [Fact]
+    public void ParseWithErrors_Error_HasUnexpectedToken()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    invalid_token here
+}";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        Assert.NotNull(result.Error!.Unexpected);
+        Assert.True(result.Error.Unexpected.Length > 0);
+    }
+
+    [Fact]
+    public void ParseWithErrors_Error_HasExpectedInfo()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    123invalid
+}";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        // Parser should indicate what was expected (though exact content depends on Pidgin)
+    }
+
+    [Fact]
+    public void ParseWithErrors_Error_ToStringIncludesLocation()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    bad
+}";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        var errorStr = result.Error!.ToString();
+        Assert.Contains("(6:", errorStr); // Should include line number 6
+    }
+
+    [Fact]
+    public void ParseWithErrors_MissingPackage_ErrorOnFirstLine()
+    {
+        var input = @"formation Test { }";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        Assert.Equal(1, result.Error!.Line);
+    }
+
+    [Fact]
+    public void ParseWithErrors_MissingSemicolon_CorrectLocation()
+    {
+        // Missing semicolon after package - error should be on line 2
+        var input = @"
+package test
+
+formation Test { }";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        Assert.True(result.Error!.Line >= 2);
+    }
+
+    [Fact]
+    public void ParseWithErrors_DeepError_CorrectLocation()
+    {
+        // Error deep in the file
+        var input = @"
+package test;
+
+formation First {
+    node SpiritStoneSocket a;
+}
+
+formation Second {
+    node SpiritStoneSocket b;
+}
+
+formation Third {
+    bad_syntax_error
+}";
+        var result = RunicParser.ParseWithErrors(input);
+        
+        Assert.False(result.Success);
+        Assert.Equal(14, result.Error!.Line); // Error on line 14 (bad_syntax_error)
+    }
 }

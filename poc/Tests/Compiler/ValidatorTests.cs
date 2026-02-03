@@ -260,4 +260,131 @@ formation Second {
         Assert.Single(errors);
         Assert.Contains("NonExistentNode", errors[0].Message);
     }
+
+    // ===== SOURCE LOCATION TESTS =====
+
+    [Fact]
+    public void Validate_UnknownNodeType_HasCorrectLocation()
+    {
+        // Line numbers in this input:
+        // L1: (empty due to @" starting)
+        // L2: package test;
+        // L3: (empty)
+        // L4: formation Test {
+        // L5:     node BadNode x;
+        // L6: }
+        var input = @"
+package test;
+
+formation Test {
+    node BadNode x;
+}";
+        var result = RunicParser.Parse(input);
+        Assert.True(result.Success);
+        
+        var validator = new RunicValidator(CreateSymbolTable());
+        var errors = validator.Validate(result.Value).ToList();
+        
+        Assert.Single(errors);
+        Assert.Equal(ErrorCode.UnknownNodeType, errors[0].Code);
+        Assert.Equal(5, errors[0].Location.Line); // "node BadNode x;" is on line 5
+        Assert.True(errors[0].Location.Column > 0);
+    }
+
+    [Fact]
+    public void Validate_InvalidImport_HasCorrectLocation()
+    {
+        var input = @"
+package test;
+
+import bad.import.path;
+
+formation Test {
+}";
+        var result = RunicParser.Parse(input);
+        Assert.True(result.Success);
+        
+        var validator = new RunicValidator(CreateSymbolTable());
+        var errors = validator.Validate(result.Value).ToList();
+        
+        Assert.Single(errors);
+        Assert.Equal(ErrorCode.UnresolvedImport, errors[0].Code);
+        Assert.Equal(4, errors[0].Location.Line); // "import bad.import.path;" is on line 4
+    }
+
+    [Fact]
+    public void Validate_InvalidConnection_HasCorrectLocation()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    node SpiritStoneSocket src;
+    node QiCapacitor cap;
+    src.bad_port -> cap.in;
+}";
+        var result = RunicParser.Parse(input);
+        Assert.True(result.Success);
+        
+        var validator = new RunicValidator(CreateSymbolTable());
+        var errors = validator.Validate(result.Value).ToList();
+        
+        Assert.Single(errors);
+        Assert.Equal(ErrorCode.UndefinedPort, errors[0].Code);
+        Assert.Equal(7, errors[0].Location.Line); // Connection is on line 7
+    }
+
+    [Fact]
+    public void Validate_MultipleErrors_HaveDistinctLocations()
+    {
+        var input = @"
+package test;
+
+import bad.pkg1;
+import bad.pkg2;
+
+formation Test {
+    node Bad1 a;
+    node Bad2 b;
+}";
+        var result = RunicParser.Parse(input);
+        Assert.True(result.Success);
+        
+        var validator = new RunicValidator(CreateSymbolTable());
+        var errors = validator.Validate(result.Value).ToList();
+        
+        Assert.Equal(4, errors.Count);
+        
+        // Import errors should be on lines 4 and 5
+        var importErrors = errors.Where(e => e.Code == ErrorCode.UnresolvedImport).ToList();
+        Assert.Equal(2, importErrors.Count);
+        Assert.Contains(importErrors, e => e.Location.Line == 4);
+        Assert.Contains(importErrors, e => e.Location.Line == 5);
+        
+        // Node errors should be on lines 8 and 9
+        var nodeErrors = errors.Where(e => e.Code == ErrorCode.UnknownNodeType).ToList();
+        Assert.Equal(2, nodeErrors.Count);
+        Assert.Contains(nodeErrors, e => e.Location.Line == 8);
+        Assert.Contains(nodeErrors, e => e.Location.Line == 9);
+    }
+
+    [Fact]
+    public void Validate_ErrorLocation_IncludesToken()
+    {
+        var input = @"
+package test;
+
+formation Test {
+    node MissingNode instance;
+}";
+        var result = RunicParser.Parse(input);
+        Assert.True(result.Success);
+        
+        var validator = new RunicValidator(CreateSymbolTable());
+        var errors = validator.Validate(result.Value).ToList();
+        
+        Assert.Single(errors);
+        Assert.Equal("MissingNode", errors[0].Token);
+    }
 }
+

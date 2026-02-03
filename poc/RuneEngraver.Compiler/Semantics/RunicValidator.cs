@@ -19,7 +19,6 @@ public class RunicValidator
     {
         _errors.Clear();
 
-        // 0. Validate Imports
         foreach (var import in unit.Imports)
         {
             ValidateImport(import);
@@ -37,7 +36,6 @@ public class RunicValidator
     {
         var scope = new Dictionary<string, FormationDefinition>();
 
-        // 1. Register local nodes
         foreach (var node in formation.Statements.OfType<NodeDefinition>())
         {
             if (ResolveNode(node.TypeName, unit, out var def))
@@ -50,13 +48,12 @@ public class RunicValidator
                     ErrorCode.UnknownNodeType,
                     ErrorSeverity.Error,
                     $"Unknown node type '{node.TypeName}' for instance '{node.InstanceName}'.",
-                    SourceLocation.Unknown,
+                    node.Span.ToLocation(),
                     node.TypeName
                 ));
             }
         }
 
-        // 2. Validate Connections
         foreach (var conn in formation.Statements.OfType<ConnectionDefinition>())
         {
             ValidateConnection(conn, scope, formation);
@@ -73,7 +70,7 @@ public class RunicValidator
                     ErrorCode.UnresolvedPackage,
                     ErrorSeverity.Error,
                     $"Imported package '{import.QualifiedId}' does not exist or has no visible members.",
-                    SourceLocation.Unknown,
+                    import.Span.ToLocation(),
                     import.QualifiedId
                 ));
             }
@@ -86,7 +83,7 @@ public class RunicValidator
                     ErrorCode.UnresolvedImport,
                     ErrorSeverity.Error,
                     $"Imported symbol '{import.QualifiedId}' could not be resolved.",
-                    SourceLocation.Unknown,
+                    import.Span.ToLocation(),
                     import.QualifiedId
                 ));
             }
@@ -130,7 +127,7 @@ public class RunicValidator
                 ErrorCode.IncompatibleElements,
                 ErrorSeverity.Error,
                 $"Incompatible elements: {conn.Source.NodeName}.{conn.Source.PortName} ({sourcePort.ElementType}) -> {conn.Target.NodeName}.{conn.Target.PortName} ({targetPort.ElementType})",
-                SourceLocation.Unknown,
+                conn.Span.ToLocation(),
                 $"{sourcePort.ElementType} -> {targetPort.ElementType}"
             ));
         }
@@ -147,7 +144,7 @@ public class RunicValidator
                     ErrorCode.PortNotFound,
                     ErrorSeverity.Error,
                     $"Port '{portRef.NodeName}' not found in formation.",
-                    SourceLocation.Unknown,
+                    portRef.Span.ToLocation(),
                     portRef.NodeName
                 ));
                 return null;
@@ -161,7 +158,7 @@ public class RunicValidator
                 ErrorCode.UndefinedNodeInstance,
                 ErrorSeverity.Error,
                 $"Node instance '{portRef.NodeName}' not defined.",
-                SourceLocation.Unknown,
+                portRef.Span.ToLocation(),
                 portRef.NodeName
             ));
             return null;
@@ -174,7 +171,7 @@ public class RunicValidator
                 ErrorCode.UndefinedPort,
                 ErrorSeverity.Error,
                 $"Type '{container.Name}' does not have port '{portRef.PortName}'.",
-                SourceLocation.Unknown,
+                portRef.Span.ToLocation(),
                 portRef.PortName
             ));
             return null;

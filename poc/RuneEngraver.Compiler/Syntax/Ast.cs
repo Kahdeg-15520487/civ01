@@ -1,9 +1,23 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using RuneEngraver.Compiler.Semantics;
 
 namespace RuneEngraver.Compiler.Syntax;
 
-public abstract record AstNode;
+public abstract record AstNode
+{
+    [JsonIgnore]
+    public SourceSpan Span { get; init; } = SourceSpan.Unknown;
+}
+
+public record SourceSpan(int StartLine, int StartColumn, int EndLine, int EndColumn)
+{
+    public static SourceSpan Unknown => new(0, 0, 0, 0);
+    
+    public SourceLocation ToLocation() => new(StartLine, StartColumn, EndColumn - StartColumn);
+    
+    public override string ToString() => $"({StartLine}:{StartColumn}-{EndLine}:{EndColumn})";
+}
 
 public record CompilationUnit(
     PackageDeclaration Package,

@@ -9,6 +9,19 @@ namespace RuneEngraver.Compiler.Syntax;
 
 public static class RunicParser
 {
+    // Position tracking helper
+    private static Parser<char, SourceSpan> CurrentSpan =>
+        CurrentPos.Select(p => new SourceSpan(p.Line, p.Col, p.Line, p.Col));
+
+    private static Parser<char, T> WithSpan<T>(Parser<char, T> parser) where T : AstNode =>
+        CurrentPos.Bind(start =>
+            parser.Bind(node =>
+                CurrentPos.Select(end =>
+                    node with { Span = new SourceSpan(start.Line, start.Col, end.Line, end.Col) }
+                )
+            )
+        );
+
     // Whitespace and Comments
     private static readonly Parser<char, Unit> _whitespaces = 
         Pidgin.Parser.SkipWhitespaces;
@@ -51,64 +64,80 @@ public static class RunicParser
 
     // Package & Imports
     private static readonly Parser<char, PackageDeclaration> PackageDecl =
-        Tok("package").Then(QualifiedIdentifier).Before(Tok(";"))
-        .Select(id => new PackageDeclaration(id));
+        WithSpan(
+            Tok("package").Then(QualifiedIdentifier).Before(Tok(";"))
+            .Select(id => new PackageDeclaration(id))
+        );
 
     private static readonly Parser<char, ImportStatement> ImportStmt =
-        Tok("import").Then(
-            Identifier.Or(Tok("*")).SeparatedAtLeastOnce(Dot)
-            .Select(parts => {
-                var list = parts.ToList();
-                bool wild = list.Last() == "*";
-                if (wild) list.RemoveAt(list.Count - 1); // Remove the "*"
-                return new ImportStatement(string.Join(".", list), wild);
-            })
-        ).Before(Tok(";"));
+        WithSpan(
+            Tok("import").Then(
+                Identifier.Or(Tok("*")).SeparatedAtLeastOnce(Dot)
+                .Select(parts => {
+                    var list = parts.ToList();
+                    bool wild = list.Last() == "*";
+                    if (wild) list.RemoveAt(list.Count - 1);
+                    return new ImportStatement(string.Join(".", list), wild);
+                })
+            ).Before(Tok(";"))
+        );
 
     // Ports
     private static readonly Parser<char, AmplitudeSpec> Amplitude =
-        Tok("[").Then(
-            Pidgin.Parser.Num.Bind(n => 
-                Tok("+").ThenReturn((AmplitudeSpec)new MinAmplitude(n))
-                .Or(Tok("..").Then(Pidgin.Parser.Num).Select(max => (AmplitudeSpec)new RangeAmplitude(n, max)))
-                .Or(Return((AmplitudeSpec)new ExactAmplitude(n)))
-            )
-        ).Before(Tok("]"));
+        WithSpan(
+            Tok("[").Then(
+                Pidgin.Parser.Num.Bind(n => 
+                    Tok("+").ThenReturn((AmplitudeSpec)new MinAmplitude(n))
+                    .Or(Tok("..").Then(Pidgin.Parser.Num).Select(max => (AmplitudeSpec)new RangeAmplitude(n, max)))
+                    .Or(Return((AmplitudeSpec)new ExactAmplitude(n)))
+                )
+            ).Before(Tok("]"))
+        );
 
     private static readonly Parser<char, PortDefinition> PortDef =
-        Map((dir, type, name, amp) => new PortDefinition(dir, type, name, amp.GetValueOrDefault()),
-            Tok("input").ThenReturn(PortDirection.Input).Or(Tok("output").ThenReturn(PortDirection.Output)),
-            Identifier,
-            Identifier,
-            Amplitude.Optional()
-        ).Before(Tok(";"));
+        WithSpan(
+            Map((dir, type, name, amp) => new PortDefinition(dir, type, name, amp.GetValueOrDefault()),
+                Tok("input").ThenReturn(PortDirection.Input).Or(Tok("output").ThenReturn(PortDirection.Output)),
+                Identifier,
+                Identifier,
+                Amplitude.Optional()
+            ).Before(Tok(";"))
+        );
 
     // Nodes
     private static readonly Parser<char, NodeParameter> NodeParam =
-        Map((name, val) => new NodeParameter(name, val),
-            Identifier.Before(Tok(":")),
-            Value
+        WithSpan(
+            Map((name, val) => new NodeParameter(name, val),
+                Identifier.Before(Tok(":")),
+                Value
+            )
         );
 
     private static readonly Parser<char, NodeDefinition> NodeDef =
-        Map((type, name, @params) => new NodeDefinition(type, name, @params.GetValueOrDefault(Enumerable.Empty<NodeParameter>())),
-            Tok("node").Then(Identifier),
-            Identifier,
-            Tok("(").Then(NodeParam.Separated(Tok(","))).Before(Tok(")")).Optional()
-        ).Before(Tok(";"));
+        WithSpan(
+            Map((type, name, @params) => new NodeDefinition(type, name, @params.GetValueOrDefault(Enumerable.Empty<NodeParameter>())),
+                Tok("node").Then(Identifier),
+                Identifier,
+                Tok("(").Then(NodeParam.Separated(Tok(","))).Before(Tok(")")).Optional()
+            ).Before(Tok(";"))
+        );
 
     // Connections
     private static readonly Parser<char, PortReference> PortRef =
-        Map((node, port) => new PortReference(node, port.GetValueOrDefault()),
-            Identifier,
-            Char('.').Then(Identifier).Optional()
+        WithSpan(
+            Map((node, port) => new PortReference(node, port.GetValueOrDefault()),
+                Identifier,
+                Char('.').Then(Identifier).Optional()
+            )
         );
 
     private static readonly Parser<char, ConnectionDefinition> Connection =
-        Map((src, dst) => new ConnectionDefinition(src, dst),
-            PortRef.Before(Tok("->")),
-            PortRef
-        ).Before(Tok(";"));
+        WithSpan(
+            Map((src, dst) => new ConnectionDefinition(src, dst),
+                PortRef.Before(Tok("->")),
+                PortRef
+            ).Before(Tok(";"))
+        );
 
     // Statements
     private static readonly Parser<char, Statement> Statement =
@@ -120,19 +149,33 @@ public static class RunicParser
 
     // Formation
     private static readonly Parser<char, FormationDefinition> Formation =
-        Map((name, stmts) => new FormationDefinition(name, stmts),
-            Tok("formation").Then(Identifier),
-            Statement.Many().Between(Tok("{"), Tok("}"))
+        WithSpan(
+            Map((name, stmts) => new FormationDefinition(name, stmts),
+                Tok("formation").Then(Identifier),
+                Statement.Many().Between(Tok("{"), Tok("}"))
+            )
         );
 
     // Compilation Unit
     public static readonly Parser<char, CompilationUnit> CompilationUnitParser =
-        Map((pkg, imports, formations) => new CompilationUnit(pkg, imports, formations),
-            Skip.Then(PackageDecl),
-            ImportStmt.Many(),
-            Formation.Many()
+        WithSpan(
+            Map((pkg, imports, formations) => new CompilationUnit(pkg, imports, formations),
+                Skip.Then(PackageDecl),
+                ImportStmt.Many(),
+                Formation.Many()
+            )
         );
 
     public static Result<char, CompilationUnit> Parse(string input) =>
         CompilationUnitParser.Parse(input);
+
+    public static ParseResult ParseWithErrors(string input)
+    {
+        var result = CompilationUnitParser.Parse(input);
+        if (result.Success)
+            return ParseResult.Ok(result.Value);
+        else
+            return ParseResult.Fail(ParserError.FromPidginError(result, input));
+    }
 }
+
