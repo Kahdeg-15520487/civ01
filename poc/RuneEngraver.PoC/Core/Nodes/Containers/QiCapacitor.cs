@@ -52,7 +52,8 @@ public class QiCapacitor : RuneNode
         }
         else if (!_storedQi.IsEmpty)
         {
-            // Status update only, no physical emission
+            // Update output with current stored charge (Trickle/Monitor)
+            _out.CurrentValue = _storedQi;
              yield return $"{Id}: Charging... {_storedQi.Magnitude}/{_threshold}";
         }
     }

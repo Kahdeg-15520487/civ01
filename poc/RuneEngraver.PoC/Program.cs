@@ -44,6 +44,7 @@ class Program
     {
         switch (key)
         {
+            case "0": RunAllTests(); break;
             case "1": RunAmplifierTest(); break;
             case "2": RunCombinerTest(); break;
             case "3": RunDecayTest(); break;
@@ -54,6 +55,18 @@ class Program
             case "8": RunSplitterTest(); break;
             default: Console.WriteLine("Invalid selection."); break;
         }
+    }
+
+    static void RunAllTests()
+    {
+        RunAmplifierTest();
+        RunCombinerTest();
+        RunDecayTest();
+        RunLoopTest();
+        RunMatrixMultiplicationTest();
+        RunCapacitorTest();
+        RunLogicGateTest();
+        RunSplitterTest();
     }
 
     static void RunMatrixMultiplicationTest() {
