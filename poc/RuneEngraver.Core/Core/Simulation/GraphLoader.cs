@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using RuneEngraver.Core.Core.Elements;
-using RuneEngraver.Core.Core.Nodes;
+using RuneEngraver.Core.Elements;
+using RuneEngraver.Core.Nodes;
 
-namespace RuneEngraver.Core.Core.Simulation;
+namespace RuneEngraver.Core.Simulation;
 
 // Re-defining the DTOs here to avoid dependency on Compiler
 // Ideally move to a Shared contract assembly, but for PoC this is fine.

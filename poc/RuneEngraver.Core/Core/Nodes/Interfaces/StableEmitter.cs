@@ -1,13 +1,14 @@
 using System.Collections.Generic;
-using RuneEngraver.Core.Core.Elements;
+using RuneEngraver.Core.Elements;
 
-namespace RuneEngraver.Core.Core.Nodes;
+namespace RuneEngraver.Core.Nodes;
 
 public class StableEmitter : RuneNode
 {
     private readonly Port _in;
     
     public QiValue LastReceived { get; private set; }
+    public List<QiValue> History { get; } = new();
 
     public StableEmitter(string id) : base(id)
     {
@@ -18,6 +19,9 @@ public class StableEmitter : RuneNode
     {
         LastReceived = _in.CurrentValue;
         if (!LastReceived.IsEmpty)
+        {
+            History.Add(LastReceived);
             yield return $"{Id}: EMIT {LastReceived}";
+        }
     }
 }

@@ -1,10 +1,10 @@
 using Godot;
 using System.Collections.Generic;
 using System.Linq;
-using Civ.Emulator.Core.Nodes;
-using Civ.Emulator.Core.Simulation;
-using Civ.Emulator.Core.Nodes.Sources;
-using Civ.Emulator.Core.Elements;
+using RuneEngraver.Core.Simulation;
+using RuneEngraver.Core.Nodes;
+using RuneEngraver.Core.Elements;
+
 
 namespace Civ.Emulator;
 
@@ -110,7 +110,7 @@ public partial class SimulationManager : Node
             case "SpiritStoneSource": 
                 // Defaulting to Fire(5) if not specified, 
                 // or we could assume the netlist provides params.
-                return new SpiritStoneSource(id);
+                return new SpiritStoneSource(id, new QiValue(ElementType.Fire, 5));
             case "CultivatorLink":
                 return new CultivatorLink(id, new QiValue(ElementType.None, 0)); // Placeholder
 

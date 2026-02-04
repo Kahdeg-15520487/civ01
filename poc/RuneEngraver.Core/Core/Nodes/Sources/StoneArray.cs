@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using RuneEngraver.Core.Core.Elements;
+using RuneEngraver.Core.Elements;
 
-namespace RuneEngraver.Core.Core.Nodes;
+namespace RuneEngraver.Core.Nodes;
 
 public class StoneArray : RuneNode
 {

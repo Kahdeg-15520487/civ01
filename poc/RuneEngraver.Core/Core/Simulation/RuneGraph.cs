@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using RuneEngraver.Core.Core.Elements;
-using RuneEngraver.Core.Core.Nodes;
+using RuneEngraver.Core.Elements;
+using RuneEngraver.Core.Nodes;
 
-namespace RuneEngraver.Core.Core.Simulation;
+namespace RuneEngraver.Core.Simulation;
 
 public class Wire
 {

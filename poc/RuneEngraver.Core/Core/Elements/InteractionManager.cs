@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace RuneEngraver.Core.Core.Elements;
+namespace RuneEngraver.Core.Elements;
 
 public static class InteractionManager
 {

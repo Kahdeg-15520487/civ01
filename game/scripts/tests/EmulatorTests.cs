@@ -1,12 +1,14 @@
 using Godot;
+using RuneEngraver.Core.Elements;
+using RuneEngraver.Core.Nodes;
+using RuneEngraver.Core.Simulation;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using Civ.Emulator;
-using Civ.Emulator.Core.Elements;
-using Civ.Emulator.Core.Simulation;
-using Civ.Emulator.Core.Nodes;
-using Civ.Emulator.Core.Nodes.Sources;
+using RuneEngraver.Compiler.Syntax;
+using RuneEngraver.Compiler.Semantics;
+using RuneEngraver.Compiler.Synthesis;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 public partial class EmulatorTests : Node
 {
@@ -29,6 +31,7 @@ public partial class EmulatorTests : Node
             RunCapacitorTest();
             RunLogicGateTest();
             RunSplitterTest();
+            RunSynthesizerTest();
             
             GD.Print("=== ALL TESTS PASSED ===");
         }
@@ -223,6 +226,84 @@ public partial class EmulatorTests : Node
 
         RunSimulation(graph, 5, "Test 8: Splitter");
         Assert(out1.LastReceived.Magnitude == 5 && out2.LastReceived.Magnitude == 5, "Splitter Output Correct");
+    }
+
+    private void RunSynthesizerTest()
+    {
+        var input = @"
+package runic.examples;
+
+formation CapacitorStrike {
+    input Fire ignition [2+];
+    output Effect fire_ball;
+
+    node SpiritStoneSocket power_source ( element: Wood, grade: Medium );
+    node Amplifier amp;
+    node QiCapacitor cap ( capacity: 50 );
+    node BurstTrigger trigger;
+    node EffectEmitter strike ( type: ""Fireball"" );
+
+    power_source.out -> amp.primary;
+    ignition -> amp.catalyst;
+    amp.out -> cap.in;
+    cap.full -> trigger.trigger;
+    cap.out -> trigger.capacitor;
+    trigger.out -> strike.in;
+    strike.out -> fire_ball;
+}";
+
+        GD.Print("\n--- Test 9: Text-to-Graph Synthesis ---");
+        GD.Print("Parsing RunicHDL...");
+        var result = RunicParser.Parse(input);
+
+        if (result.Success)
+        {
+            GD.Print("Parse Successful!");
+            var unit = result.Value;
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
+            // GD.Print(JsonSerializer.Serialize(unit, options));
+
+            GD.Print("\nValidating Semantics...");
+            var table = new SymbolTable(); // Loads mock built-ins
+            var validator = new RunicValidator(table);
+            var errors = validator.Validate(unit);
+
+            if (errors.Any())
+            {
+                GD.PrintErr("Validation Failed:");
+                foreach (var err in errors) GD.PrintErr($"- {err}");
+            }
+            else
+            {
+                GD.Print("Validation Successful!");
+
+                // 2. Build Graph (Synthesis)
+                GD.Print("\nSynthesizing Graph...");
+                var builder = new GraphBuilder(table);
+                // Note: Only building the first formation "CapacitorStrike"
+                var graphDef = builder.Build(unit.Formations.First(), unit);
+                
+                var json = JsonSerializer.Serialize(graphDef, options);
+                // GD.Print("Generated JSON:");
+                // GD.Print(json);
+
+                // 3. Load & Run (Runtime)
+                GD.Print("\nLoading and Running Simulation...");
+                var loader = new GraphLoader();
+                var runGraph = loader.Load(json);
+
+                RunSimulation(runGraph, 15, "Test 9: Synthesized CapacitorStrike");
+            }
+        }
+        else
+        {
+            GD.PrintErr("Parse Failed!");
+            GD.PrintErr(result.Error);
+        }
     }
 
     private void Assert(bool condition, string message)

@@ -1,6 +1,6 @@
 using System;
 
-namespace RuneEngraver.Core.Core.Elements;
+namespace RuneEngraver.Core.Elements;
 
 public class QiEffect : QiValue, IEquatable<QiEffect>
 {

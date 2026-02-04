@@ -1,6 +1,6 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene format=3 uid="uid://bpknlv3g5x7xh"]
 
-[ext_resource type="Script" path="res://scripts/tests/EmulatorTests.cs" id="1"]
+[ext_resource type="Script" uid="uid://diek0tpvtrij5" path="res://scripts/tests/EmulatorTests.cs" id="1"]
 
-[node name="EmulatorTests" type="Node"]
+[node name="EmulatorTests" type="Node" unique_id=1730252753]
 script = ExtResource("1")

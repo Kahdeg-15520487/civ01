@@ -1,4 +1,4 @@
-namespace RuneEngraver.Core.Core.Elements;
+namespace RuneEngraver.Core.Elements;
 
 public enum ElementType
 {
