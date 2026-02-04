@@ -31,8 +31,9 @@ func setup(entity: Variant, world_pos: Vector2, camera: Camera2D, boundaries: Ar
 	# Assuming children order: Name, Type, Desc, Delete... 
 	# Actually, easier to have a dedicated container.
 	# For now, let's remove children named "ConfigContainer" if any
-	if container.has_node("ConfigContainer"):
-		container.get_node("ConfigContainer").queue_free()
+	var existing = container.get_node_or_null("ConfigContainer")
+	if existing:
+		existing.free() # IMPORTANT: Use free() not queue_free() to avoid duplicates
 	
 	if entity is Rune:
 		name_label.text = entity.display_name
@@ -179,8 +180,9 @@ func _build_config_ui(rune: Rune) -> void:
 	
 	if rune.id == "source_socket":
 		_add_single_stone_selector(config_box)
-	elif rune.id == "source_array":
-		_add_multi_stone_selector(config_box, 5)
+	elif not rune.socket_pattern.is_empty():
+		# Dynamic multi-socket support
+		_add_multi_stone_selector(config_box, rune.socket_pattern.size())
 
 func _add_single_stone_selector(parent: Node) -> void:
 	var lbl = Label.new()

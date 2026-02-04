@@ -16,4 +16,4 @@ qi_cost = 0
 bandwidth_in = 0
 bandwidth_out = 0
 io_definition = {}
-shape_pattern = [Vector2i(0, 0)]
+shape_pattern = Array[Vector2i]([Vector2i(0, 0)])

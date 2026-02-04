@@ -249,25 +249,35 @@ func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
 				var params = entry.get("params", {})
 				
 				if target_rune.id == "source_socket":
+					# Socket is technically a socket_pattern valid rune too now?
+					# But let's keep simple logic for single-socket compatibility
 					params["stone_type"] = stone_type
 					print("Inserted %s into Socket" % stone_type)
 				
-				elif target_rune.id == "source_array":
-					# Determine slot based on click vs main_pos?
-					# Array is 3x3. main_pos is Center? Or Top-Left?
-					# Rune.gd defaults: shape_pattern is relative to pivot. 
-					# Visual uses pivot. 
-					# EngravingTable uses grid_position as the "Anchor".
-					# By default Rune.gd without override uses top-left logic?
-					# Let's assume grid_position IS the anchor.
-					# For Array, shape_pattern has (-1,-1)... meaning grid_position is the center (0,0).
-					# Wait, if shape uses negatives, then grid_position is the center.
-					# We need to find which offset the user specifically clicked.
-					# But `grid_position` passed here is the clicked cell?
-					# NO. `place_rune` called with `grid_pos` from `_handle_click`.
-					# Re-fetch the actual clicked cell from mouse? 
-					# Or if we normalized to main_pos, we lost the offset.
-					# We need the original clicked pos.
+				# Universal Slot Logic: Works for Array or any multi-socket rune
+				elif not target_rune.socket_pattern.is_empty():
+					# Map offset to slot index dynamically
+					var clicked_offset = grid_position - entry.main_pos # Calculate offset from rune's anchor
+					var slot_idx = target_rune.socket_pattern.find(clicked_offset)
+					
+					if slot_idx != -1:
+						var slots = params.get("element_slots", [])
+						var needed_size = target_rune.socket_pattern.size()
+						
+						# Ensure size matches definition
+						if slots.size() < needed_size:
+							slots.resize(needed_size)
+							for i in range(slots.size()):
+								if slots[i] == null: slots[i] = "None"
+						
+						slots[slot_idx] = stone_type
+						params["element_slots"] = slots
+						print("Inserted %s into Slot %d" % [stone_type, slot_idx])
+					else:
+						print("Clicked position %s is not a valid socket." % clicked_offset)
+				
+				else:
+					# Should cover source_array if it has sockets
 					pass
 				
 				# Commit params
@@ -317,7 +327,12 @@ func _draw() -> void:
 		if grid_system.is_valid_pos(grid_pos):
 			var snap_pos = grid_system.grid_to_world(grid_pos)
 			
-			var color = Color(1, 1, 0, 0.3)
+			var color = Color(1, 1, 0, 0.3) # Default yellow
+			
+			# Blue for Route Qi mode
+			if current_tool == ToolMode.DRAW_TRACE:
+				color = Color(0.3, 0.6, 1.0, 0.4) # Blue glow
+			
 			if current_tool == ToolMode.PLACE_RUNE and selected_rune_type:
 				# Show custom shape highlight
 				var cells = selected_rune_type.get_occupied_cells()
@@ -333,7 +348,7 @@ func _draw() -> void:
 					draw_rect(c_rect, color.lightened(0.5), false, 2.0)
 					
 			else:
-				# Default Cursor
+				# Default Cursor (single cell)
 				var rect_size = Vector2(1, 1) * grid_system.cell_size.x
 				var rect = Rect2(snap_pos - rect_size / 2.0, rect_size)
 				draw_rect(rect, color, true) # Highlight
@@ -435,7 +450,11 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 		var rune = entry["rune"] as Rune
 		print("Selected Entity: %s" % rune.display_name)
 		
-		# Calculate proper Boundaries (List of Rects)
+		# Get the rune's anchor position (main_pos)
+		var main_pos = entry["main_pos"] as Vector2i
+		var main_world_pos = grid_system.grid_to_world(main_pos)
+		
+		# Calculate proper Boundaries relative to the RUNE'S ANCHOR (not clicked cell)
 		var boundary_rects: Array[Rect2] = []
 		
 		var cells = rune.get_occupied_cells()
@@ -457,9 +476,13 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 			# Update Visual
 			if entry.has("visual") and is_instance_valid(entry["visual"]):
 				entry["visual"].update_state(entry["params"])
-			
-		var world_pos = grid_system.grid_to_world(grid_pos)
-		properties_panel.setup(rune, world_pos, camera, boundary_rects, params, on_param_change)
+		
+		# TRACK SELECTION FOR DELETE
+		selected_entity_pos = main_pos
+		selected_trace_idx = -1
+		
+		# USE main_world_pos (rune anchor) instead of grid_pos (clicked cell)
+		properties_panel.setup(rune, main_world_pos, camera, boundary_rects, params, on_param_change)
 		return
 
 

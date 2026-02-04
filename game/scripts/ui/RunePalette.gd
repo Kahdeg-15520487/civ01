@@ -5,68 +5,82 @@ signal rune_selected(rune: Rune)
 
 @onready var container = null
 
-# Categorized Rune List
-var rune_categories: Dictionary = {
+# Categorized Rune Paths (Strings) to prevent preload crashes
+var rune_paths: Dictionary = {
 	"Sources": [
-		preload("res://resources/runes/sources/source_socket.tres"),
-		preload("res://resources/runes/sources/source_array.tres")
+		"res://resources/runes/sources/source_socket.tres",
+		"res://resources/runes/sources/source_array.tres"
 	],
 	"Operations": [
-		preload("res://resources/runes/operations/op_amplifier.tres"),
-		preload("res://resources/runes/operations/op_combiner.tres"),
-		preload("res://resources/runes/operations/op_splitter.tres"),
-		preload("res://resources/runes/operations/op_attenuator.tres"),
-		preload("res://resources/runes/operations/op_transmuter.tres"),
-		preload("res://resources/runes/operations/op_dampener.tres"),
-		preload("res://resources/runes/tests/test_l_shape.tres")
+		"res://resources/runes/operations/op_amplifier.tres",
+		"res://resources/runes/operations/op_combiner.tres",
+		"res://resources/runes/operations/op_splitter.tres",
+		"res://resources/runes/operations/op_attenuator.tres",
+		"res://resources/runes/operations/op_transmuter.tres",
+		"res://resources/runes/operations/op_dampener.tres",
+		"res://resources/runes/tests/test_l_shape.tres"
 	],
 	"Control": [
-		preload("res://resources/runes/control/control_threshold.tres"),
-		preload("res://resources/runes/control/control_yinyang.tres"),
-		preload("res://resources/runes/control/control_filter.tres")
+		"res://resources/runes/control/control_threshold.tres",
+		"res://resources/runes/control/control_yinyang.tres",
+		"res://resources/runes/control/control_filter.tres"
 	],
 	"Containers": [
-		preload("res://resources/runes/containers/container_vessel.tres"),
-		preload("res://resources/runes/containers/container_pool.tres")
+		"res://resources/runes/containers/container_vessel.tres",
+		"res://resources/runes/containers/container_pool.tres"
 	],
 	"Stones": [
-		preload("res://resources/runes/items/item_stone_fire.tres"),
-		preload("res://resources/runes/items/item_stone_water.tres"),
-		preload("res://resources/runes/items/item_stone_wood.tres"),
-		preload("res://resources/runes/items/item_stone_earth.tres"),
-		preload("res://resources/runes/items/item_stone_metal.tres")
+		"res://resources/runes/items/item_stone_fire.tres",
+		"res://resources/runes/items/item_stone_water.tres",
+		"res://resources/runes/items/item_stone_wood.tres",
+		"res://resources/runes/items/item_stone_earth.tres",
+		"res://resources/runes/items/item_stone_metal.tres"
 	],
 	"Sinks": [
-		preload("res://resources/runes/sinks/sink_emitter.tres"),
-		preload("res://resources/runes/sinks/sink_void.tres"),
-		preload("res://resources/runes/sinks/sink_heatsink.tres"),
-		preload("res://resources/runes/sinks/sink_grounding.tres")
+		"res://resources/runes/sinks/sink_emitter.tres",
+		"res://resources/runes/sinks/sink_void.tres",
+		"res://resources/runes/sinks/sink_heatsink.tres",
+		"res://resources/runes/sinks/sink_grounding.tres"
 	]
 }
+var rune_categories: Dictionary = {} # Will be populated with Resources
 
 func _ready() -> void:
-	# Debugging node path issue and finding container manually
-	var margin = get_node_or_null("MarginContainer")
-	if not margin:
-		push_error("RunePalette: MarginContainer not found!")
-		print_tree_pretty()
-		return
-		
-	var scroll = margin.get_node_or_null("ScrollContainer")
-	if not scroll:
-		push_error("RunePalette: ScrollContainer not found under MarginContainer!")
-		margin.print_tree_pretty()
-		# Fallback for old structure?
-		container = margin.get_node_or_null("VBoxContainer")
-	else:
-		container = scroll.get_node_or_null("VBoxContainer")
-		
+	# Recursive search for the container to be absolutely safe
+	container = find_child("RuneList", true, false)
+	
 	if not container:
-		push_error("RunePalette: VBoxContainer not found!")
+		# Fallback: maybe it's still named VBoxContainer in some cached version?
+		container = find_child("VBoxContainer", true, false)
+	
+	if not container:
+		push_error("CRITICAL: RuneList container not found in RunePalette!")
+		print("Dumping Scene Tree for Debug:")
 		print_tree_pretty()
 		return
-
+	
+	print("RunePalette: Container found: ", container.name)
+	_load_runes()
 	_populate_palette()
+
+func _load_runes() -> void:
+	rune_categories.clear()
+	for cat in rune_paths:
+		var loaded_list = []
+		for path in rune_paths[cat]:
+			if ResourceLoader.exists(path):
+				# Force reload to ensure socket_pattern updates are picked up DO NOT CACHE
+				var res = ResourceLoader.load(path, "", ResourceLoader.CACHE_MODE_REPLACE)
+				if res is Rune:
+					loaded_list.append(res)
+				else:
+					push_error("Path is not a Rune: " + path)
+			else:
+				push_error("Rune Resource missing: " + path)
+		
+		# Only add category if it has items
+		if loaded_list.size() > 0:
+			rune_categories[cat] = loaded_list
 
 func _populate_palette() -> void:
 	print("RunePalette: Populating...")

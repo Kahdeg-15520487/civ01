@@ -22,8 +22,9 @@ func setup(_rune: Rune, _cell_size: float = 20.0) -> void:
 		max_bound.y = max(max_bound.y, cell.y)
 		
 	# Convert grid bounds to pixel bounds (relative to pivot center)
-	var bound_center_grid = (min_bound + max_bound) / 2.0
-	var pixel_center = bound_center_grid * grid_cell_size
+	# For label: Position at top-center
+	var bound_center_x = (min_bound.x + max_bound.x) / 2.0
+	var pixel_center = Vector2(bound_center_x, min_bound.y) * grid_cell_size
 	
 	# 2. Configure Main Label
 	if not label:
@@ -103,6 +104,10 @@ func _draw() -> void:
 		var cells = rune_data.get_occupied_cells()
 		var sockets = rune_data.socket_pattern
 		
+		# Debug Visuals (Once per redraw)
+		if rune_data.id == "source_array" or rune_data.id == "source_socket":
+			print("Drawing %s. Sockets: %s" % [rune_data.id, sockets])
+		
 		for offset in cells:
 			var cell_pos = Vector2(offset) * cell_size
 			var rect = Rect2(cell_pos - Vector2(cell_size / 2, cell_size / 2), Vector2(cell_size, cell_size))
@@ -129,17 +134,28 @@ func _draw() -> void:
 				draw_circle(port_pixel_pos, 4.0, color)
 				# Text handled by Labels now
 		
-		# Draw Slotted Stone (if any)
-		if current_params.has("stone_type"):
+		# Draw Array Slots (Multi-Stone via element_slots)
+		if current_params.has("element_slots") and current_params["element_slots"] is Array:
+			var slots = current_params["element_slots"]
+			# var sockets = rune_data.socket_pattern (Already declared above)
+			
+			for i in range(min(slots.size(), sockets.size())):
+				var type = slots[i]
+				if type == "None" or type == "Empty": continue
+				
+				var color = _get_element_color(type)
+				var pos = Vector2(sockets[i]) * cell_size
+				_draw_gem(pos, cell_size, color)
+		
+		# Draw Single Stone (Socket via stone_type)
+		if current_params.has("stone_type") and current_params["stone_type"] != "None":
 			var type = current_params["stone_type"]
 			var color = _get_element_color(type)
-			
-			# Target position: (0,0) relative to center is usually the explicit "Hole" for Array/Socket
-			# For Socket (2x2 U-shape), (0,0) is also the empty spot in our def.
-			var stone_pos = Vector2(0, 0)
-			
-			draw_circle(stone_pos, cell_size * 0.3, color)
-			draw_circle(stone_pos, cell_size * 0.2, Color.WHITE.lerp(color, 0.5)) # Shine
+			# Render at the first socket position (or center if no sockets defined)
+			var pos = Vector2.ZERO
+			if not sockets.is_empty():
+				pos = Vector2(sockets[0]) * cell_size
+			_draw_gem(pos, cell_size, color)
 
 var current_params: Dictionary = {}
 
@@ -155,3 +171,8 @@ func _get_element_color(element: String) -> Color:
 		"Earth": return Color(0.8, 0.7, 0.2)
 		"Metal": return Color(0.9, 0.9, 0.9)
 		_: return Color.GRAY
+
+func _draw_gem(pos: Vector2, size: float, color: Color) -> void:
+	draw_circle(pos, size * 0.3, color)
+	draw_circle(pos, size * 0.2, Color.WHITE.lerp(color, 0.5)) # Shine
+	draw_circle(pos, size * 0.3, Color.BLACK, false, 2.0) # Outline

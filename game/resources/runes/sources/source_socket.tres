@@ -6,17 +6,17 @@
 script = ExtResource("1_rune")
 id = "source_socket"
 display_name = "Spirit Socket"
-description = "Holds a Spirit Stone to generate Qi."
+description = "A massive 3x3 socket structure. Holds a single Spirit Stone in its core."
 type = 0
 simulation_classes = "Civ.Emulator.SpiritStoneSource"
 inputs = []
-outputs = [Vector2i(1, 0)]
-size_in_cells = Vector2i(1, 1)
+outputs = [Vector2i(2, 0)]
+size_in_cells = Vector2i(4, 3)
 qi_cost = 0
 bandwidth_in = 0
 bandwidth_out = 10
 io_definition = {
-"out": Vector2i(1, 0)
+"out": Vector2i(2, 0)
 }
-shape_pattern = Array[Vector2i]([Vector2i(0, 0)])
+shape_pattern = Array[Vector2i]([Vector2i(-1, -1), Vector2i(0, -1), Vector2i(1, -1), Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(2, 0), Vector2i(-1, 1), Vector2i(0, 1), Vector2i(1, 1)])
 socket_pattern = Array[Vector2i]([Vector2i(0, 0)])
