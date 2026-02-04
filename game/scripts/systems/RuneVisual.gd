@@ -9,21 +9,54 @@ func setup(_rune: Rune, _cell_size: float = 20.0) -> void:
 	rune_data = _rune
 	grid_cell_size = _cell_size
 	
-	# Create Label if not exists
+	# 1. Calculate Bounding Box of the shape for centering
+	var min_bound = Vector2(9999, 9999)
+	var max_bound = Vector2(-9999, -9999)
+	var cells = rune_data.get_occupied_cells()
+	
+	for cell in cells:
+		min_bound.x = min(min_bound.x, cell.x)
+		min_bound.y = min(min_bound.y, cell.y)
+		max_bound.x = max(max_bound.x, cell.x)
+		max_bound.y = max(max_bound.y, cell.y)
+		
+	# Convert grid bounds to pixel bounds (relative to pivot center)
+	var bound_center_grid = (min_bound + max_bound) / 2.0
+	# Offset by 0.5 because cells are centered? 
+	# Drawing logic: cell_pos = offset * size. Rect is centered on cell_pos.
+	# So (0,0) cell is at (0,0) pixel.
+	# So pixel center is just avg * size.
+	var pixel_center = bound_center_grid * grid_cell_size
+	
+	# 2. Configure Label
 	if not label:
 		label = Label.new()
 		add_child(label)
 		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		label.add_theme_font_size_override("font_size", 12)
-		label.add_theme_color_override("font_outline_color", Color.BLACK)
-		label.add_theme_constant_override("outline_size", 4)
-		label.z_index = 1 # On top of rects
+		label.z_index = 1
+	
+	# Use a large font size and scale down for SDF-like crispness (in standard font)
+	var base_font_size = 32
+	var text_scale = 0.5
 	
 	label.text = rune_data.display_name.left(3)
-	# Center label roughly
-	label.position = Vector2(-20, -10)
-	label.custom_minimum_size = Vector2(40, 20)
+	label.add_theme_font_size_override("font_size", base_font_size)
+	label.add_theme_color_override("font_outline_color", Color.BLACK)
+	label.add_theme_constant_override("outline_size", 8) # Thicker outline for larger font
+	
+	label.scale = Vector2(text_scale, text_scale)
+	
+	# Centering logic with scale
+	# We want the center of the label (pivot) to be at pixel_center.
+	# Label size is automatic based on text.
+	# We need to set pivot_offset to center of label size? 
+	# Or just adjust position: pos = center - (size * scale / 2)
+	
+	# Force update to get size
+	label.reset_size()
+	var l_size = label.get_minimum_size()
+	label.position = pixel_center - ((l_size * text_scale) / 2.0)
 	
 	queue_redraw()
 
