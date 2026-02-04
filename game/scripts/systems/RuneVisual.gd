@@ -4,6 +4,7 @@ extends Node2D
 var rune_data: Rune
 var grid_cell_size: float = 20.0 # Default fallback
 var label: Label
+var port_labels: Array[Label] = []
 
 func setup(_rune: Rune, _cell_size: float = 20.0) -> void:
 	rune_data = _rune
@@ -22,13 +23,9 @@ func setup(_rune: Rune, _cell_size: float = 20.0) -> void:
 		
 	# Convert grid bounds to pixel bounds (relative to pivot center)
 	var bound_center_grid = (min_bound + max_bound) / 2.0
-	# Offset by 0.5 because cells are centered? 
-	# Drawing logic: cell_pos = offset * size. Rect is centered on cell_pos.
-	# So (0,0) cell is at (0,0) pixel.
-	# So pixel center is just avg * size.
 	var pixel_center = bound_center_grid * grid_cell_size
 	
-	# 2. Configure Label
+	# 2. Configure Main Label
 	if not label:
 		label = Label.new()
 		add_child(label)
@@ -36,29 +33,66 @@ func setup(_rune: Rune, _cell_size: float = 20.0) -> void:
 		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		label.z_index = 1
 	
-	# Use a large font size and scale down for SDF-like crispness (in standard font)
-	var base_font_size = 32
-	var text_scale = 0.5
+	# Use a large font size and scale down for SDF-like crispness
+	# High-DPI approach: Render huge, scale tiny.
+	var base_font_size = 128
+	var text_scale = 0.125 # 128 * 0.125 = 16 effective
 	
 	label.text = rune_data.display_name.left(3)
 	label.add_theme_font_size_override("font_size", base_font_size)
 	label.add_theme_color_override("font_outline_color", Color.BLACK)
-	label.add_theme_constant_override("outline_size", 8) # Thicker outline for larger font
+	label.add_theme_constant_override("outline_size", 32) # Scale outline with font size
 	
 	label.scale = Vector2(text_scale, text_scale)
 	
-	# Centering logic with scale
-	# We want the center of the label (pivot) to be at pixel_center.
-	# Label size is automatic based on text.
-	# We need to set pivot_offset to center of label size? 
-	# Or just adjust position: pos = center - (size * scale / 2)
-	
-	# Force update to get size
 	label.reset_size()
 	var l_size = label.get_minimum_size()
 	label.position = pixel_center - ((l_size * text_scale) / 2.0)
 	
+	# 3. Configure Port Labels
+	_update_port_labels()
+	
 	queue_redraw()
+
+func _update_port_labels() -> void:
+	# Clear existing port labels (or pool them, but recreation is cheap enough here)
+	for l in port_labels:
+		l.queue_free()
+	port_labels.clear()
+	
+	if not rune_data.io_definition: return
+	
+	var base_font_size = 96
+	var text_scale = 0.08 # 96 * 0.08 = ~7.6 effective
+	
+	for port_name in rune_data.io_definition:
+		var grid_rel_pos = rune_data.io_definition[port_name]
+		var port_pixel_pos = Vector2(grid_rel_pos) * grid_cell_size
+		
+		var l = Label.new()
+		add_child(l)
+		l.text = port_name.left(1).capitalize()
+		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		l.z_index = 2
+		
+		l.add_theme_font_size_override("font_size", base_font_size)
+		# Add outline for readability
+		l.add_theme_color_override("font_outline_color", Color.BLACK)
+		l.add_theme_constant_override("outline_size", 24) # Scaled outline
+		
+		l.scale = Vector2(text_scale, text_scale)
+		
+		l.reset_size()
+		var size = l.get_minimum_size()
+		# Position: Port pos is center of port. 
+		# We want text slightly below/offset? Or centered on port?
+		# Original code: port_pixel_pos + Vector2(-5, 12)
+		# Let's try centering on the port but slightly offset Y to not cover the dot.
+		var offset = Vector2(0, 4)
+		l.position = port_pixel_pos - ((size * text_scale) / 2.0) + offset
+		
+		port_labels.append(l)
 
 func _draw() -> void:
 	if rune_data:
@@ -75,23 +109,14 @@ func _draw() -> void:
 			draw_rect(rect, Color.WHITE, false, 1.0) # Border
 			
 		# Draw Ports
-		var font = ThemeDB.fallback_font
 		if rune_data.io_definition:
 			for port_name in rune_data.io_definition:
 				var grid_rel_pos = rune_data.io_definition[port_name]
-				var port_pixel_pos = (Vector2(grid_rel_pos) * cell_size) # Relative to (0,0) which is center of rune?
-				# Wait, logic check:
-				# Rune Center is at (0,0) locally.
-				# io_definition coords like (1,0) are relative to the grid center of the rune.
-				# A 4x4 rune has center at cross of cells?
-				# Let's assume io_definition is relative to the "Main Position" which is the center-ish.
-				# So (1,0) means 1 cell right of center.
+				var port_pixel_pos = (Vector2(grid_rel_pos) * cell_size)
 				
 				# Draw Port Marker
 				var is_input = not ("out" in port_name.to_lower() or "pass" in port_name.to_lower() or "block" in port_name.to_lower() or "excess" in port_name.to_lower())
 				var color = Color(0.0, 1.0, 0.0) if is_input else Color(1.0, 0.4, 0.0) # Green In, Orange Out
 				
 				draw_circle(port_pixel_pos, 4.0, color)
-				
-				# Optional: Draw port Label small
-				draw_string(font, port_pixel_pos + Vector2(-5, 12), port_name.left(1).capitalize(), HorizontalAlignment.HORIZONTAL_ALIGNMENT_CENTER, -1, 8, Color.WHITE)
+				# Text handled by Labels now

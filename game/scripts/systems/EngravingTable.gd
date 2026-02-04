@@ -340,6 +340,7 @@ func _setup_ui() -> void:
 	properties_panel.offset_top = 50
 	properties_panel.offset_right = -20
 	properties_panel.delete_requested.connect(_on_delete_requested)
+	properties_panel.visible = false # Hide by default
 	
 	# Select first one by default if available
 	if rune_palette_ui.rune_categories.size() > 0:
