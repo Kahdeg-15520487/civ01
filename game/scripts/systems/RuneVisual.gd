@@ -2,31 +2,47 @@ class_name RuneVisual
 extends Node2D
 
 var rune_data: Rune
+var grid_cell_size: float = 20.0 # Default fallback
+var label: Label
 
-func setup(_rune: Rune) -> void:
+func setup(_rune: Rune, _cell_size: float = 20.0) -> void:
 	rune_data = _rune
+	grid_cell_size = _cell_size
+	
+	# Create Label if not exists
+	if not label:
+		label = Label.new()
+		add_child(label)
+		label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		label.add_theme_font_size_override("font_size", 12)
+		label.add_theme_color_override("font_outline_color", Color.BLACK)
+		label.add_theme_constant_override("outline_size", 4)
+		label.z_index = 1 # On top of rects
+	
+	label.text = rune_data.display_name.left(3)
+	# Center label roughly
+	label.position = Vector2(-20, -10)
+	label.custom_minimum_size = Vector2(40, 20)
+	
 	queue_redraw()
 
 func _draw() -> void:
 	if rune_data:
-		# Calculate actual size in pixels (assuming 10px grid)
-		var cell_size = 10.0
-		var pixel_size = Vector2(rune_data.size_in_cells) * cell_size
-		var half_size = pixel_size / 2.0
+		# Calculate actual size in pixels
+		var cell_size = grid_cell_size
 		
-		# Draw background box centered
-		var rect = Rect2(-half_size, pixel_size)
-		draw_rect(rect, Color(0.2, 0.4, 0.8), true) # Blueish
-		
-		# Draw Border
-		draw_rect(rect, Color.WHITE, false, 2.0)
-		
-		# Draw Name (Placeholder for Sprite)
-		var font = ThemeDB.fallback_font
-		draw_string_outline(font, Vector2(-15, 5), rune_data.display_name.left(3), HorizontalAlignment.HORIZONTAL_ALIGNMENT_CENTER, -1, 16, 1, Color.BLACK)
-		draw_string(font, Vector2(-15, 5), rune_data.display_name.left(3), HorizontalAlignment.HORIZONTAL_ALIGNMENT_CENTER, -1, 16)
-
+		# Draw Cells
+		var cells = rune_data.get_occupied_cells()
+		for offset in cells:
+			var cell_pos = Vector2(offset) * cell_size
+			var rect = Rect2(cell_pos - Vector2(cell_size / 2, cell_size / 2), Vector2(cell_size, cell_size))
+			
+			draw_rect(rect, Color(0.2, 0.4, 0.8), true) # Blueish Body
+			draw_rect(rect, Color.WHITE, false, 1.0) # Border
+			
 		# Draw Ports
+		var font = ThemeDB.fallback_font
 		if rune_data.io_definition:
 			for port_name in rune_data.io_definition:
 				var grid_rel_pos = rune_data.io_definition[port_name]

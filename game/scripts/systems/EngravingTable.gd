@@ -89,7 +89,7 @@ const MIN_ZOOM: float = 0.5
 const MAX_ZOOM: float = 5.0
 const ZOOM_SPEED: float = 0.1
 
-func _input(event: InputEvent) -> void:
+func _unhandled_input(event: InputEvent) -> void:
 	# Camera Controls
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
@@ -210,19 +210,18 @@ func _handle_click(screen_pos: Vector2) -> void:
 				pass # Left click in draw mode does nothing (or maybe selects?)
 
 
-## Checks if a rectangular area on the grid is clear
-func is_area_clear(center_grid: Vector2i, size_in_cells: Vector2i) -> bool:
-	var top_left = center_grid - (size_in_cells / 2)
-	for x in range(size_in_cells.x):
-		for y in range(size_in_cells.y):
-			var check_pos = top_left + Vector2i(x, y)
-			if not grid_system.is_valid_pos(check_pos): return false
-			if current_board_state.has(check_pos): return false
+## Checks if the cells required by a rune are clear at the given position
+func is_area_clear(center_grid: Vector2i, rune: Rune) -> bool:
+	var occupied = rune.get_occupied_cells()
+	for offset in occupied:
+		var check_pos = center_grid + offset
+		if not grid_system.is_valid_pos(check_pos): return false
+		if current_board_state.has(check_pos): return false
 	return true
 
 ## Called when user drags a rune onto the board
 func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
-	if not is_area_clear(grid_position, rune_resource.size_in_cells):
+	if not is_area_clear(grid_position, rune_resource):
 		print("Area blocked!")
 		return
 		
@@ -230,19 +229,18 @@ func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
 	
 	var visual = RuneVisualScene.instantiate()
 	rune_layer.add_child(visual)
-	visual.setup(rune_resource)
+	visual.setup(rune_resource, grid_system.cell_size.x)
 	visual.position = grid_system.grid_to_world(grid_position)
 	
 	# Mark all cells as occupied
-	var top_left = grid_position - (rune_resource.size_in_cells / 2)
-	for x in range(rune_resource.size_in_cells.x):
-		for y in range(rune_resource.size_in_cells.y):
-			var occupied_pos = top_left + Vector2i(x, y)
-			current_board_state[occupied_pos] = {
-				"rune": rune_resource,
-				"visual": visual,
-				"main_pos": grid_position # Reference to center
-			}
+	var cells = rune_resource.get_occupied_cells()
+	for offset in cells:
+		var occupied_pos = grid_position + offset
+		current_board_state[occupied_pos] = {
+			"rune": rune_resource,
+			"visual": visual,
+			"main_pos": grid_position # Reference to center
+		}
 
 func _draw() -> void:
 	if grid_system:
@@ -255,21 +253,27 @@ func _draw() -> void:
 		if grid_system.is_valid_pos(grid_pos):
 			var snap_pos = grid_system.grid_to_world(grid_pos)
 			
-			# Determine size of highlight based on selected rune or default 1x1
-			var highlight_size_cells = Vector2i(1, 1)
-			if current_tool == ToolMode.PLACE_RUNE and selected_rune_type:
-				highlight_size_cells = selected_rune_type.size_in_cells
-			
-			var rect_size = Vector2(highlight_size_cells) * grid_system.cell_size.x # Assumes square cells
-			var rect = Rect2(snap_pos - rect_size / 2.0, rect_size)
-			
 			var color = Color(1, 1, 0, 0.3)
 			if current_tool == ToolMode.PLACE_RUNE and selected_rune_type:
-				if not is_area_clear(grid_pos, highlight_size_cells):
+				# Show custom shape highlight
+				var cells = selected_rune_type.get_occupied_cells()
+				if not is_area_clear(grid_pos, selected_rune_type):
 					color = Color(1, 0, 0, 0.3) # Red if blocked
-			
-			draw_rect(rect, color, true) # Highlight
-			draw_rect(rect, color.lightened(0.5), false, 2.0) # Border
+				
+				for offset in cells:
+					# Adjust for center logic
+					var draw_pos = snap_pos + (Vector2(offset) * grid_system.cell_size)
+					# Rect should be centered on that pos
+					var c_rect = Rect2(draw_pos - grid_system.cell_size / 2.0, grid_system.cell_size)
+					draw_rect(c_rect, color, true)
+					draw_rect(c_rect, color.lightened(0.5), false, 2.0)
+					
+			else:
+				# Default Cursor
+				var rect_size = Vector2(1, 1) * grid_system.cell_size.x
+				var rect = Rect2(snap_pos - rect_size / 2.0, rect_size)
+				draw_rect(rect, color, true) # Highlight
+				draw_rect(rect, color.lightened(0.5), false, 2.0) # Border
 
 
 const RuneVisualScene = preload("res://scenes/systems/RuneVisual.tscn")
@@ -442,11 +446,10 @@ func _delete_rune_at(grid_pos: Vector2i) -> void:
 		visual.queue_free()
 		
 	# Clear grid cells
-	var top_left = grid_pos - (rune.size_in_cells / 2)
-	for x in range(rune.size_in_cells.x):
-		for y in range(rune.size_in_cells.y):
-			var occupied_pos = top_left + Vector2i(x, y)
-			current_board_state.erase(occupied_pos)
+	var cells = rune.get_occupied_cells()
+	for offset in cells:
+		var occupied_pos = grid_pos + offset
+		current_board_state.erase(occupied_pos)
 			
 	print("Deleted rune at ", grid_pos)
 

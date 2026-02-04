@@ -14,7 +14,8 @@ var rune_categories: Dictionary = {
 		preload("res://resources/runes/operations/op_amplifier.tres"),
 		preload("res://resources/runes/operations/op_combiner.tres"),
 		preload("res://resources/runes/operations/op_splitter.tres"),
-		preload("res://resources/runes/operations/op_attenuator.tres")
+		preload("res://resources/runes/operations/op_attenuator.tres"),
+		preload("res://resources/runes/tests/test_l_shape.tres")
 	],
 	"Control": [
 		preload("res://resources/runes/control/control_threshold.tres")
