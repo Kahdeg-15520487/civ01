@@ -4,6 +4,7 @@ using System.Linq;
 using Civ.Emulator.Core.Nodes;
 using Civ.Emulator.Core.Simulation;
 using Civ.Emulator.Core.Nodes.Sources;
+using Civ.Emulator.Core.Elements;
 
 namespace Civ.Emulator;
 
@@ -100,12 +101,48 @@ public partial class SimulationManager : Node
 
     private RuneNode CreateNodeFactory(string type, string id)
     {
+        // Simple parsing or default params for now. 
+        // In a real scenario, we'd pass a 'params' dictionary too.
+        
         switch (type)
         {
-            case "SpiritStoneSource":
-                 return new SpiritStoneSource(id);
-             // TODO: Add other types here
+            // Sources
+            case "SpiritStoneSource": 
+                // Defaulting to Fire(5) if not specified, 
+                // or we could assume the netlist provides params.
+                return new SpiritStoneSource(id);
+            case "CultivatorLink":
+                return new CultivatorLink(id, new QiValue(ElementType.None, 0)); // Placeholder
+
+            // Operations
+            case "AmplifierNode": return new AmplifierNode(id);
+            case "CombinerNode": return new CombinerNode(id);
+            case "AttenuatorNode": return new AttenuatorNode(id, 0.5f); // Todo: Param
+            case "TransmuterNode": return new TransmuterNode(id);
+            case "SplitterNode": return new SplitterNode(id);
+            case "DampenerNode": return new DampenerNode(id);
+
+            // Containers
+            case "SpiritVessel": return new SpiritVessel(id);
+            case "QiCapacitor": return new QiCapacitor(id, 10); // Todo: Param
+            case "DualVessel": return new DualVessel(id);
+            case "ElementalPool": return new ElementalPool(id);
+
+            // Control
+            case "ThresholdGate": return new ThresholdGate(id, 5); // Todo: Param
+            case "YinYangGate": return new YinYangGate(id);
+            case "ElementFilter": return new ElementFilter(id, ElementType.Fire); // Todo: Param
+
+            // Sinks
+            case "StableEmitter": return new StableEmitter(id);
+            case "VoidDrain": return new VoidDrain(id);
+            case "EffectEmitter": return new EffectEmitter(id);
+            case "GroundingRod": return new GroundingRod(id);
+            case "HeatSink": return new HeatSink(id);
+            case "SkyAntenna": return new SkyAntenna(id);
+
             default:
+                GD.PrintErr($"Unknown Node Type: {type}");
                 return null;
         }
     }

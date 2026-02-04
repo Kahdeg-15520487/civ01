@@ -13,7 +13,7 @@ var is_simulating: bool = false
 var current_board_state: Dictionary = {} # Stores placed runes and traces
 
 # Grid Settings
-@export var grid_size: int = 10 # Finer grid (Was 40)
+@export var grid_size: int = 20 # Larger grid for readability (Was 10)
 @export var grid_width: int = 80 # 80 * 10 = 800px (Was 20)
 @export var grid_height: int = 56 # 56 * 10 = 560px (Was 14)
 
@@ -30,7 +30,31 @@ func _ready() -> void:
 	print("Engraving Table Initialized")
 	_setup_layers()
 	_setup_grid()
+	_setup_camera()
 	_setup_ui()
+	_setup_simulation()
+
+func _setup_camera() -> void:
+	camera = Camera2D.new()
+	camera.enabled = true
+	# Center camera on grid initially
+	var center_x = (grid_width * grid_size) / 2.0
+	var center_y = (grid_height * grid_size) / 2.0
+	camera.position = Vector2(center_x, center_y) + Vector2(180, 50) # + offset
+	add_child(camera)
+
+func _reset_camera() -> void:
+	var center_x = (grid_width * grid_size) / 2.0
+	var center_y = (grid_height * grid_size) / 2.0
+	camera.position = Vector2(center_x, center_y) + Vector2(180, 50)
+	zoom_level = 1.0
+	camera.zoom = Vector2(1, 1)
+
+func _adjust_zoom(factor: float) -> void:
+	zoom_level *= factor
+	zoom_level = clamp(zoom_level, MIN_ZOOM, MAX_ZOOM)
+	camera.zoom = Vector2(zoom_level, zoom_level)
+
 
 func _setup_layers() -> void:
 	# Define rendering order: 
@@ -51,19 +75,41 @@ func _setup_grid() -> void:
 	queue_redraw() # Trigger _draw
 
 
-
-	
-
-
 func _on_rune_selected(rune: Rune) -> void:
 	print("Selected rune for placement: ", rune.display_name)
 	selected_rune_type = rune
 
+var camera: Camera2D
+var zoom_level: float = 1.0
+const MIN_ZOOM: float = 0.5
+const MAX_ZOOM: float = 5.0
+const ZOOM_SPEED: float = 0.1
+
 func _input(event: InputEvent) -> void:
+	# Camera Controls
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_adjust_zoom(1.0 + ZOOM_SPEED)
+			return
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_adjust_zoom(1.0 - ZOOM_SPEED)
+			return
+		elif event.button_index == MOUSE_BUTTON_MIDDLE:
+			if event.pressed:
+				# Start Pan
+				pass
+	
+	if event is InputEventKey:
+		if event.pressed and event.keycode == KEY_SPACE:
+			_reset_camera()
+
 	if event is InputEventMouseMotion:
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_MIDDLE):
+			camera.position -= event.relative / zoom_level
+			
 		queue_redraw()
 		if is_dragging_trace and current_trace_visual:
-			var mouse_pos = get_local_mouse_position()
+			var mouse_pos = get_global_mouse_position()
 			var grid_pos = grid_system.world_to_grid(mouse_pos)
 			
 			if grid_system.is_valid_pos(grid_pos):
@@ -89,15 +135,15 @@ func _input(event: InputEvent) -> void:
 	elif event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
-				_handle_click(event.position)
+				_handle_click(get_global_mouse_position())
 				
 		elif event.button_index == MOUSE_BUTTON_RIGHT:
 			# Right click to draw traces ONLY if in Route mode
 			if current_tool == ToolMode.DRAW_TRACE:
 				if event.pressed:
-					_start_trace(event.position)
+					_start_trace(get_global_mouse_position())
 				else:
-					_end_trace(event.position)
+					_end_trace(get_global_mouse_position())
 			elif current_tool == ToolMode.PLACE_RUNE:
 				# Maybe clear selection or cancel placement?
 				pass
@@ -143,7 +189,6 @@ func _end_trace(screen_pos: Vector2) -> void:
 	current_trace_visual = null
 
 
-
 func _handle_click(screen_pos: Vector2) -> void:
 	var grid_pos = grid_system.world_to_grid(screen_pos)
 	if grid_system.is_valid_pos(grid_pos):
@@ -159,9 +204,6 @@ func _handle_click(screen_pos: Vector2) -> void:
 				_select_entity_at(grid_pos)
 			ToolMode.DRAW_TRACE:
 				pass # Left click in draw mode does nothing (or maybe selects?)
-
-
-
 
 
 ## Checks if a rectangular area on the grid is clear
@@ -200,10 +242,10 @@ func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
 
 func _draw() -> void:
 	if grid_system:
-		grid_system.draw_grid(self)
+		grid_system.draw_grid(self )
 		
 		# Draw Cursor Highlight
-		var mouse_pos = get_local_mouse_position()
+		var mouse_pos = get_global_mouse_position()
 		var grid_pos = grid_system.world_to_grid(mouse_pos)
 		
 		if grid_system.is_valid_pos(grid_pos):
@@ -215,7 +257,7 @@ func _draw() -> void:
 				highlight_size_cells = selected_rune_type.size_in_cells
 			
 			var rect_size = Vector2(highlight_size_cells) * grid_system.cell_size.x # Assumes square cells
-			var rect = Rect2(snap_pos - rect_size/2.0, rect_size)
+			var rect = Rect2(snap_pos - rect_size / 2.0, rect_size)
 			
 			var color = Color(1, 1, 0, 0.3)
 			if current_tool == ToolMode.PLACE_RUNE and selected_rune_type:
@@ -226,13 +268,12 @@ func _draw() -> void:
 			draw_rect(rect, color.lightened(0.5), false, 2.0) # Border
 
 
-
-
 const RuneVisualScene = preload("res://scenes/systems/RuneVisual.tscn")
 const QiTraceVisualScene = preload("res://scenes/systems/QiTraceVisual.tscn")
+const NetlistExtractorScript = preload("res://scripts/systems/NetlistExtractor.gd")
 
 # State
-enum ToolMode { PLACE_RUNE, DRAW_TRACE, SELECT }
+enum ToolMode {PLACE_RUNE, DRAW_TRACE, SELECT}
 var current_tool: ToolMode = ToolMode.SELECT # Default to Select
 var is_dragging_trace: bool = false
 var current_trace_visual: QiTraceVisual = null
@@ -260,28 +301,40 @@ func _setup_ui() -> void:
 	# Connect Toolbar Signals
 	editor_toolbar.tool_changed.connect(_on_tool_changed)
 	editor_toolbar.trace_width_changed.connect(_on_trace_width_changed)
+	editor_toolbar.request_start_sim.connect(start_simulation)
+	editor_toolbar.request_stop_sim.connect(stop_simulation)
 	
 	# Instantiate Palette (Left)
 	var palette_scene = preload("res://scenes/ui/RunePalette.tscn")
 	rune_palette_ui = palette_scene.instantiate()
-	rune_palette_ui.position.y = 50 
 	ui_layer.add_child(rune_palette_ui)
-	rune_palette_ui.visible = false 
+	
+	# Anchor to Left, Top (below toolbar), Bottom
+	rune_palette_ui.set_anchors_preset(Control.PRESET_LEFT_WIDE)
+	rune_palette_ui.offset_top = 50 # Below toolbar
+	rune_palette_ui.visible = false
 	rune_palette_ui.rune_selected.connect(_on_rune_selected)
 	
 	# Instantiate Properties Panel (Right)
 	var props_scene = preload("res://scenes/ui/PropertiesPanel.tscn")
 	properties_panel = props_scene.instantiate()
-	properties_panel.anchor_left = 1.0
-	properties_panel.anchor_right = 1.0
-	properties_panel.position = Vector2(get_viewport_rect().size.x - 220, 50) # Approx right alignment
-	properties_panel.visible = false
-	properties_panel.delete_requested.connect(_on_delete_requested)
 	ui_layer.add_child(properties_panel)
 	
+	# Configure Anchors (Top Right)
+	properties_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	properties_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN # Grow to the left
+	properties_panel.position = Vector2.ZERO # Reset position to let anchors take over?
+	# Actually, set_anchors_preset sets offsets too usually. 
+	# Let's ensure it has a margin.
+	properties_panel.offset_top = 50
+	properties_panel.offset_right = -20
+	properties_panel.delete_requested.connect(_on_delete_requested)
+	
 	# Select first one by default if available
-	if rune_palette_ui.available_runes.size() > 0:
-		selected_rune_type = rune_palette_ui.available_runes[0]
+	if rune_palette_ui.rune_categories.size() > 0:
+		var first_cat_runes = rune_palette_ui.rune_categories.values()[0]
+		if first_cat_runes.size() > 0:
+			selected_rune_type = first_cat_runes[0]
 
 func _on_tool_changed(tool_name: String) -> void:
 	print("Switched tool to: ", tool_name)
@@ -321,7 +374,7 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 
 	# 2. Check Traces
 	# We check the distance from the mouse position to any trace segment
-	var mouse_pos = get_local_mouse_position()
+	var mouse_pos = get_global_mouse_position()
 	for i in range(placed_traces.size()):
 		var t = placed_traces[i]
 		var visual = t["visual"] as QiTraceVisual
@@ -331,11 +384,10 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 		var points = visual.line_2d.points
 		for j in range(points.size() - 1):
 			var p1 = points[j]
-			var p2 = points[j+1]
+			var p2 = points[j + 1]
 			var closest = Geometry2D.get_closest_point_to_segment(mouse_pos, p1, p2)
 			
 			if mouse_pos.distance_to(closest) < (width / 2.0) + 5.0: # Width + tolerance
-
 				print("Selected Trace (Index %d)" % i)
 				selected_trace_idx = i
 				selected_entity_pos = Vector2i(-1, -1)
@@ -397,14 +449,41 @@ func _on_trace_width_changed(width_idx: int) -> void:
 	print("Trace width set to: ", trace_widths[current_trace_width_idx])
 
 
+@onready var sim_manager_cs: Node = null # The C# bridge node
 
 
-
+func _setup_simulation() -> void:
+	# Instantiate the C# Simulation Manager
+	# Assuming SimulationManager.cs is a GlobalClass "SimulationManager"
+	# But in C# GlobalClasses might need full path or manual loading if not appearing in ClassDB yet.
+	# Let's try loading by resource path to be safe.
+	var sim_script = load("res://scripts/emulator/SimulationManager.cs")
+	if sim_script:
+		sim_manager_cs = Node.new()
+		sim_manager_cs.set_script(sim_script)
+		sim_manager_cs.name = "SimulationManager"
+		add_child(sim_manager_cs)
+		print("SimulationManager C# Node Added")
+	else:
+		push_error("Failed to load SimulationManager.cs")
 
 ## Starts the Chi flow simulation
 func start_simulation() -> void:
+	if is_simulating: return
+	
+	print("Starting Simulation...")
 	is_simulating = true
 	emit_signal("simulation_started")
+	
+	# 1. Extract Netlist
+	var extractor = NetlistExtractorScript.new(grid_system)
+	var graph_data = extractor.extract(current_board_state, placed_traces)
+	
+	# 2. Build Graph in C#
+	if sim_manager_cs:
+		sim_manager_cs.call("BuildGraph", graph_data)
+		
+	# 3. Start Tick Loop
 	_run_tick()
 
 func stop_simulation() -> void:
@@ -414,8 +493,9 @@ func stop_simulation() -> void:
 func _run_tick() -> void:
 	if not is_simulating: return
 	
-	print("Simulation Tick")
-	# Propagate Qi through traces and Runes
+	# print("Simulation Tick")
+	if sim_manager_cs:
+		sim_manager_cs.call("RunTick")
 	
 	# Schedule next tick
 	if is_simulating:

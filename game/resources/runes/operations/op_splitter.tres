@@ -1,0 +1,22 @@
+[gd_resource type="Resource" script_class="Rune" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/Rune.gd" id="1_rune"]
+
+[resource]
+script = ExtResource("1_rune")
+id = "op_splitter"
+display_name = "Splitter"
+description = "Splits input Qi equally into two outputs."
+type = 1
+simulation_classes = "Civ.Emulator.SplitterNode"
+inputs = [Vector2i(-2, 0)]
+outputs = [Vector2i(1, -1), Vector2i(1, 1)]
+size_in_cells = Vector2i(4, 4)
+qi_cost = 1
+bandwidth_in = 10
+bandwidth_out = 10
+io_definition = {
+"in": Vector2i(-2, 0),
+"out1": Vector2i(1, -1),
+"out2": Vector2i(1, 1)
+}
