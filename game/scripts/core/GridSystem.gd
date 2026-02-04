@@ -45,8 +45,13 @@ func draw_grid(canvas: Node2D) -> void:
 	var total_w = grid_width_cells * cell_size.x
 	var total_h = grid_height_cells * cell_size.y
 	
-	# Draw background area (Dark Slate)
-	canvas.draw_rect(Rect2(grid_offset, Vector2(total_w, total_h)), Color(0.1, 0.1, 0.12, 1.0), true)
+	# Draw background area (Dark Slate) - Infinite-ish
+	var huge_rect = Rect2(Vector2(-10000, -10000), Vector2(20000, 20000))
+	canvas.draw_rect(huge_rect, Color(0.1, 0.1, 0.12, 1.0), true)
+	
+	# Draw Playable Area Highlight (slightly lighter?)
+	var play_area = Rect2(grid_offset, Vector2(total_w, total_h))
+	canvas.draw_rect(play_area, Color(0.12, 0.12, 0.15, 1.0), true)
 	
 	# Vertical Lines
 

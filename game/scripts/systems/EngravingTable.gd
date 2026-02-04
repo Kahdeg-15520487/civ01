@@ -13,9 +13,9 @@ var is_simulating: bool = false
 var current_board_state: Dictionary = {} # Stores placed runes and traces
 
 # Grid Settings
-@export var grid_size: int = 20 # Larger grid for readability (Was 10)
-@export var grid_width: int = 80 # 80 * 10 = 800px (Was 20)
-@export var grid_height: int = 56 # 56 * 10 = 560px (Was 14)
+@export var grid_size: int = 20 # Larger grid
+@export var grid_width: int = 200 # Wider (Was 80)
+@export var grid_height: int = 150 # Taller (Was 56)
 
 var grid_system: GridSystem
 
@@ -27,6 +27,10 @@ var trace_layer: Node2D
 var rune_layer: Node2D
 
 func _ready() -> void:
+	# Force Window Scaling logic
+	get_window().content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+	get_window().content_scale_aspect = Window.CONTENT_SCALE_ASPECT_EXPAND
+	
 	print("Engraving Table Initialized")
 	_setup_layers()
 	_setup_grid()
@@ -297,6 +301,9 @@ func _setup_ui() -> void:
 	var toolbar_scene = preload("res://scenes/ui/EditorToolbar.tscn")
 	editor_toolbar = toolbar_scene.instantiate()
 	ui_layer.add_child(editor_toolbar)
+	
+	# Force Anchors
+	editor_toolbar.set_anchors_preset(Control.PRESET_TOP_WIDE)
 	
 	# Connect Toolbar Signals
 	editor_toolbar.tool_changed.connect(_on_tool_changed)
