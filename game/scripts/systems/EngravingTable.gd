@@ -6,6 +6,7 @@ extends Node2D
 # Signals
 signal simulation_started
 signal simulation_stopped
+signal validation_failed(errors: Array)
 signal rune_placed(rune_instance)
 
 # State
@@ -137,9 +138,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				# Let's do simple X-then-Y for now.
 				var elbow_point = Vector2(end_world.x, start_world.y)
 				
-				# Update visual with 3 points
-				# Note: Need to update QiTraceVisual to handle multiple points
-				current_trace_visual.update_path([start_world, elbow_point, end_world])
+				# 4. Check for crossings with existing traces
+				var new_path = [start_world, elbow_point, end_world]
+				var crossing = _find_first_crossing(new_path)
+				
+				# Update visual with crossing info
+				current_trace_visual.update_path(new_path, crossing)
 			else:
 				# Free drag (fallback)
 				current_trace_visual.update_endpoint(mouse_pos)
@@ -154,9 +158,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			# Right click to draw traces ONLY if in Route mode
 			if current_tool == ToolMode.DRAW_TRACE:
 				if event.pressed:
-					_start_trace(get_global_mouse_position())
-				else:
-					_end_trace(get_global_mouse_position())
+					# Toggle: If not drawing, start. If drawing, commit.
+					if not is_dragging_trace:
+						_start_trace(get_global_mouse_position())
+					else:
+						_end_trace(get_global_mouse_position())
 			elif current_tool == ToolMode.PLACE_RUNE:
 				# Maybe clear selection or cancel placement?
 				pass
@@ -190,7 +196,16 @@ func _end_trace(screen_pos: Vector2) -> void:
 	if not is_dragging_trace: return
 	
 	var grid_pos = grid_system.world_to_grid(screen_pos)
-	print("Ended trace at: ", grid_pos)
+	print("Ending trace at: ", grid_pos)
+	
+	# Check if the trace has any crossings - if so, reject it
+	if current_trace_visual and current_trace_visual.has_crossing:
+		print("REJECTED: Trace crosses existing route!")
+		# Delete the invalid visual
+		current_trace_visual.queue_free()
+		current_trace_visual = null
+		is_dragging_trace = false
+		return
 	
 	# Store the valid trace
 	placed_traces.append({
@@ -353,6 +368,19 @@ func _draw() -> void:
 				var rect = Rect2(snap_pos - rect_size / 2.0, rect_size)
 				draw_rect(rect, color, true) # Highlight
 				draw_rect(rect, color.lightened(0.5), false, 2.0) # Border
+	
+	# Draw crossing marker on top of everything
+	if current_trace_visual and current_trace_visual.has_crossing:
+		var cross_pos = current_trace_visual.crossing_point
+		if cross_pos != Vector2.INF:
+			var cross_size = 10.0
+			
+			# Draw red X
+			draw_line(cross_pos + Vector2(-cross_size, -cross_size), cross_pos + Vector2(cross_size, cross_size), Color.RED, 4.0)
+			draw_line(cross_pos + Vector2(cross_size, -cross_size), cross_pos + Vector2(-cross_size, cross_size), Color.RED, 4.0)
+			
+			# Draw circle around X
+			draw_circle(cross_pos, cross_size * 1.5, Color(1, 0, 0, 0.4))
 
 
 const RuneVisualScene = preload("res://scenes/systems/RuneVisual.tscn")
@@ -586,6 +614,17 @@ func _setup_simulation() -> void:
 func start_simulation() -> void:
 	if is_simulating: return
 	
+	# Validate board state before running
+	var errors = _validate_board()
+	if not errors.is_empty():
+		for err in errors:
+			push_warning(err)
+			print("[Validation Error] %s" % err)
+		
+		# Show error to user (you may want to use a popup instead)
+		emit_signal("validation_failed", errors)
+		return
+	
 	print("Starting Simulation...")
 	is_simulating = true
 	emit_signal("simulation_started")
@@ -601,6 +640,47 @@ func start_simulation() -> void:
 	# 3. Start Tick Loop
 	_run_tick()
 
+## Validates the board state before simulation
+func _validate_board() -> Array[String]:
+	var errors: Array[String] = []
+	var checked_positions: Array[Vector2i] = []
+	
+	for grid_pos in current_board_state:
+		var entry = current_board_state[grid_pos]
+		var main_pos = entry["main_pos"] as Vector2i
+		
+		# Skip if we already checked this rune (multi-cell runes share entries)
+		if main_pos in checked_positions:
+			continue
+		checked_positions.append(main_pos)
+		
+		var rune = entry["rune"] as Rune
+		var params = entry["params"] as Dictionary
+		
+		# Check Spirit Socket
+		if rune.id == "source_socket":
+			var stone_type = params.get("stone_type", "None")
+			if stone_type == "None" or stone_type == "Empty" or stone_type == "":
+				errors.append("Spirit Socket at %s has no stone inserted!" % main_pos)
+		
+		# Check Stone Array
+		elif rune.id == "source_array":
+			var slots = params.get("element_slots", [])
+			var socket_count = rune.socket_pattern.size()
+			var empty_count = 0
+			
+			for i in range(socket_count):
+				var slot_val = "None"
+				if i < slots.size():
+					slot_val = slots[i]
+				if slot_val == "None" or slot_val == "Empty" or slot_val == "":
+					empty_count += 1
+			
+			if empty_count > 0:
+				errors.append("Stone Array at %s has %d empty slot(s)!" % [main_pos, empty_count])
+	
+	return errors
+
 func stop_simulation() -> void:
 	is_simulating = false
 	emit_signal("simulation_stopped")
@@ -615,3 +695,99 @@ func _run_tick() -> void:
 	# Schedule next tick
 	if is_simulating:
 		get_tree().create_timer(0.5).timeout.connect(_run_tick)
+
+## Find the first crossing point between a path and any existing trace
+func _find_first_crossing(path: Array) -> Vector2:
+	# path is an array of Vector2 points forming the new trace
+	# Returns Vector2.INF if no crossing, otherwise the first crossing point
+	var min_distance = 5.0 # Minimum distance between traces
+	
+	for i in range(path.size() - 1):
+		var seg_a_start = path[i]
+		var seg_a_end = path[i + 1]
+		
+		# Check against all placed traces
+		for t in placed_traces:
+			var visual = t["visual"] as QiTraceVisual
+			if not is_instance_valid(visual): continue
+			
+			var existing_points = visual.line_2d.points
+			for j in range(existing_points.size() - 1):
+				var seg_b_start = existing_points[j]
+				var seg_b_end = existing_points[j + 1]
+				
+				# 1. Check for crossing intersection
+				var intersection = _segment_intersection(seg_a_start, seg_a_end, seg_b_start, seg_b_end)
+				if intersection != Vector2.INF:
+					return intersection
+				
+				# 2. Check if new segment is too close to existing segment
+				var close_point = _closest_point_segment_to_segment(seg_a_start, seg_a_end, seg_b_start, seg_b_end)
+				if close_point.distance < min_distance:
+					return close_point.point
+	
+	return Vector2.INF
+
+## Calculate intersection point between two line segments
+## Returns Vector2.INF if no intersection
+func _segment_intersection(p1: Vector2, p2: Vector2, p3: Vector2, p4: Vector2) -> Vector2:
+	var d1 = p2 - p1
+	var d2 = p4 - p3
+	
+	var cross = d1.x * d2.y - d1.y * d2.x
+	
+	# Parallel lines
+	if abs(cross) < 0.0001:
+		return Vector2.INF
+	
+	var d3 = p3 - p1
+	var t = (d3.x * d2.y - d3.y * d2.x) / cross
+	var u = (d3.x * d1.y - d3.y * d1.x) / cross
+	
+	# Check if intersection is within both segments (with small epsilon)
+	var eps = 0.01
+	if t >= eps and t <= (1.0 - eps) and u >= eps and u <= (1.0 - eps):
+		return p1 + d1 * t
+	
+	return Vector2.INF
+
+## Find closest approach between two segments
+func _closest_point_segment_to_segment(a1: Vector2, a2: Vector2, b1: Vector2, b2: Vector2) -> Dictionary:
+	var min_dist = INF
+	var min_point = Vector2.INF
+	
+	# A endpoints to B segment
+	var d1 = _point_to_segment_distance(a1, b1, b2)
+	if d1.distance < min_dist:
+		min_dist = d1.distance
+		min_point = a1
+	
+	var d2 = _point_to_segment_distance(a2, b1, b2)
+	if d2.distance < min_dist:
+		min_dist = d2.distance
+		min_point = a2
+	
+	# B endpoints to A segment
+	var d3 = _point_to_segment_distance(b1, a1, a2)
+	if d3.distance < min_dist:
+		min_dist = d3.distance
+		min_point = b1
+	
+	var d4 = _point_to_segment_distance(b2, a1, a2)
+	if d4.distance < min_dist:
+		min_dist = d4.distance
+		min_point = b2
+	
+	return {"distance": min_dist, "point": min_point}
+
+## Distance from point to line segment
+func _point_to_segment_distance(point: Vector2, seg_start: Vector2, seg_end: Vector2) -> Dictionary:
+	var seg = seg_end - seg_start
+	var seg_len_sq = seg.length_squared()
+	
+	if seg_len_sq < 0.0001:
+		return {"distance": point.distance_to(seg_start), "closest": seg_start}
+	
+	var t = clamp(seg.dot(point - seg_start) / seg_len_sq, 0.0, 1.0)
+	var closest = seg_start + seg * t
+	return {"distance": point.distance_to(closest), "closest": closest}

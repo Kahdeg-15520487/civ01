@@ -77,22 +77,33 @@ public class GraphLoader
         return graph;
     }
 
-    private RuneNode CreateNode(NodeData data)
+    private RuneNode? CreateNode(NodeData data)
     {
         return data.Type switch
         {
-            "SpiritStoneSocket" => new SpiritStoneSource(data.Id, ParseQiValue(data.Params)),
+            "SpiritStoneSocket" => CreateSpiritStoneSource(data),
             "Amplifier" => new AmplifierNode(data.Id),
             "QiCapacitor" => new QiCapacitor(data.Id, GetInt(data.Params, "capacity")),
             "Combiner" => new CombinerNode(data.Id),
             "Splitter" => new SplitterNode(data.Id),
-            "FormationInput" => new SpiritStoneSource(data.Id, ParseQiValue(data.Params)), // Treat inputs as Sources
+            "FormationInput" => CreateSpiritStoneSource(data), // Treat inputs as Sources
             "FormationOutput" => new StableEmitter(data.Id), // Treat outputs as Sinks
             "BurstTrigger" => new BurstTrigger(data.Id),
             "Transmuter" => new TransmuterNode(data.Id), // Needs param fix later
             "EffectEmitter" => new EffectEmitter(data.Id), 
             _ => throw new NotSupportedException($"Unknown node type: {data.Type}")
         };
+    }
+    
+    private RuneNode? CreateSpiritStoneSource(NodeData data)
+    {
+        var qiValue = ParseQiValue(data.Params);
+        if (qiValue == null)
+        {
+            Console.WriteLine($"[GraphLoader] Skipping empty socket: {data.Id}");
+            return null; // Empty socket - no stone
+        }
+        return new SpiritStoneSource(data.Id, qiValue);
     }
 
     private void Connect(RuneGraph graph, Dictionary<string, RuneNode> nodes, string from, string to)
@@ -141,8 +152,18 @@ public class GraphLoader
 
     private QiValue ParseQiValue(Dictionary<string, JsonElement> p)
     {
-        var elemStr = p.ContainsKey("element") ? p["element"].ToString() : "Fire";
-        if (!Enum.TryParse<ElementType>(elemStr, out var type)) type = ElementType.Fire;
+        var elemStr = p.ContainsKey("element") ? p["element"].ToString() : "None";
+        
+        // Empty socket - no stone inserted
+        if (elemStr == "None" || elemStr == "Empty" || string.IsNullOrEmpty(elemStr))
+        {
+            return null;
+        }
+        
+        if (!Enum.TryParse<ElementType>(elemStr, out var type)) 
+        {
+            return null; // Unknown element type
+        }
 
         int mag = 1;
         if (p.TryGetValue("grade", out var gradeVal))
