@@ -331,14 +331,8 @@ func _setup_ui() -> void:
 	properties_panel = props_scene.instantiate()
 	ui_layer.add_child(properties_panel)
 	
-	# Configure Anchors (Top Right)
-	properties_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT)
-	properties_panel.grow_horizontal = Control.GROW_DIRECTION_BEGIN # Grow to the left
-	properties_panel.position = Vector2.ZERO # Reset position to let anchors take over?
-	# Actually, set_anchors_preset sets offsets too usually. 
-	# Let's ensure it has a margin.
-	properties_panel.offset_top = 50
-	properties_panel.offset_right = -20
+	# Configure Anchors (None, we manual pos)
+	# properties_panel.set_anchors_preset(Control.PRESET_TOP_RIGHT) # REMOVED
 	properties_panel.delete_requested.connect(_on_delete_requested)
 	properties_panel.visible = false # Hide by default
 	
@@ -379,10 +373,23 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 		var rune = entry["rune"] as Rune
 		print("Selected Entity: %s" % rune.display_name)
 		
-		selected_entity_pos = grid_pos
-		selected_trace_idx = -1
-		properties_panel.setup(rune)
+		# Calculate proper Boundaries (List of Rects)
+		var boundary_rects: Array[Rect2] = []
+		
+		var cells = rune.get_occupied_cells()
+		var cell_size = grid_system.cell_size.x # Assuming square
+		
+		for offset in cells:
+			# Cell visual bounds: offset * size - half_size to offset * size + half_size
+			var c_center = Vector2(offset) * cell_size
+			var c_min = c_center - Vector2(cell_size / 2, cell_size / 2)
+			var rect = Rect2(c_min, Vector2(cell_size, cell_size))
+			boundary_rects.append(rect)
+			
+		var world_pos = grid_system.grid_to_world(grid_pos)
+		properties_panel.setup(rune, world_pos, camera, boundary_rects)
 		return
+
 
 	# 2. Check Traces
 	# We check the distance from the mouse position to any trace segment
@@ -403,7 +410,9 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 				print("Selected Trace (Index %d)" % i)
 				selected_trace_idx = i
 				selected_entity_pos = Vector2i(-1, -1)
-				properties_panel.setup(t["data"])
+				# For trace, simple box around the point
+				var t_box = Rect2(-10, -10, 20, 20)
+				properties_panel.setup(t["data"], closest, camera, [t_box])
 				return
 
 	# 3. Nothing selected
