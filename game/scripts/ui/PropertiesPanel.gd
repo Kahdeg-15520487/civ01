@@ -11,20 +11,37 @@ signal delete_requested
 var target_world_pos: Vector2
 var target_boundaries: Array[Rect2] = [] # List of AABBs relative to target_world_pos (unzoomed)
 var camera_ref: Camera2D
+var current_params: Dictionary = {}
+var on_param_change: Callable
 
 var is_dragging: bool = false
 var drag_offset: Vector2
 
-# Setup now takes a list of boundaries
-func setup(entity: Variant, world_pos: Vector2, camera: Camera2D, boundaries: Array[Rect2] = [Rect2(-20, -20, 40, 40)]) -> void:
+@onready var container = $VBoxContainer
+
+# Setup now takes params and callback
+func setup(entity: Variant, world_pos: Vector2, camera: Camera2D, boundaries: Array[Rect2] = [Rect2(-20, -20, 40, 40)], params: Dictionary = {}, callback: Callable = Callable()) -> void:
 	target_world_pos = world_pos
 	target_boundaries = boundaries
 	camera_ref = camera
+	current_params = params
+	on_param_change = callback
+	
+	# Clear previous dynamic UI (anything after DescLabel)
+	# Assuming children order: Name, Type, Desc, Delete... 
+	# Actually, easier to have a dedicated container.
+	# For now, let's remove children named "ConfigContainer" if any
+	if container.has_node("ConfigContainer"):
+		container.get_node("ConfigContainer").queue_free()
 	
 	if entity is Rune:
 		name_label.text = entity.display_name
 		type_label.text = "Type: %s" % Rune.RuneType.keys()[entity.type]
 		desc_label.text = entity.description
+		
+		# Create Config UI if needed
+		_build_config_ui(entity)
+		
 	elif entity is QiTrace:
 		name_label.text = "Qi Trace"
 		type_label.text = "Width: %s" % entity.width
@@ -152,6 +169,115 @@ func _draw() -> void:
 		elif not found_intersection:
 			 # Fallback if no intersection (e.g. inside all boxes or logic error): draw to center
 			draw_line(start_point, target_visual_center, Color.WHITE, 2.0) # Debug fallback
+
+
+func _build_config_ui(rune: Rune) -> void:
+	var config_box = VBoxContainer.new()
+	config_box.name = "ConfigContainer"
+	container.add_child(config_box)
+	container.move_child(config_box, 3) # After Desc
+	
+	if rune.id == "source_socket":
+		_add_single_stone_selector(config_box)
+	elif rune.id == "source_array":
+		_add_multi_stone_selector(config_box, 5)
+
+func _add_single_stone_selector(parent: Node) -> void:
+	var lbl = Label.new()
+	lbl.text = "Insert Spirit Stone:"
+	parent.add_child(lbl)
+	
+	var opt = _create_element_dropdown()
+	# Load current
+	if current_params.has("stone_type"):
+		_select_element_in_dropdown(opt, current_params["stone_type"])
+	
+	opt.item_selected.connect(func(idx):
+		var val = _get_element_from_dropdown(idx)
+		if on_param_change.is_valid():
+			on_param_change.call("stone_type", val)
+	)
+	parent.add_child(opt)
+
+func _add_multi_stone_selector(parent: Node, count: int) -> void:
+	var lbl = Label.new()
+	lbl.text = "Socket Array (%d Slots):" % count
+	parent.add_child(lbl)
+	
+	# Ensure params has array
+	if not current_params.has("element_slots") or not current_params["element_slots"] is Array:
+		# Initialize with explicit sizing if needed, but array is flexible
+		var defaults = []
+		defaults.resize(count)
+		defaults.fill("None")
+		if on_param_change.is_valid(): # Init immediately? Or wait for input.
+			# Let's not auto-init to save bandwidth, treat missing as None
+			pass
+			
+	var current_slots = current_params.get("element_slots", [])
+	if current_slots.size() < count:
+		current_slots.resize(count)
+		current_slots.fill("None") # Logic hole: fill only new
+	
+	for i in range(count):
+		var h_box = HBoxContainer.new()
+		parent.add_child(h_box)
+		
+		var s_lbl = Label.new()
+		s_lbl.text = "#%d" % (i + 1)
+		h_box.add_child(s_lbl)
+		
+		var opt = _create_element_dropdown()
+		# Get value safely
+		var val = "None"
+		if i < current_slots.size(): val = current_slots[i]
+		_select_element_in_dropdown(opt, val)
+		
+		opt.item_selected.connect(func(idx):
+			var new_val = _get_element_from_dropdown(idx)
+			# We need to copy the array, modify, and set it back
+			var slots = current_params.get("element_slots", []).duplicate()
+			if slots.size() < count:
+				slots.resize(count)
+				# Fill defaults if resizing
+				for j in range(slots.size()):
+					if slots[j] == null: slots[j] = "None"
+			
+			slots[i] = new_val
+			
+			if on_param_change.is_valid():
+				on_param_change.call("element_slots", slots)
+		)
+		h_box.add_child(opt)
+
+func _create_element_dropdown() -> OptionButton:
+	var opt = OptionButton.new()
+	opt.add_item("Empty", 0)
+	opt.set_item_disabled(0, true) # "Select Element" or "Empty"? Let's allow removing stones.
+	# Actually, usually 0 is prompt. Let's make index 0 "None"/Remove.
+	opt.set_item_text(0, "Empty")
+	opt.set_item_disabled(0, false)
+	
+	opt.add_item("Fire", 1)
+	opt.add_item("Water", 2)
+	opt.add_item("Wood", 3)
+	opt.add_item("Earth", 4)
+	opt.add_item("Metal", 5)
+	return opt
+
+func _select_element_in_dropdown(opt: OptionButton, element: String) -> void:
+	var types = ["None", "Fire", "Water", "Wood", "Earth", "Metal"]
+	# Map "Empty" to "None"
+	if element == "Empty": element = "None"
+	var idx = types.find(element)
+	if idx != -1: opt.selected = idx
+	else: opt.selected = 0
+
+func _get_element_from_dropdown(idx: int) -> String:
+	var elements = ["None", "Fire", "Water", "Wood", "Earth", "Metal"]
+	if idx >= 0 and idx < elements.size():
+		return elements[idx]
+	return "None"
 
 
 func _on_delete_button_pressed() -> void:

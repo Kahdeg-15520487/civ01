@@ -12,6 +12,7 @@ simulation_classes = "Civ.Emulator.CombinerNode"
 inputs = [Vector2i(-2, -1), Vector2i(-2, 1)]
 outputs = [Vector2i(1, 0)]
 size_in_cells = Vector2i(4, 4)
+shape_pattern = [Vector2i(-2, -1), Vector2i(-1, -1), Vector2i(-1, 0), Vector2i(0, 0), Vector2i(1, 0), Vector2i(-1, 1), Vector2i(-2, 1)]
 qi_cost = 1
 bandwidth_in = 10
 bandwidth_out = 20

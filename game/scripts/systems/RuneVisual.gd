@@ -101,14 +101,22 @@ func _draw() -> void:
 		
 		# Draw Cells
 		var cells = rune_data.get_occupied_cells()
+		var sockets = rune_data.socket_pattern
+		
 		for offset in cells:
 			var cell_pos = Vector2(offset) * cell_size
 			var rect = Rect2(cell_pos - Vector2(cell_size / 2, cell_size / 2), Vector2(cell_size, cell_size))
 			
-			draw_rect(rect, Color(0.2, 0.4, 0.8), true) # Blueish Body
-			draw_rect(rect, Color.WHITE, false, 1.0) # Border
+			if sockets.has(offset):
+				# Draw "Hollow" Socket style
+				draw_rect(rect, Color(0.1, 0.1, 0.2), true) # Dark background (Hole)
+				draw_rect(rect, Color(0.4, 0.6, 1.0), false, 2.0) # Light Border
+			else:
+				# Draw "Solid" Body style
+				draw_rect(rect, Color(0.2, 0.4, 0.8), true) # Blueish Body
+				draw_rect(rect, Color.WHITE, false, 1.0) # Border
 			
-		# Draw Ports
+	# Draw Ports
 		if rune_data.io_definition:
 			for port_name in rune_data.io_definition:
 				var grid_rel_pos = rune_data.io_definition[port_name]
@@ -120,3 +128,30 @@ func _draw() -> void:
 				
 				draw_circle(port_pixel_pos, 4.0, color)
 				# Text handled by Labels now
+		
+		# Draw Slotted Stone (if any)
+		if current_params.has("stone_type"):
+			var type = current_params["stone_type"]
+			var color = _get_element_color(type)
+			
+			# Target position: (0,0) relative to center is usually the explicit "Hole" for Array/Socket
+			# For Socket (2x2 U-shape), (0,0) is also the empty spot in our def.
+			var stone_pos = Vector2(0, 0)
+			
+			draw_circle(stone_pos, cell_size * 0.3, color)
+			draw_circle(stone_pos, cell_size * 0.2, Color.WHITE.lerp(color, 0.5)) # Shine
+
+var current_params: Dictionary = {}
+
+func update_state(params: Dictionary) -> void:
+	current_params = params
+	queue_redraw()
+
+func _get_element_color(element: String) -> Color:
+	match element:
+		"Fire": return Color(1, 0.2, 0.2)
+		"Water": return Color(0.2, 0.2, 1)
+		"Wood": return Color(0.2, 0.8, 0.2)
+		"Earth": return Color(0.8, 0.7, 0.2)
+		"Metal": return Color(0.9, 0.9, 0.9)
+		_: return Color.GRAY

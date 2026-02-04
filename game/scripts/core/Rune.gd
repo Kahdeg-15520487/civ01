@@ -27,7 +27,11 @@ enum RuneType {
 ## Custom Shape Definition.
 ## If empty, uses size_in_cells to create a rectangle.
 ## If not empty, defines the specific cells this rune occupies relative to the pivot (0,0).
+## If not empty, defines the specific cells this rune occupies relative to the pivot (0,0).
 @export var shape_pattern: Array[Vector2i] = []
+
+## Defines which cells should visually appear as "Sockets" (Hollow frames).
+@export var socket_pattern: Array[Vector2i] = []
 
 ## Returns the list of occupied cells relative to the pivot (0,0).
 func get_occupied_cells() -> Array[Vector2i]:

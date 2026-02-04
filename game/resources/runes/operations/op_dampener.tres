@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Rune" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/Rune.gd" id="1_rune"]
+
+[resource]
+script = ExtResource("1_rune")
+id = "op_dampener"
+display_name = "Dampener"
+description = "Uses a Suppressor element to reduce the Target element's magnitude."
+type = 1
+simulation_classes = "Civ.Emulator.DampenerNode"
+inputs = [Vector2i(-1, 0), Vector2i(-1, 1)]
+outputs = [Vector2i(1, 0)]
+size_in_cells = Vector2i(3, 2)
+qi_cost = 1
+bandwidth_in = 10
+bandwidth_out = 10
+io_definition = {
+"target": Vector2i(-1, 0),
+"suppressor": Vector2i(-1, 1),
+"out": Vector2i(1, 0)
+}
+shape_pattern = [Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, 0)]

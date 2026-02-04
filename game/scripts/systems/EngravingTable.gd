@@ -92,6 +92,15 @@ const ZOOM_SPEED: float = 0.1
 func _unhandled_input(event: InputEvent) -> void:
 	# Camera Controls
 	if event is InputEventMouseButton:
+		# Guard: Don't zoom/pan if over UI
+		var mouse_pos = get_global_mouse_position()
+		# Check Palette visibility and rect
+		if rune_palette_ui.visible and rune_palette_ui.get_global_rect().has_point(get_viewport().get_mouse_position()):
+			return
+		# Check Properties Panel visibility and rect
+		if properties_panel.visible and properties_panel.get_global_rect().has_point(get_viewport().get_mouse_position()):
+			return
+			
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
 			_adjust_zoom(1.0 + ZOOM_SPEED)
 			return
@@ -221,6 +230,56 @@ func is_area_clear(center_grid: Vector2i, rune: Rune) -> bool:
 
 ## Called when user drags a rune onto the board
 func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
+	# 1. SPECIAL LOGIC: Handle "Item" placement (Stones)
+	if rune_resource.id.begins_with("item_stone_"):
+		if current_board_state.has(grid_position):
+			var original_click_pos = grid_position
+			var entry = current_board_state[grid_position]
+			# Entry is now shared, no need to lookup main_pos
+			
+			var target_rune = entry.get("rune")
+			if target_rune and (target_rune.id == "source_socket" or target_rune.id == "source_array"):
+				var stone_type = rune_resource.display_name.replace(" Stone", "") # Hacky extraction or use ID mapping
+				if rune_resource.id == "item_stone_fire": stone_type = "Fire"
+				elif rune_resource.id == "item_stone_water": stone_type = "Water"
+				elif rune_resource.id == "item_stone_wood": stone_type = "Wood"
+				elif rune_resource.id == "item_stone_earth": stone_type = "Earth"
+				elif rune_resource.id == "item_stone_metal": stone_type = "Metal"
+				
+				var params = entry.get("params", {})
+				
+				if target_rune.id == "source_socket":
+					params["stone_type"] = stone_type
+					print("Inserted %s into Socket" % stone_type)
+				
+				elif target_rune.id == "source_array":
+					# Determine slot based on click vs main_pos?
+					# Array is 3x3. main_pos is Center? Or Top-Left?
+					# Rune.gd defaults: shape_pattern is relative to pivot. 
+					# Visual uses pivot. 
+					# EngravingTable uses grid_position as the "Anchor".
+					# By default Rune.gd without override uses top-left logic?
+					# Let's assume grid_position IS the anchor.
+					# For Array, shape_pattern has (-1,-1)... meaning grid_position is the center (0,0).
+					# Wait, if shape uses negatives, then grid_position is the center.
+					# We need to find which offset the user specifically clicked.
+					# But `grid_position` passed here is the clicked cell?
+					# NO. `place_rune` called with `grid_pos` from `_handle_click`.
+					# Re-fetch the actual clicked cell from mouse? 
+					# Or if we normalized to main_pos, we lost the offset.
+					# We need the original clicked pos.
+					pass
+				
+				# Commit params
+				entry["params"] = params
+				if entry.has("visual") and is_instance_valid(entry["visual"]):
+					entry["visual"].update_state(params)
+				
+				return
+		
+		print("Stone must be placed in a Socket or Array!")
+		return
+
 	if not is_area_clear(grid_position, rune_resource):
 		print("Area blocked!")
 		return
@@ -234,13 +293,18 @@ func place_rune(rune_resource: Rune, grid_position: Vector2i) -> void:
 	
 	# Mark all cells as occupied
 	var cells = rune_resource.get_occupied_cells()
+	
+	# Create a shared entry object for this rune instance
+	var shared_entry = {
+		"rune": rune_resource,
+		"visual": visual,
+		"params": {}, # Shared instance parameters
+		"main_pos": grid_position # Reference to anchor (useful for calculations)
+	}
+	
 	for offset in cells:
 		var occupied_pos = grid_position + offset
-		current_board_state[occupied_pos] = {
-			"rune": rune_resource,
-			"visual": visual,
-			"main_pos": grid_position # Reference to center
-		}
+		current_board_state[occupied_pos] = shared_entry
 
 func _draw() -> void:
 	if grid_system:
@@ -364,11 +428,9 @@ var selected_trace_idx: int = -1
 func _select_entity_at(grid_pos: Vector2i) -> void:
 	# 1. Check Runes
 	if current_board_state.has(grid_pos):
-		# Handle multi-cell runes: find the main entry
+		# With shared_entry refactor, any occupied cell points to the full data.
 		var entry = current_board_state[grid_pos]
-		if entry.has("main_pos"):
-			grid_pos = entry["main_pos"]
-			entry = current_board_state[grid_pos]
+		# No need to look up main_pos recursively anymore.
 			
 		var rune = entry["rune"] as Rune
 		print("Selected Entity: %s" % rune.display_name)
@@ -386,8 +448,18 @@ func _select_entity_at(grid_pos: Vector2i) -> void:
 			var rect = Rect2(c_min, Vector2(cell_size, cell_size))
 			boundary_rects.append(rect)
 			
+		var params = entry["params"]
+		
+		# Define callback for param updates
+		var on_param_change = func(key, value):
+			print("Param changed: %s = %s" % [key, value])
+			entry["params"][key] = value
+			# Update Visual
+			if entry.has("visual") and is_instance_valid(entry["visual"]):
+				entry["visual"].update_state(entry["params"])
+			
 		var world_pos = grid_system.grid_to_world(grid_pos)
-		properties_panel.setup(rune, world_pos, camera, boundary_rects)
+		properties_panel.setup(rune, world_pos, camera, boundary_rects, params, on_param_change)
 		return
 
 

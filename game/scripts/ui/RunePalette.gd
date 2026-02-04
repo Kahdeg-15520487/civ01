@@ -3,41 +3,85 @@ extends PanelContainer
 
 signal rune_selected(rune: Rune)
 
-@onready var container = $MarginContainer/VBoxContainer
+@onready var container = null
 
 # Categorized Rune List
 var rune_categories: Dictionary = {
 	"Sources": [
-		preload("res://resources/runes/sources/source_fire.tres")
+		preload("res://resources/runes/sources/source_socket.tres"),
+		preload("res://resources/runes/sources/source_array.tres")
 	],
 	"Operations": [
 		preload("res://resources/runes/operations/op_amplifier.tres"),
 		preload("res://resources/runes/operations/op_combiner.tres"),
 		preload("res://resources/runes/operations/op_splitter.tres"),
 		preload("res://resources/runes/operations/op_attenuator.tres"),
+		preload("res://resources/runes/operations/op_transmuter.tres"),
+		preload("res://resources/runes/operations/op_dampener.tres"),
 		preload("res://resources/runes/tests/test_l_shape.tres")
 	],
 	"Control": [
-		preload("res://resources/runes/control/control_threshold.tres")
+		preload("res://resources/runes/control/control_threshold.tres"),
+		preload("res://resources/runes/control/control_yinyang.tres"),
+		preload("res://resources/runes/control/control_filter.tres")
 	],
 	"Containers": [
-		preload("res://resources/runes/containers/container_vessel.tres")
+		preload("res://resources/runes/containers/container_vessel.tres"),
+		preload("res://resources/runes/containers/container_pool.tres")
+	],
+	"Stones": [
+		preload("res://resources/runes/items/item_stone_fire.tres"),
+		preload("res://resources/runes/items/item_stone_water.tres"),
+		preload("res://resources/runes/items/item_stone_wood.tres"),
+		preload("res://resources/runes/items/item_stone_earth.tres"),
+		preload("res://resources/runes/items/item_stone_metal.tres")
 	],
 	"Sinks": [
 		preload("res://resources/runes/sinks/sink_emitter.tres"),
-		preload("res://resources/runes/sinks/sink_void.tres")
+		preload("res://resources/runes/sinks/sink_void.tres"),
+		preload("res://resources/runes/sinks/sink_heatsink.tres"),
+		preload("res://resources/runes/sinks/sink_grounding.tres")
 	]
 }
 
 func _ready() -> void:
+	# Debugging node path issue and finding container manually
+	var margin = get_node_or_null("MarginContainer")
+	if not margin:
+		push_error("RunePalette: MarginContainer not found!")
+		print_tree_pretty()
+		return
+		
+	var scroll = margin.get_node_or_null("ScrollContainer")
+	if not scroll:
+		push_error("RunePalette: ScrollContainer not found under MarginContainer!")
+		margin.print_tree_pretty()
+		# Fallback for old structure?
+		container = margin.get_node_or_null("VBoxContainer")
+	else:
+		container = scroll.get_node_or_null("VBoxContainer")
+		
+	if not container:
+		push_error("RunePalette: VBoxContainer not found!")
+		print_tree_pretty()
+		return
+
 	_populate_palette()
 
 func _populate_palette() -> void:
-	# Clear existing (if any)
+	print("RunePalette: Populating...")
+	if not container:
+		push_error("RunePalette: Container is null! Cannot populate.")
+		return
+		
+	# Clear existing
 	for child in container.get_children():
 		child.queue_free()
 		
+	print("RunePalette: Categories found: ", rune_categories.keys())
+		
 	for category in rune_categories:
+		print("Adding category: ", category)
 		# Header
 		var header = Label.new()
 		header.text = category
