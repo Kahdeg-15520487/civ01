@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="Rune" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/Rune.gd" id="1_rune"]
+
+[resource]
+script = ExtResource("1_rune")
+id = "sink_backlash"
+display_name = "Backlash Node"
+description = "Excess Qi reflects back to the user. Causes self-damage but prevents external harm."
+type = 3
+simulation_classes = "Civ.Emulator.BacklashNode"
+inputs = [Vector2i(-2, 0)]
+outputs = []
+size_in_cells = Vector2i(4, 4)
+qi_cost = 0
+bandwidth_in = 30
+bandwidth_out = 0
+io_definition = {
+"in": Vector2i(-2, 0)
+}

@@ -8,6 +8,8 @@ public class CultivatorLink : RuneNode
     private readonly Port _out;
     public QiValue CurrentInput { get; set; }
 
+    public CultivatorLink(string id) : this(id, QiValue.Empty) { }
+    
     public CultivatorLink(string id, QiValue initialInput) : base(id)
     {
         _out = AddOutput("out");

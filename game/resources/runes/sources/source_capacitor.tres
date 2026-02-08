@@ -1,0 +1,23 @@
+[gd_resource type="Resource" script_class="Rune" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/core/Rune.gd" id="1_rune"]
+
+[resource]
+script = ExtResource("1_rune")
+id = "source_capacitor"
+display_name = "Qi Capacitor"
+description = "Accumulates Qi over time. Releases stored energy when full or triggered."
+type = 2
+simulation_classes = "Civ.Emulator.QiCapacitor"
+inputs = [Vector2i(-2, 0)]
+outputs = [Vector2i(2, 0), Vector2i(1, 1)]
+size_in_cells = Vector2i(5, 3)
+qi_cost = 2
+bandwidth_in = 20
+bandwidth_out = 50
+io_definition = {
+"in": Vector2i(-2, 0),
+"out": Vector2i(2, 0),
+"full": Vector2i(1, 1)
+}
+shape_pattern = Array[Vector2i]([Vector2i(-2, 0), Vector2i(-1, -1), Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, -1), Vector2i(0, 0), Vector2i(0, 1), Vector2i(1, -1), Vector2i(1, 0), Vector2i(1, 1), Vector2i(2, 0)])

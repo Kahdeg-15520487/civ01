@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\RuneEngraver.PoC\RuneEngraver.PoC.csproj" />
+    <ProjectReference Include="..\RuneEngraver.Core\RuneEngraver.Core.csproj" />
     <ProjectReference Include="..\RuneEngraver.Compiler\RuneEngraver.Compiler.csproj" />
   </ItemGroup>
 

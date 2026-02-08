@@ -1,7 +1,7 @@
 using System.Linq;
 using Xunit;
-using RuneEngraver.Core.Core.Elements;
-using RuneEngraver.Core.Core.Nodes;
+using RuneEngraver.Core.Elements;
+using RuneEngraver.Core.Nodes;
 
 namespace RuneEngraver.Core.Tests.Nodes.Control;
 
