@@ -81,16 +81,60 @@ public class GraphLoader
     {
         return data.Type switch
         {
+            // Sources
             "SpiritStoneSocket" => CreateSpiritStoneSource(data),
-            "Amplifier" => new AmplifierNode(data.Id),
+            "SpiritStoneSource" => CreateSpiritStoneSource(data),
+            "StoneArray" => CreateSpiritStoneSource(data),
+            "CultivatorLink" => new CultivatorLink(data.Id),
+            "TunedResonator" => new TunedResonator(data.Id),
+            "AmplitudeRegulator" => new AmplitudeRegulator(data.Id),
+            "FormationInput" => CreateSpiritStoneSource(data),
+            
+            // Capacitors
             "QiCapacitor" => new QiCapacitor(data.Id, GetInt(data.Params, "capacity")),
+            "BurstTrigger" => new BurstTrigger(data.Id),
+            
+            // Operations
+            "Amplifier" => new AmplifierNode(data.Id),
             "Combiner" => new CombinerNode(data.Id),
             "Splitter" => new SplitterNode(data.Id),
-            "FormationInput" => CreateSpiritStoneSource(data), // Treat inputs as Sources
-            "FormationOutput" => new StableEmitter(data.Id), // Treat outputs as Sinks
-            "BurstTrigger" => new BurstTrigger(data.Id),
-            "Transmuter" => new TransmuterNode(data.Id), // Needs param fix later
-            "EffectEmitter" => new EffectEmitter(data.Id), 
+            "Attenuator" => new AttenuatorNode(data.Id, GetFloat(data.Params, "factor", 0.5f)),
+            "Transmuter" => new TransmuterNode(data.Id),
+            "Dampener" => new DampenerNode(data.Id),
+            
+            // Control
+            "YinYangGate" => new YinYangGate(data.Id),
+            "ThresholdGate" => new ThresholdGate(data.Id, GetInt(data.Params, "threshold", 5)),
+            "ElementFilter" => new ElementFilter(data.Id, GetElementType(data.Params, "targetElement", ElementType.Fire)),
+            
+            // Containers
+            "SpiritVessel" => new SpiritVessel(data.Id),
+            "ElementalPool" => new ElementalPool(data.Id),
+            "DualVessel" => new DualVessel(data.Id),
+            
+            // Sinks
+            "EffectEmitter" => new EffectEmitter(data.Id),
+            "VoidDrain" => new VoidDrain(data.Id),
+            "HeatSink" => new HeatSink(data.Id),
+            "GroundingRod" => new GroundingRod(data.Id),
+            "QiReceptacle" => new QiReceptacle(data.Id),
+            "UnstableVent" => new UnstableVent(data.Id),
+            "BacklashNode" => new BacklashNode(data.Id),
+            "CorruptionSeep" => new CorruptionSeep(data.Id),
+            
+            // Interface
+            "StableEmitter" => new StableEmitter(data.Id),
+            "OverrunEmitter" => new OverrunEmitter(data.Id),
+            "FizzleEmitter" => new FizzleEmitter(data.Id),
+            "SkyAntenna" => new SkyAntenna(data.Id),
+            "FormationOutput" => new StableEmitter(data.Id),
+            
+            // Modifiers
+            "StabilizerNode" => new StabilizerNode(data.Id),
+            "CoolingChamber" => new CoolingChamber(data.Id),
+            "HeatingChamber" => new HeatingChamber(data.Id),
+            "CatalystNode" => new CatalystNode(data.Id),
+            
             _ => throw new NotSupportedException($"Unknown node type: {data.Type}")
         };
     }
@@ -198,4 +242,24 @@ public class GraphLoader
         }
         return def;
     }
+
+    private float GetFloat(Dictionary<string, JsonElement> p, string key, float def = 0f)
+    {
+        if (p.TryGetValue(key, out var val))
+        {
+             if (val.ValueKind == JsonValueKind.Number) return val.GetSingle();
+             if (float.TryParse(val.ToString(), out float res)) return res;
+        }
+        return def;
+    }
+
+    private ElementType GetElementType(Dictionary<string, JsonElement> p, string key, ElementType def = ElementType.Fire)
+    {
+        if (p.TryGetValue(key, out var val))
+        {
+             if (Enum.TryParse<ElementType>(val.ToString(), out var result)) return result;
+        }
+        return def;
+    }
 }
+

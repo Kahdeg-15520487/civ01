@@ -9,7 +9,14 @@ signal rune_selected(rune: Rune)
 var rune_paths: Dictionary = {
 	"Sources": [
 		"res://resources/runes/sources/source_socket.tres",
-		"res://resources/runes/sources/source_array.tres"
+		"res://resources/runes/sources/source_array.tres",
+		"res://resources/runes/sources/source_cultivator_link.tres",
+		"res://resources/runes/sources/source_tuned_resonator.tres",
+		"res://resources/runes/sources/source_amplitude_regulator.tres"
+	],
+	"Capacitors": [
+		"res://resources/runes/sources/source_capacitor.tres",
+		"res://resources/runes/sources/source_burst_trigger.tres"
 	],
 	"Operations": [
 		"res://resources/runes/operations/op_amplifier.tres",
@@ -27,7 +34,8 @@ var rune_paths: Dictionary = {
 	],
 	"Containers": [
 		"res://resources/runes/containers/container_vessel.tres",
-		"res://resources/runes/containers/container_pool.tres"
+		"res://resources/runes/containers/container_pool.tres",
+		"res://resources/runes/containers/container_dual_vessel.tres"
 	],
 	"Stones": [
 		"res://resources/runes/items/item_stone_fire.tres",
@@ -40,7 +48,23 @@ var rune_paths: Dictionary = {
 		"res://resources/runes/sinks/sink_emitter.tres",
 		"res://resources/runes/sinks/sink_void.tres",
 		"res://resources/runes/sinks/sink_heatsink.tres",
-		"res://resources/runes/sinks/sink_grounding.tres"
+		"res://resources/runes/sinks/sink_grounding.tres",
+		"res://resources/runes/sinks/sink_receptacle.tres",
+		"res://resources/runes/sinks/sink_unstable_vent.tres",
+		"res://resources/runes/sinks/sink_backlash.tres",
+		"res://resources/runes/sinks/sink_corruption_seep.tres"
+	],
+	"Interface": [
+		"res://resources/runes/interface/interface_stable_emitter.tres",
+		"res://resources/runes/interface/interface_overrun_emitter.tres",
+		"res://resources/runes/interface/interface_fizzle_emitter.tres",
+		"res://resources/runes/interface/interface_sky_antenna.tres"
+	],
+	"Modifiers": [
+		"res://resources/runes/modifiers/modifier_stabilizer.tres",
+		"res://resources/runes/modifiers/modifier_cooling_chamber.tres",
+		"res://resources/runes/modifiers/modifier_heating_chamber.tres",
+		"res://resources/runes/modifiers/modifier_catalyst.tres"
 	]
 }
 var rune_categories: Dictionary = {} # Will be populated with Resources

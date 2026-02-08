@@ -12,8 +12,16 @@ config_version=5
 
 config/name="RunicPuzzle"
 run/main_scene="res://scenes/ui/MainMenu.tscn"
-config/features=PackedStringArray("4.6", "Forward Plus")
+config/features=PackedStringArray("4.6", "C#", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=1920
+window/size/viewport_height=1080
+window/size/mode="maximized"
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [dotnet]
 
@@ -26,12 +34,3 @@ project/assembly_name="RunicPuzzle"
 [rendering]
 
 rendering_device/driver.windows="d3d12"
-
-[display]
-
-window/size/viewport_width=1920
-window/size/viewport_height=1080
-window/size/mode="maximized"
-window/size/resizable=true
-window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"

@@ -1,5 +1,5 @@
 using Xunit;
-using RuneEngraver.Core.Core.Elements;
+using RuneEngraver.Core.Elements;
 
 namespace RuneEngraver.Core.Tests.Core;
 
