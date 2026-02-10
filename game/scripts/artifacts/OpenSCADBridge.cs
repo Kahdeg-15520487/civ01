@@ -167,10 +167,11 @@ public partial class OpenSCADBridge : Node
         int polyBudget = GetPolygonBudget(artifactTier);
 
         // Build OpenSCAD command
+        // Note: Modern OpenSCAD requires explicit export format for OBJ files
         var processInfo = new ProcessStartInfo
         {
             FileName = _openscadPath,
-            Arguments = $"-o \"{objPath}\" \"{scriptPath}\"",
+            Arguments = $"-o \"{objPath}\" --export-format obj \"{scriptPath}\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
