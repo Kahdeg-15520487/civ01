@@ -150,7 +150,7 @@ public partial class OpenSCADBridge : Node
         }
 
         string scriptPath = Path.Combine(tempDir, "artifact.scad");
-        string meshPath = Path.Combine(tempDir, "artifact.stl");
+        string meshPath = Path.Combine(tempDir, "artifact.obj");
 
         // Write script
         try
@@ -250,17 +250,17 @@ public partial class OpenSCADBridge : Node
     }
 
     /// <summary>
-    /// Count triangle faces in an STL file
+    /// Count polygon faces in an OBJ file
     /// </summary>
-    private int CountPolygons(string stlPath)
+    private int CountPolygons(string objPath)
     {
         try
         {
             int faceCount = 0;
-            foreach (var line in File.ReadLines(stlPath))
+            foreach (var line in File.ReadLines(objPath))
             {
-                // STL format uses "facet" for each triangle
-                if (line.TrimStart().StartsWith("facet"))
+                // OBJ format uses "f" for faces
+                if (line.TrimStart().StartsWith("f"))
                 {
                     faceCount++;
                 }
