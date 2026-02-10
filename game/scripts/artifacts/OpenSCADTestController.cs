@@ -33,6 +33,8 @@ cylinder(h=10, r=5, center=false);
         // Create UI
         _setup_ui();
         _setup_3d_scene();
+
+        // Initialize bridge early
         _initialize_openscad_bridge();
 
         GD.Print($"OpenSCAD bridge after init: {_openscadBridge != null}");
@@ -231,21 +233,32 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
             GD.Print($"  Polygons: {compileResult.PolygonCount}");
 
             // Step 2: Parse OBJ to Godot mesh
+            GD.Print("Starting OBJ parse...");
             _update_status($"Parsing OBJ ({compileResult.PolygonCount} polygons)...", false);
 
             var mesh = await OBJParser.ParseAsync(compileResult.MeshPath);
+            GD.Print($"OBJ parse complete, mesh is null: {mesh == null}");
 
             if (mesh == null)
             {
+                GD.PrintErr("Mesh is null after parsing!");
                 _update_status("Failed to parse OBJ file!", true);
                 _compileButton.Disabled = false;
                 return;
             }
 
-            GD.Print("OBJ parsing successful");
+            GD.Print("OBJ parsing successful - setting mesh to display");
 
             // Step 3: Display mesh in 3D viewport
+            if (_meshDisplay == null)
+            {
+                GD.PrintErr("_meshDisplay is null! Re-creating...");
+                _meshDisplay = new MeshInstance3D();
+                AddChild(_meshDisplay);
+            }
+
             _meshDisplay.Mesh = mesh;
+            GD.Print("Mesh assigned to MeshInstance3D");
 
             // Center the mesh
             _center_mesh();
@@ -267,22 +280,36 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
     private void _center_mesh()
     {
         if (_meshDisplay.Mesh == null)
+        {
+            GD.PrintErr("_center_mesh: _meshDisplay.Mesh is null");
             return;
+        }
 
         var mesh = _meshDisplay.Mesh as ArrayMesh;
         if (mesh == null)
+        {
+            GD.PrintErr("_center_mesh: mesh is null or not ArrayMesh");
             return;
+        }
 
-        // Get mesh bounds
-        var aabb = mesh.GetAabb();
+        try
+        {
+            // Get mesh bounds
+            var aabb = mesh.GetAabb();
+            GD.Print($"Mesh AABB: position={aabb.Position}, size={aabb.Size}");
 
-        // Calculate center offset
-        var center = aabb.Position + aabb.Size / 2;
+            // Calculate center offset
+            var center = aabb.Position + aabb.Size / 2;
 
-        // Position mesh to center it at origin
-        _meshDisplay.Position = -center;
+            // Position mesh to center it at origin
+            _meshDisplay.Position = -center;
 
-        GD.Print($"Mesh centered. Bounds: {aabb.Size}");
+            GD.Print($"Mesh centered. New position: {_meshDisplay.Position}");
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"Error centering mesh: {ex.Message}\n{ex.StackTrace}");
+        }
     }
 
     private void _update_status(string message, bool isError)
