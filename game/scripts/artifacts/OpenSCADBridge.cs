@@ -21,11 +21,25 @@ public partial class OpenSCADBridge : Node
     private static OpenSCADBridge _instance;
     public static OpenSCADBridge Instance => _instance;
 
+    // Track if paths have been initialized
+    private bool _pathsInitialized = false;
+
     public override void _Ready()
     {
         _instance = this;
         InitializePaths();
         GD.Print("OpenSCADBridge initialized");
+    }
+
+    /// <summary>
+    /// Ensure paths are initialized (for use when created dynamically)
+    /// </summary>
+    private void EnsureInitialized()
+    {
+        if (!_pathsInitialized)
+        {
+            InitializePaths();
+        }
     }
 
     private void InitializePaths()
@@ -59,6 +73,8 @@ public partial class OpenSCADBridge : Node
             GD.PrintErr($"OpenSCAD binary not found at: {_openscadPath}");
             GD.PrintErr("OpenSCAD features will not work. Please bundle OpenSCAD with the game.");
         }
+
+        _pathsInitialized = true;
     }
 
     /// <summary>
@@ -84,15 +100,18 @@ public partial class OpenSCADBridge : Node
         string scadScript,
         string artifactTier = "Mortal")
     {
+        // Ensure paths are initialized (might not be if created dynamically)
+        EnsureInitialized();
+
         var result = new CompileResult
         {
             Success = false
         };
 
         // Validate OpenSCAD exists
-        if (!File.Exists(_openscadPath))
+        if (string.IsNullOrEmpty(_openscadPath) || !File.Exists(_openscadPath))
         {
-            result.ErrorLog = "OpenSCAD binary not found. Please ensure OpenSCAD is bundled with the game.";
+            result.ErrorLog = $"OpenSCAD binary not found. Path: {_openscadPath ?? "null"}. Please ensure OpenSCAD is bundled with the game at: tools/openscad/";
             return result;
         }
 
