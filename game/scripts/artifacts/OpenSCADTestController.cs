@@ -17,6 +17,15 @@ public partial class OpenSCADTestController : Node3D
     private MeshInstance3D _meshDisplay;
     private Camera3D _camera;
 
+    // Camera orbit state
+    private Vector3 _cameraOffset = new Vector3(10, 10, 10);
+    private float _orbitRadius = 17.32f; // Distance from origin
+    private float _orbitAngleHorizontal = 0.785f; // 45 degrees
+    private float _orbitAngleVertical = 0.615f; // ~35 degrees
+    private bool _isDragging = false;
+    private bool _isPanning = false;
+    private Vector2 _lastMousePos;
+
     // OpenSCAD bridge
     private OpenSCADBridge _openscadBridge;
 
@@ -115,8 +124,7 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
     {
         // Camera
         _camera = new Camera3D();
-        _camera.Position = new Vector3(10, 10, 10);
-        _camera.LookAt(Vector3.Zero);
+        UpdateCameraPosition();
         AddChild(_camera);
 
         // Make camera current
@@ -321,28 +329,96 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
         );
     }
 
-    public override void _Process(double delta)
+    public override void _Input(InputEvent @event)
     {
-        // Simple camera controls
-        var moveSpeed = 10.0f;
-        var rotSpeed = 0.5f;
-
-        // WASD movement
-        if (Input.IsActionPressed("ui_up")) // W
-            _camera.Position += _camera.Basis.Z * moveSpeed * (float)delta;
-        if (Input.IsActionPressed("ui_down")) // S
-            _camera.Position -= _camera.Basis.Z * moveSpeed * (float)delta;
-        if (Input.IsActionPressed("ui_left")) // A
-            _camera.Position -= _camera.Basis.X * moveSpeed * (float)delta;
-        if (Input.IsActionPressed("ui_right")) // D
-            _camera.Position += _camera.Basis.X * moveSpeed * (float)delta;
-
-        // Mouse orbit (right click + drag)
-        if (Input.IsMouseButtonPressed(MouseButton.Right))
+        // Mouse button press
+        if (@event is InputEventMouseButton mouseButton)
         {
-            var mouseMotion = Input.GetLastMouseScreenVelocity();
-            _camera.Position = _camera.Position.Rotated(Vector3.Up, -mouseMotion.X * rotSpeed * (float)delta);
-            _camera.LookAt(Vector3.Zero);
+            if (mouseButton.Pressed)
+            {
+                _lastMousePos = mouseButton.Position;
+
+                if (mouseButton.ButtonIndex == MouseButton.Left)
+                {
+                    _isDragging = true;
+                }
+                else if (mouseButton.ButtonIndex == MouseButton.Right)
+                {
+                    _isPanning = true;
+                }
+                else if (mouseButton.ButtonIndex == MouseButton.Middle)
+                {
+                    // Reset camera
+                    _orbitRadius = 17.32f;
+                    _orbitAngleHorizontal = 0.785f;
+                    _orbitAngleVertical = 0.615f;
+                    UpdateCameraPosition();
+                }
+            }
+            else
+            {
+                if (mouseButton.ButtonIndex == MouseButton.Left)
+                {
+                    _isDragging = false;
+                }
+                else if (mouseButton.ButtonIndex == MouseButton.Right)
+                {
+                    _isPanning = false;
+                }
+            }
         }
+
+        // Mouse motion
+        if (@event is InputEventMouseMotion mouseMotion)
+        {
+            var delta = mouseMotion.Position - _lastMousePos;
+            _lastMousePos = mouseMotion.Position;
+
+            // Orbit (left click drag)
+            if (_isDragging)
+            {
+                _orbitAngleHorizontal -= delta.X * 0.01f;
+                _orbitAngleVertical = Mathf.Clamp(
+                    _orbitAngleVertical + delta.Y * 0.01f,
+                    -Mathf.Pi / 2 + 0.1f,
+                    Mathf.Pi / 2 - 0.1f
+                );
+                UpdateCameraPosition();
+            }
+
+            // Pan (right click drag)
+            if (_isPanning)
+            {
+                var panSpeed = _orbitRadius * 0.002f;
+                var right = _camera.Basis.X;
+                var up = new Vector3(0, 1, 0);
+
+                _camera.Position -= right * delta.X * panSpeed;
+                _camera.Position += up * delta.Y * panSpeed;
+            }
+        }
+
+        // Mouse wheel for zoom
+        if (@event is InputEventMouseButton wheel && wheel.ButtonIndex == MouseButton.WheelUp)
+        {
+            _orbitRadius = Mathf.Max(2.0f, _orbitRadius * 0.9f);
+            UpdateCameraPosition();
+        }
+        if (@event is InputEventMouseButton wheelDown && wheelDown.ButtonIndex == MouseButton.WheelDown)
+        {
+            _orbitRadius = Mathf.Min(100.0f, _orbitRadius * 1.1f);
+            UpdateCameraPosition();
+        }
+    }
+
+    private void UpdateCameraPosition()
+    {
+        // Convert spherical coordinates to Cartesian
+        float x = _orbitRadius * Mathf.Cos(_orbitAngleVertical) * Mathf.Sin(_orbitAngleHorizontal);
+        float y = _orbitRadius * Mathf.Sin(_orbitAngleVertical);
+        float z = _orbitRadius * Mathf.Cos(_orbitAngleVertical) * Mathf.Cos(_orbitAngleHorizontal);
+
+        _camera.Position = new Vector3(x, y, z);
+        _camera.LookAt(Vector3.Zero);
     }
 }
