@@ -53,10 +53,20 @@ public partial class OpenSCADBridge : Node
             "artifact_cache"
         );
 
-        // Create cache directory if it doesn't exist
-        if (!DirAccess.DirExistsAbsolute(_cacheDir))
+        GD.Print($"Cache directory: {_cacheDir}");
+
+        // Create cache directory if it doesn't exist (use System.IO for reliability)
+        try
         {
-            DirAccess.MakeDirAbsolute(_cacheDir);
+            if (!Directory.Exists(_cacheDir))
+            {
+                Directory.CreateDirectory(_cacheDir);
+                GD.Print($"Created cache directory: {_cacheDir}");
+            }
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"Failed to create cache directory: {ex.Message}");
         }
 
         _openscadPath = Path.Combine(
@@ -65,7 +75,6 @@ public partial class OpenSCADBridge : Node
         );
 
         GD.Print($"OpenSCAD path: {_openscadPath}");
-        GD.Print($"Cache directory: {_cacheDir}");
 
         // Validate OpenSCAD exists
         if (!File.Exists(_openscadPath))
@@ -108,10 +117,23 @@ public partial class OpenSCADBridge : Node
             Success = false
         };
 
-        // Validate OpenSCAD exists
-        if (string.IsNullOrEmpty(_openscadPath) || !File.Exists(_openscadPath))
+        // Validate paths are initialized
+        if (string.IsNullOrEmpty(_openscadPath))
         {
-            result.ErrorLog = $"OpenSCAD binary not found. Path: {_openscadPath ?? "null"}. Please ensure OpenSCAD is bundled with the game at: tools/openscad/";
+            result.ErrorLog = "OpenSCAD path is null. InitializePaths() may have failed.";
+            return result;
+        }
+
+        if (string.IsNullOrEmpty(_cacheDir))
+        {
+            result.ErrorLog = "Cache directory is null. InitializePaths() may have failed.";
+            return result;
+        }
+
+        // Validate OpenSCAD exists
+        if (!File.Exists(_openscadPath))
+        {
+            result.ErrorLog = $"OpenSCAD binary not found at: {_openscadPath}. Please ensure OpenSCAD is bundled with the game at: tools/openscad/";
             return result;
         }
 

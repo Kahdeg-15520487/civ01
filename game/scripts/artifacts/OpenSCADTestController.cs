@@ -28,12 +28,14 @@ cylinder(h=10, r=5, center=false);
 
     public override void _Ready()
     {
-        GD.Print("OpenSCADTestController initialized");
+        GD.Print("OpenSCADTestController _Ready() called");
 
         // Create UI
         _setup_ui();
         _setup_3d_scene();
         _initialize_openscad_bridge();
+
+        GD.Print($"OpenSCAD bridge after init: {_openscadBridge != null}");
     }
 
     private void _setup_ui()
@@ -181,13 +183,23 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
 
     private void _initialize_openscad_bridge()
     {
+        GD.Print("_initialize_openscad_bridge() called");
         // Create OpenSCAD bridge
         _openscadBridge = new OpenSCADBridge();
+        GD.Print($"Created bridge, is null? {_openscadBridge == null}");
         AddChild(_openscadBridge);
+        GD.Print("Bridge added as child");
     }
 
     private async void _on_compile_pressed()
     {
+        // Ensure bridge is initialized
+        if (_openscadBridge == null)
+        {
+            GD.PrintErr("OpenSCAD bridge is null! Re-initializing...");
+            _initialize_openscad_bridge();
+        }
+
         string script = _scriptInput.Text;
 
         if (string.IsNullOrWhiteSpace(script))
@@ -203,6 +215,7 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
         try
         {
             GD.Print("Starting OpenSCAD compilation...");
+            GD.Print($"Bridge instance: {_openscadBridge != null}");
 
             // Step 1: Compile with OpenSCAD
             var compileResult = await _openscadBridge.CompileAsync(script, "Mortal");
@@ -241,7 +254,8 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
         }
         catch (Exception ex)
         {
-            GD.PrintErr($"Error during compilation: {ex.Message}");
+            GD.PrintErr($"Error during compilation: {ex.GetType().Name}: {ex.Message}");
+            GD.PrintErr($"Stack trace: {ex.StackTrace}");
             _update_status($"Error: {ex.Message}", true);
         }
         finally
