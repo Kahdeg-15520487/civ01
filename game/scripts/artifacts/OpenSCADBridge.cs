@@ -309,6 +309,49 @@ public partial class OpenSCADBridge : Node
         var hash = sha256.ComputeHash(bytes);
         return Convert.ToHexString(hash).ToLower();
     }
+
+    /// <summary>
+    /// Full compilation pipeline: Script → OpenSCAD → OBJ → Godot Mesh
+    /// </summary>
+    public async void CompileAndDisplay(string script, Node toolbar, Node modeler)
+    {
+        try
+        {
+            var result = await CompileAsync(script, "Mortal");
+
+            // Update toolbar via GDScript signal
+            toolbar.Call("set_compiling", false);
+
+            if (!result.Success)
+            {
+                toolbar.Call("set_result", false, result.ErrorLog);
+                modeler.Call("emit_signal", "compilation_finished", false, Variant.CreateFrom(false));
+                return;
+            }
+
+            // Parse OBJ
+            var mesh = await OBJParser.ParseAsync(result.MeshPath);
+
+            if (mesh == null)
+            {
+                toolbar.Call("set_result", false, "Failed to parse OBJ");
+                modeler.Call("emit_signal", "compilation_finished", false, Variant.CreateFrom(false));
+                return;
+            }
+
+            // Success
+            toolbar.Call("set_result", true, $"{result.PolygonCount} polygons");
+            modeler.Call("emit_signal", "compilation_finished", true, mesh);
+            modeler.Call("_display_compiled_mesh", mesh);
+        }
+        catch (Exception ex)
+        {
+            GD.PrintErr($"Compilation error: {ex.Message}");
+            toolbar.Call("set_compiling", false);
+            toolbar.Call("set_result", false, ex.Message);
+            modeler.Call("emit_signal", "compilation_finished", false, Variant.CreateFrom(false));
+        }
+    }
 }
 
 /// <summary>

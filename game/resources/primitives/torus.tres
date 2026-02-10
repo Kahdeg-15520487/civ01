@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ArtifactPrimitive" load_steps=2 format=3 uid="uid://primitives_torus"]
+
+[ext_resource type="Script" path="res://scripts/core/ArtifactPrimitive.gd" id="Primitive"]
+
+[resource]
+script = ExtResource("Primitive")
+id = "primitive_torus"
+display_name = "Torus"
+description = "A donut shape (torus). Use radius for the ring size and tube radius for thickness."
+type = 4
+csg_op = 0
+position = Vector3i(0, 0, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(1, 1, 1)
+size = Vector3(2, 2, 2)
+radius = 2.0
+height = 2.0
+tube_radius = 0.5
+parent_id = ""
+color = Color(0.6, 0.7, 0.85, 1)

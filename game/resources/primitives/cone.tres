@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="ArtifactPrimitive" load_steps=2 format=3 uid="uid://primitives_cone"]
+
+[ext_resource type="Script" path="res://scripts/core/ArtifactPrimitive.gd" id="Primitive"]
+
+[resource]
+script = ExtResource("Primitive")
+id = "primitive_cone"
+display_name = "Cone"
+description = "A cone with a circular base. Use radius for base size and height for tip height."
+type = 3
+csg_op = 0
+position = Vector3i(0, 0, 0)
+rotation = Vector3(0, 0, 0)
+scale = Vector3(1, 1, 1)
+size = Vector3(2, 2, 2)
+radius = 1.0
+height = 2.5
+tube_radius = 0.3
+parent_id = ""
+color = Color(0.7, 0.65, 0.85, 1)

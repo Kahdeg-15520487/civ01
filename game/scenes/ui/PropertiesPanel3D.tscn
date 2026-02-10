@@ -1,0 +1,39 @@
+[gd_scene load_steps=2 format=3 uid="uid://properties_panel_3d_scene"]
+
+[ext_resource type="Script" path="res://scripts/ui/PropertiesPanel3D.gd" id="1"]
+
+[node name="PropertiesPanel3D" type="PanelContainer"]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 10.0
+offset_top = 60.0
+offset_right = 210.0
+offset_bottom = 460.0
+script = ExtResource("1")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="NameLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_type_variation = &"HeaderMedium"
+text = "Primitive Name"
+
+[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+layout_mode = 2
+
+[node name="TypeLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Type: Cube | CSG: Union"
+
+[node name="DescLabel" type="RichTextLabel" parent="VBoxContainer"]
+layout_mode = 2
+text = "Description of the primitive goes here."
+fit_content = true
+
+[node name="DeleteButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Delete Primitive"

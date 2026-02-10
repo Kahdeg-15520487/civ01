@@ -1,0 +1,57 @@
+[gd_scene load_steps=2 format=3 uid="uid://modeler_toolbar_scene"]
+
+[ext_resource type="Script" path="res://scripts/ui/ModelerToolbar.gd" id="1"]
+
+[node name="ModelerToolbar" type="PanelContainer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 40.0
+grow_horizontal = 2
+script = ExtResource("1")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+layout_mode = 2
+theme_override_constants/separation = 15
+
+[node name="Tools" type="HBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="BtnSelect" type="Button" parent="HBoxContainer/Tools"]
+layout_mode = 2
+text = "Select"
+
+[node name="BtnPlace" type="Button" parent="HBoxContainer/Tools"]
+layout_mode = 2
+text = "Place"
+
+[node name="BtnRotate" type="Button" parent="HBoxContainer/Tools"]
+layout_mode = 2
+text = "Rotate"
+
+[node name="BtnScale" type="Button" parent="HBoxContainer/Tools"]
+layout_mode = 2
+text = "Scale"
+
+[node name="VSeparator" type="VSeparator" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="CompileContainer" type="HBoxContainer" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="BtnCompile" type="Button" parent="HBoxContainer/CompileContainer"]
+layout_mode = 2
+text = "Compile Artifact"
+
+[node name="VSeparator2" type="VSeparator" parent="HBoxContainer"]
+layout_mode = 2
+
+[node name="StatusLabel" type="Label" parent="HBoxContainer"]
+layout_mode = 2
+text = "Select Mode: Click to select primitives"
+autowrap_mode = 3
+
+[connection signal="pressed" from="HBoxContainer/Tools/BtnSelect" to="." method="_on_select_pressed"]
+[connection signal="pressed" from="HBoxContainer/Tools/BtnPlace" to="." method="_on_place_pressed"]
+[connection signal="pressed" from="HBoxContainer/Tools/BtnRotate" to="." method="_on_rotate_pressed"]
+[connection signal="pressed" from="HBoxContainer/Tools/BtnScale" to="." method="_on_scale_pressed"]
+[connection signal="pressed" from="HBoxContainer/CompileContainer/BtnCompile" to="." method="_on_compile_pressed"]
