@@ -30,10 +30,21 @@ public partial class OpenSCADTestController : Node3D
     // OpenSCAD bridge
     private OpenSCADBridge _openscadBridge;
 
-    // Default test script (simple cylinder)
+    // Default test script (complex CSG to demonstrate Manifold performance)
     private const string DefaultScript = @"
-// Simple cylinder test
-cylinder(h=10, r=5, center=false);
+// Complex CSG test - Manifold shines here!
+difference() {
+    union() {
+        cube([10, 10, 10], center=true);
+        translate([5, 0, 0]) sphere(r=4);
+        translate([-5, 0, 0]) sphere(r=4);
+    }
+    translate([0, 0, 0]) cylinder(h=15, r=2, center=true);
+    translate([3, 3, 0]) cylinder(h=15, r=1.5, center=true);
+    translate([-3, -3, 0]) cylinder(h=15, r=1.5, center=true);
+    translate([3, -3, 0]) cylinder(h=15, r=1.5, center=true);
+    translate([-3, 3, 0]) cylinder(h=15, r=1.5, center=true);
+}
 ";
 
     public override void _Ready()
