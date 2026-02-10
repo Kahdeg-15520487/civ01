@@ -47,8 +47,10 @@ layout_mode = 2
 
 [node name="StatusLabel" type="Label" parent="HBoxContainer"]
 layout_mode = 2
+size_flags_horizontal = 3
 text = "Select Mode: Click to select primitives"
-autowrap_mode = 3
+autowrap_mode = 0
+clip_text = true
 
 [connection signal="pressed" from="HBoxContainer/Tools/BtnSelect" to="." method="_on_select_pressed"]
 [connection signal="pressed" from="HBoxContainer/Tools/BtnPlace" to="." method="_on_place_pressed"]

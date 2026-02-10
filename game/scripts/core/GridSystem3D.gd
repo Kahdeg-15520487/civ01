@@ -11,9 +11,9 @@ var grid_origin: Vector3 = Vector3.ZERO
 # Visual settings
 var grid_color_major: Color = Color(0.5, 0.5, 0.5, 0.6)
 var grid_color_minor: Color = Color(0.3, 0.3, 0.3, 0.3)
-var grid_color_axis_x: Color = Color(0.8, 0.2, 0.2, 0.8)  # Red X-axis
-var grid_color_axis_z: Color = Color(0.2, 0.2, 0.8, 0.8)  # Blue Z-axis
-var grid_color_axis_y: Color = Color(0.2, 0.8, 0.2, 0.8)  # Green Y-axis
+var grid_color_axis_x: Color = Color(0.8, 0.2, 0.2, 0.8) # Red X-axis
+var grid_color_axis_z: Color = Color(0.2, 0.2, 0.8, 0.8) # Blue Z-axis
+var grid_color_axis_y: Color = Color(0.2, 0.8, 0.2, 0.8) # Green Y-axis
 
 func _init(_cell_size: Vector3 = Vector3(1, 1, 1), _extents: Vector3i = Vector3i(20, 20, 20), _origin: Vector3 = Vector3.ZERO):
 	cell_size = _cell_size
@@ -40,21 +40,21 @@ func snap_to_grid(world_pos: Vector3) -> Vector3:
 ## Snap to grid on XZ plane only (for placement on ground)
 func snap_to_grid_xz(world_pos: Vector3) -> Vector3:
 	var gp = world_to_grid(world_pos)
-	var snapped = grid_to_world(gp)
+	var snapped_pos = grid_to_world(gp)
 	# Preserve Y (height) position
-	snapped.y = world_pos.y
-	return snapped
+	snapped_pos.y = world_pos.y
+	return snapped_pos
 
 ## Check if a grid position is within bounds
 func is_valid_pos(grid_pos: Vector3i) -> bool:
-	return grid_pos.x >= -grid_extents.x / 2 and grid_pos.x < grid_extents.x / 2 and \
-		   grid_pos.y >= -grid_extents.y / 2 and grid_pos.y < grid_extents.y / 2 and \
-		   grid_pos.z >= -grid_extents.z / 2 and grid_pos.z < grid_extents.z / 2
+	return grid_pos.x >= -grid_extents.x / 2.0 and grid_pos.x < grid_extents.x / 2.0 and \
+		   grid_pos.y >= -grid_extents.y / 2.0 and grid_pos.y < grid_extents.y / 2.0 and \
+		   grid_pos.z >= -grid_extents.z / 2.0 and grid_pos.z < grid_extents.z / 2.0
 
 ## Check if position is valid on XZ plane (ignoring Y)
 func is_valid_pos_xz(grid_pos: Vector3i) -> bool:
-	return grid_pos.x >= -grid_extents.x / 2 and grid_pos.x < grid_extents.x / 2 and \
-		   grid_pos.z >= -grid_extents.z / 2 and grid_pos.z < grid_extents.z / 2
+	return grid_pos.x >= -grid_extents.x / 2.0 and grid_pos.x < grid_extents.x / 2.0 and \
+		   grid_pos.z >= -grid_extents.z / 2.0 and grid_pos.z < grid_extents.z / 2.0
 
 ## Get the world bounds of the grid
 func get_world_bounds() -> AABB:
@@ -64,7 +64,7 @@ func get_world_bounds() -> AABB:
 
 ## Generate grid mesh for visualization
 func create_grid_mesh() -> ArrayMesh:
-	var mesh = ArrayMesh.new()
+	var _mesh = ArrayMesh.new()
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_LINES)
 
@@ -78,7 +78,7 @@ func create_grid_mesh() -> ArrayMesh:
 		# Highlight axes
 		var color = grid_color_major
 		if x == 0:
-			color = grid_color_axis_x  # X-axis in red
+			color = grid_color_axis_x # X-axis in red
 
 		st.set_color(color)
 		st.add_vertex(start)
@@ -91,30 +91,30 @@ func create_grid_mesh() -> ArrayMesh:
 		# Highlight axes
 		var color = grid_color_major
 		if z == 0:
-			color = grid_color_axis_z  # Z-axis in blue
+			color = grid_color_axis_z # Z-axis in blue
 
 		st.set_color(color)
 		st.add_vertex(start)
 		st.add_vertex(end)
 
-	# Draw Y-axis line (vertical at origin) - shorter, just for reference
+	# Draw Y-axis line (vertical at origin)
 	st.set_color(grid_color_axis_y)
 	st.add_vertex(Vector3.ZERO)
-	st.add_vertex(Vector3(0, 2.0, 0))  # 2 units tall for reference
+	st.add_vertex(Vector3(0, 5.0, 0)) # 5 units tall for better reference
 
 	st.generate_normals()
 	return st.commit()
 
 ## Create a cursor mesh for showing current grid position
 func create_cursor_mesh() -> ArrayMesh:
-	var mesh = ArrayMesh.new()
+	var _mesh = ArrayMesh.new()
 	var st = SurfaceTool.new()
 
 	# Create a simple 3D cursor (wireframe box with corner markers)
 	st.begin(Mesh.PRIMITIVE_LINES)
 
-	var half_cell = cell_size / 2.0
-	var cursor_size = cell_size * 1.1  # Slightly larger than cell
+	var _half_cell = cell_size / 2.0
+	var cursor_size = cell_size * 1.1 # Slightly larger than cell
 
 	# Bottom face
 	st.add_vertex(Vector3(-cursor_size.x, 0, -cursor_size.z))
@@ -167,11 +167,11 @@ func raycast_to_grid(camera: Camera3D, mouse_pos: Vector2, plane_y: float = 0.0)
 		if is_valid_pos_xz(grid_pos):
 			return grid_pos
 
-	return Vector3i(-99999, -99999, -99999)  # Invalid (sentinel value)
+	return Vector3i(-99999, -99999, -99999) # Invalid (sentinel value)
 
 ## Calculate the height of a grid position (for multi-cell objects)
-func get_cell_height(grid_pos: Vector3i) -> int:
-	return 1  # Default: all cells are 1 unit tall
+func get_cell_height(_grid_pos: Vector3i) -> int:
+	return 1 # Default: all cells are 1 unit tall
 
 ## Get the footprint of an object at a grid position
 func get_footprint(grid_pos: Vector3i, size: Vector3i) -> Array[Vector3i]:

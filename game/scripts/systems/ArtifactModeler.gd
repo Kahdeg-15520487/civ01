@@ -7,15 +7,15 @@ class_name ArtifactModeler extends Node3D
 signal primitive_placed(primitive: ArtifactPrimitive)
 signal primitive_selected(primitive: ArtifactPrimitive)
 signal compilation_started
-signal compilation_finished(success: bool, mesh: ArrayMesh)
+signal compilation_finished(_success_arg: bool, _mesh_arg: ArrayMesh)
 
 # Tool modes
-enum ToolMode { SELECT, PLACE, ROTATE, SCALE }
+enum ToolMode {SELECT, PLACE, ROTATE, SCALE}
 var current_tool: ToolMode = ToolMode.SELECT
 
 # State
 var grid_system: GridSystem3D
-var placed_primitives: Dictionary = {}  # id -> {data: ArtifactPrimitive, visual: MeshInstance3D}
+var placed_primitives: Dictionary = {} # id -> {data: ArtifactPrimitive, visual: MeshInstance3D}
 var selected_primitive_id: String = ""
 var primitive_counter: int = 0
 
@@ -38,7 +38,7 @@ var editor_toolbar: ModelerToolbar
 @onready var openscad_bridge = $OpenSCADBridge
 
 # Grid settings
-@export var grid_extents: Vector3i = Vector3i(20, 20, 20)
+@export var grid_extents: Vector3i = Vector3i(100, 100, 100)
 @export var cell_size: float = 1.0
 
 func _ready() -> void:
@@ -47,6 +47,11 @@ func _ready() -> void:
 	_setup_camera()
 	_setup_ui()
 	_connect_signals()
+	
+	# Debug: Print viewport and UI info
+	RenderingServer.set_default_clear_color(Color(0.15, 0.15, 0.2)) # Dark blue-grey to distinguish from black overlays
+	print("Viewport Size: ", get_viewport().get_visible_rect().size)
+	call_deferred("_debug_ui_sizes")
 
 func _setup_grid() -> void:
 	# Initialize the grid system
@@ -59,6 +64,11 @@ func _setup_grid() -> void:
 	# Create grid visualization mesh
 	if grid_mesh:
 		grid_mesh.mesh = grid_system.create_grid_mesh()
+		grid_mesh.position.y = -0.01 # Prevent Z-fighting with primitives at floor level
+		var mat = StandardMaterial3D.new()
+		mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+		mat.vertex_color_use_as_albedo = true
+		grid_mesh.material_override = mat
 
 func _setup_camera() -> void:
 	if camera_controller:
@@ -72,29 +82,42 @@ func _setup_ui() -> void:
 	var ui_layer = CanvasLayer.new()
 	add_child(ui_layer)
 
+	# Create a root Control node for the UI to handle sizing
+	var ui_root = Control.new()
+	ui_root.set_anchors_preset(Control.PRESET_FULL_RECT)
+	ui_root.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	ui_layer.add_child(ui_root)
+
 	# Instantiate Toolbar (Top)
 	var toolbar_scene = preload("res://scenes/ui/ModelerToolbar.tscn")
 	editor_toolbar = toolbar_scene.instantiate()
-	ui_layer.add_child(editor_toolbar)
+	ui_root.add_child(editor_toolbar)
 	editor_toolbar.set_anchors_preset(Control.PRESET_TOP_WIDE)
+	editor_toolbar.custom_minimum_size = Vector2(0, 40)
+	editor_toolbar.size_flags_vertical = Control.SIZE_SHRINK_BEGIN
 
 	# Create Palette (Left) programmatically
 	var palette_script = load("res://scripts/ui/PrimitivePalette.gd")
 	palette_panel = PanelContainer.new()
 	palette_panel.set_script(palette_script.duplicate())
-	palette_panel.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	palette_panel.position = Vector2(10, 60)
-	palette_panel.custom_minimum_size = Vector2(190, 400)
-	ui_layer.add_child(palette_panel)
+	palette_panel.set_anchors_preset(Control.PRESET_LEFT_WIDE)
+	palette_panel.anchor_top = 0.1
+	palette_panel.anchor_bottom = 0.9
+	palette_panel.offset_left = 10
+	palette_panel.custom_minimum_size = Vector2(190, 0)
+	ui_root.add_child(palette_panel)
 	palette_panel.visible = false
 
 	# Create Properties Panel (Right) programmatically
 	var props_script = load("res://scripts/ui/PropertiesPanel3D.gd")
 	props_panel_ctrl = PanelContainer.new()
 	props_panel_ctrl.set_script(props_script.duplicate())
-	props_panel_ctrl.set_anchors_preset(Control.PRESET_TOP_LEFT)
-	props_panel_ctrl.custom_minimum_size = Vector2(200, 400)
-	ui_layer.add_child(props_panel_ctrl)
+	props_panel_ctrl.set_anchors_preset(Control.PRESET_RIGHT_WIDE)
+	props_panel_ctrl.anchor_top = 0.1
+	props_panel_ctrl.anchor_bottom = 0.9
+	props_panel_ctrl.offset_right = -10
+	props_panel_ctrl.custom_minimum_size = Vector2(200, 0)
+	ui_root.add_child(props_panel_ctrl)
 	props_panel_ctrl.visible = false
 
 	# Position right panel after scene tree is ready
@@ -115,9 +138,8 @@ func _connect_signals() -> void:
 		props_panel_ctrl.delete_requested.connect(_on_delete_requested)
 
 func _position_right_panel() -> void:
-	if props_panel_ctrl:
-		var viewport_size = get_viewport().get_visible_rect().size
-		props_panel_ctrl.position = Vector2(viewport_size.x - 210, 60)
+	# Right panel is now anchored via PRESET_RIGHT_WIDE in _setup_ui
+	pass
 
 func _unhandled_input(event: InputEvent) -> void:
 	# Check if mouse is over UI
@@ -139,6 +161,14 @@ func _is_mouse_over_ui(mouse_pos: Vector2) -> bool:
 	if editor_toolbar and editor_toolbar.get_global_rect().has_point(mouse_pos):
 		return true
 	return false
+
+func _debug_ui_sizes() -> void:
+	if editor_toolbar:
+		print("Toolbar Size: ", editor_toolbar.size, " Visible: ", editor_toolbar.visible)
+	if palette_panel:
+		print("Palette Size: ", palette_panel.size, " Visible: ", palette_panel.visible)
+	if props_panel_ctrl:
+		print("Props Panel Size: ", props_panel_ctrl.size, " Visible: ", props_panel_ctrl.visible)
 
 func _handle_left_click() -> void:
 	var camera = camera_controller.get_node("Camera") as Camera3D
@@ -185,10 +215,9 @@ func _place_primitive(template: ArtifactPrimitive, grid_pos: Vector3i) -> void:
 	# Set material with color based on CSG operation
 	var material = StandardMaterial3D.new()
 	material.albedo_color = new_prim.color
-	material.metallic = 0.3
-	material.roughness = 0.6
-	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.alpha_scissor_threshold = 0.5
+	material.metallic = 0.1 # Lower metallic for cleaner look
+	material.roughness = 0.5
+	material.specular = 0.2 # Lower specular to avoid "spotlight" weirdness
 	visual.material_override = material
 
 	primitives_layer.add_child(visual)
@@ -233,7 +262,7 @@ func _select_primitive(prim_id: String) -> void:
 		selection_indicator.position = visual.position
 		selection_indicator.mesh = visual.mesh
 		selection_indicator.rotation_degrees = prim.rotation
-		selection_indicator.scale = prim.scale * 1.1  # Slightly larger
+		selection_indicator.scale = prim.scale * 1.1 # Slightly larger
 		selection_indicator.visible = true
 
 	# Show properties panel
@@ -266,7 +295,6 @@ func _create_mesh_for_primitive(prim: ArtifactPrimitive) -> Mesh:
 			return _create_cube_mesh(Vector3(1, 1, 1))
 
 func _create_cube_mesh(size: Vector3) -> ArrayMesh:
-	var mesh = ArrayMesh.new()
 	var st = SurfaceTool.new()
 	st.begin(Mesh.PRIMITIVE_TRIANGLES)
 
@@ -288,13 +316,13 @@ func _create_cube_mesh(size: Vector3) -> ArrayMesh:
 		[Vector3(-hs.x, -hs.y, -hs.z), Vector3(-hs.x, -hs.y, hs.z), Vector3(-hs.x, hs.y, hs.z), Vector3(-hs.x, hs.y, -hs.z)]
 	]
 
-	var normals = [
-		Vector3.FORWARD, Vector3.BACK, Vector3.UP, Vector3.DOWN, Vector3.RIGHT, Vector3.LEFT
-	]
+	# var normals = [
+	# 	Vector3.FORWARD, Vector3.BACK, Vector3.UP, Vector3.DOWN, Vector3.RIGHT, Vector3.LEFT
+	# ]
 
 	for i in range(6):
 		var verts = faces[i]
-		var normal = normals[i]
+		# var normal = normals[i] # Unused, but SurfaceTool.generate_normals() is called later
 		st.add_vertex(verts[0])
 		st.add_vertex(verts[1])
 		st.add_vertex(verts[2])
@@ -342,6 +370,12 @@ func _update_ghost_visibility() -> void:
 		ghost_preview.visible = current_primitive_template != null
 		if current_primitive_template:
 			ghost_preview.mesh = _create_mesh_for_primitive(current_primitive_template)
+			# Distinguish ghost with a transparent material
+			var mat = StandardMaterial3D.new()
+			mat.albedo_color = Color(0.2, 0.6, 1.0, 0.4)
+			mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+			mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+			ghost_preview.material_override = mat
 
 func _on_tool_changed(tool_name: String) -> void:
 	print("Switched tool to: ", tool_name)
@@ -470,7 +504,7 @@ func _on_compile_pressed() -> void:
 func _compile_async(script: String) -> void:
 	# This needs to be called via the C# bridge
 	# For now, we'll use a simple approach that assumes the bridge exists
-	openscad_bridge.call_deferred("CompileAndDisplay", script, editor_toolbar, self)
+	openscad_bridge.call_deferred("CompileAndDisplay", script, editor_toolbar, self )
 
 ## Display the compiled mesh in the viewport
 func _display_compiled_mesh(mesh: ArrayMesh) -> void:
@@ -493,7 +527,7 @@ func _display_compiled_mesh(mesh: ArrayMesh) -> void:
 	# Center the mesh
 	var aabb = mesh.get_aabb()
 	var center = aabb.position + aabb.size / 2
-	display.position = -center
+	display.position = - center
 
 	# Add to compiled mesh layer
 	compiled_mesh_layer.add_child(display)

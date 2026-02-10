@@ -6,6 +6,7 @@
 
 [sub_resource type="Environment" id="Environment_1"]
 background_mode = 1
+background_color = Color(0.1, 0.1, 0.15, 1)
 ambient_light_source = 1
 ambient_light_color = Color(0.3, 0.3, 0.3, 1)
 tonemap_mode = 2
@@ -19,7 +20,7 @@ script = ExtResource("Camera3D")
 [node name="Camera" type="Camera3D" parent="CameraController" unique_id=1009073119]
 fov = 60.0
 near = 0.1
-far = 500.0
+far = 1000.0
 
 [node name="Grid3D" type="MeshInstance3D" parent="." unique_id=1574766816]
 
@@ -36,7 +37,7 @@ visible = false
 [node name="Cursor3D" type="MeshInstance3D" parent="." unique_id=1097034507]
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=549455421]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 15, 10)
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 10, 15, 10)
 shadow_enabled = true
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=2029498288]
