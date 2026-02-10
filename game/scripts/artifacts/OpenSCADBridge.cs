@@ -32,18 +32,6 @@ public partial class OpenSCADBridge : Node
     {
         // Path to bundled OpenSCAD binary
         var basePath = ProjectSettings.GlobalizePath("res://tools/openscad");
-        if (!DirAccess.DirExistsAbsolute(basePath))
-        {
-            // Fallback to user data directory for exported builds
-            basePath = OS.GetExecutableDir().GetBaseDir();
-        }
-
-        _openscadPath = Path.Combine(
-            basePath,
-            "tools",
-            "openscad",
-            OS.HasFeature("windows") ? "openscad.exe" : "openscad"
-        );
 
         // Cache directory for compiled meshes
         _cacheDir = Path.Combine(
@@ -56,6 +44,11 @@ public partial class OpenSCADBridge : Node
         {
             DirAccess.MakeDirAbsolute(_cacheDir);
         }
+
+        _openscadPath = Path.Combine(
+            basePath,
+            OS.HasFeature("windows") ? "openscad.exe" : "openscad"
+        );
 
         GD.Print($"OpenSCAD path: {_openscadPath}");
         GD.Print($"Cache directory: {_cacheDir}");

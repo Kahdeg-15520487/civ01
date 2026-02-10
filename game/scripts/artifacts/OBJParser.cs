@@ -156,39 +156,26 @@ public static class OBJParser
         var arrays = new Godot.Collections.Array();
         arrays.Resize((int)Mesh.ArrayType.Max);
 
-        // Vertices (required)
-        var vertArray = new Godot.Collections.Vector3Array();
-        foreach (var v in vertices)
-            vertArray.Add(v);
+        // Convert lists to arrays for Godot
+        var vertArray = vertices.ToArray();
         arrays[(int)Mesh.ArrayType.Vertex] = vertArray;
 
         // Normals (optional)
         if (normals.Count > 0 && normals.Count == vertices.Count)
         {
-            var normalArray = new Godot.Collections.Vector3Array();
-            foreach (var n in normals)
-                normalArray.Add(n);
+            var normalArray = normals.ToArray();
             arrays[(int)Mesh.ArrayType.Normal] = normalArray;
-        }
-        else
-        {
-            // Generate flat normals if not present
-            // This will be computed by Godot when not provided
         }
 
         // UVs (optional)
         if (uvs.Count > 0)
         {
-            var uvArray = new Godot.Collections.Vector2Array();
-            foreach (var uv in uvs)
-                uvArray.Add(uv);
+            var uvArray = uvs.ToArray();
             arrays[(int)Mesh.ArrayType.TexUV] = uvArray;
         }
 
         // Indices (required)
-        var indexArray = new Godot.Collections.Int32Array();
-        foreach (var idx in indices)
-            indexArray.Add(idx);
+        var indexArray = indices.ToArray();
         arrays[(int)Mesh.ArrayType.Index] = indexArray;
 
         // Create mesh
@@ -201,27 +188,26 @@ public static class OBJParser
     /// <summary>
     /// Calculate smooth normals for a mesh (if OBJ doesn't have them)
     /// </summary>
-    public static Godot.Collections.Vector3Array CalculateNormals(
-        Godot.Collections.Vector3Array vertices,
-        Godot.Collections.Int32Array indices)
+    public static Vector3[] CalculateNormals(
+        Vector3[] vertices,
+        int[] indices)
     {
-        var normals = new Godot.Collections.Vector3Array();
-        normals.Resize(vertices.Count);
+        var normals = new Vector3[vertices.Length];
 
         // Initialize normals to zero
-        for (int i = 0; i < normals.Count; i++)
+        for (int i = 0; i < normals.Length; i++)
         {
             normals[i] = Vector3.Zero;
         }
 
         // Sum normals for each face
-        for (int i = 0; i < indices.Count; i += 3)
+        for (int i = 0; i < indices.Length; i += 3)
         {
             int i0 = indices[i];
             int i1 = indices[i + 1];
             int i2 = indices[i + 2];
 
-            if (i0 >= normals.Count || i1 >= normals.Count || i2 >= normals.Count)
+            if (i0 >= normals.Length || i1 >= normals.Length || i2 >= normals.Length)
                 continue;
 
             var v0 = vertices[i0];
@@ -240,7 +226,7 @@ public static class OBJParser
         }
 
         // Normalize all normals
-        for (int i = 0; i < normals.Count; i++)
+        for (int i = 0; i < normals.Length; i++)
         {
             normals[i] = normals[i].Normalized();
         }

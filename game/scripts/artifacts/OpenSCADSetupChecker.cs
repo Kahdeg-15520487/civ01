@@ -23,12 +23,6 @@ public partial class OpenSCADSetupChecker : Node
         // Expected paths
         var basePath = ProjectSettings.GlobalizePath("res://tools/openscad");
 
-        // For exported builds, check the executable directory
-        if (!DirAccess.DirExistsAbsolute(basePath))
-        {
-            basePath = Path.Combine(OS.GetExecutableDir().GetBaseDir(), "tools", "openscad");
-        }
-
         GD.Print($"Checking path: {basePath}");
 
         // Check if directory exists
@@ -110,9 +104,6 @@ public partial class OpenSCADSetupChecker : Node
             GD.Print("");
             GD.Print("   To your game:");
             GD.Print($"     {ProjectSettings.GlobalizePath("res://tools/openscad")}");
-            GD.Print("");
-            GD.Print("   Or for exported builds:");
-            GD.Print($"     {Path.Combine(OS.GetExecutableDir().GetBaseDir(), "tools", "openscad")}");
         }
         else if (OS.HasFeature("x11"))
         {
@@ -136,10 +127,6 @@ public partial class OpenSCADSetupChecker : Node
     public static bool IsOpenSCADAvailable()
     {
         var basePath = ProjectSettings.GlobalizePath("res://tools/openscad");
-        if (!DirAccess.DirExistsAbsolute(basePath))
-        {
-            basePath = Path.Combine(OS.GetExecutableDir().GetBaseDir(), "tools", "openscad");
-        }
 
         string binaryName = OS.HasFeature("windows") ? "openscad.exe" : "openscad";
         string binaryPath = Path.Combine(basePath, binaryName);
