@@ -150,7 +150,7 @@ public partial class OpenSCADBridge : Node
         }
 
         string scriptPath = Path.Combine(tempDir, "artifact.scad");
-        string objPath = Path.Combine(tempDir, "artifact.obj");
+        string meshPath = Path.Combine(tempDir, "artifact.stl");
 
         // Write script
         try
@@ -167,11 +167,11 @@ public partial class OpenSCADBridge : Node
         int polyBudget = GetPolygonBudget(artifactTier);
 
         // Build OpenSCAD command
-        // Note: Modern OpenSCAD requires explicit export format for OBJ files
+        // Note: Output format is determined by file extension (.obj)
         var processInfo = new ProcessStartInfo
         {
             FileName = _openscadPath,
-            Arguments = $"-o \"{objPath}\" --export-format obj \"{scriptPath}\"",
+            Arguments = $"-o \"{meshPath}\" \"{scriptPath}\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
@@ -195,14 +195,14 @@ public partial class OpenSCADBridge : Node
                 if (!string.IsNullOrEmpty(output))
                     GD.Print($"OpenSCAD stdout: {output}");
 
-                if (process.ExitCode == 0 && File.Exists(objPath))
+                if (process.ExitCode == 0 && File.Exists(meshPath))
                 {
                     // Success
                     result.Success = true;
-                    result.MeshPath = objPath;
-                    result.PolygonCount = CountPolygons(objPath);
+                    result.MeshPath = meshPath;
+                    result.PolygonCount = CountPolygons(meshPath);
 
-                    GD.Print($"OpenSCAD compilation successful: {objPath}");
+                    GD.Print($"OpenSCAD compilation successful: {meshPath}");
                     GD.Print($"  Polygons: {result.PolygonCount} / {polyBudget}");
 
                     // Check polygon budget
@@ -250,16 +250,17 @@ public partial class OpenSCADBridge : Node
     }
 
     /// <summary>
-    /// Count polygon faces in an OBJ file
+    /// Count triangle faces in an STL file
     /// </summary>
-    private int CountPolygons(string objPath)
+    private int CountPolygons(string stlPath)
     {
         try
         {
             int faceCount = 0;
-            foreach (var line in File.ReadLines(objPath))
+            foreach (var line in File.ReadLines(stlPath))
             {
-                if (line.TrimStart().StartsWith("f"))
+                // STL format uses "facet" for each triangle
+                if (line.TrimStart().StartsWith("facet"))
                 {
                     faceCount++;
                 }

@@ -230,22 +230,23 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
             GD.Print($"OpenSCAD compilation successful: {compileResult.MeshPath}");
             GD.Print($"  Polygons: {compileResult.PolygonCount}");
 
-            // Step 2: Parse OBJ to Godot mesh
-            _update_status($"Parsing OBJ ({compileResult.PolygonCount} polygons)...", false);
+            // Step 2: Load STL mesh into Godot
+            _update_status($"Loading STL mesh ({compileResult.PolygonCount} polygons)...", false);
 
-            var mesh = await OBJParser.ParseAsync(compileResult.MeshPath);
+            // Use Godot's built-in STL importer
+            var loadedMesh = ResourceLoader.Load(compileResult.MeshPath) as ArrayMesh;
 
-            if (mesh == null)
+            if (loadedMesh == null)
             {
-                _update_status("Failed to parse OBJ file!", true);
+                _update_status("Failed to load STL file!", true);
                 _compileButton.Disabled = false;
                 return;
             }
 
-            GD.Print("OBJ parsing successful");
+            GD.Print("STL loading successful");
 
             // Step 3: Display mesh in 3D viewport
-            _meshDisplay.Mesh = mesh;
+            _meshDisplay.Mesh = loadedMesh;
 
             // Center the mesh
             _center_mesh();
