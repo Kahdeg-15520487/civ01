@@ -1,6 +1,7 @@
 using Godot;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
@@ -38,6 +39,8 @@ public static class OBJParser
 
         GD.Print($"Parsing OBJ file: {objPath}");
 
+        var totalStopwatch = Stopwatch.StartNew();
+
         var vertices = new List<Vector3>();
         var normals = new List<Vector3>();
         var uvs = new List<Vector2>();
@@ -45,9 +48,15 @@ public static class OBJParser
         // Parse OBJ file
         try
         {
-            foreach (var line in File.ReadLines(objPath))
+            var readStopwatch = Stopwatch.StartNew();
+            var lines = File.ReadAllLines(objPath);
+            readStopwatch.Stop();
+            GD.Print($"  File read time: {readStopwatch.ElapsedMilliseconds}ms ({lines.Length} lines)");
+
+            var parseStopwatch = Stopwatch.StartNew();
+            for (int i = 0; i < lines.Length; i++)
             {
-                var trimmed = line.Trim();
+                var trimmed = lines[i].Trim();
                 if (string.IsNullOrEmpty(trimmed) || trimmed.StartsWith("#"))
                     continue;
 
@@ -93,21 +102,33 @@ public static class OBJParser
                         break;
                 }
             }
+            parseStopwatch.Stop();
+            GD.Print($"  Vertex/normal/UV parse time: {parseStopwatch.ElapsedMilliseconds}ms");
 
+            var faceStopwatch = Stopwatch.StartNew();
             // Now parse faces to generate indices
             var indices = new List<int>();
-            foreach (var line in File.ReadLines(objPath))
+            for (int i = 0; i < lines.Length; i++)
             {
-                var trimmed = line.Trim();
+                var trimmed = lines[i].Trim();
                 if (trimmed.StartsWith("f"))
                 {
                     ParseFace(trimmed, indices);
                 }
             }
-
+            faceStopwatch.Stop();
+            GD.Print($"  Face parse time: {faceStopwatch.ElapsedMilliseconds}ms");
             GD.Print($"  Parsed: {vertices.Count} vertices, {indices.Count / 3} triangles");
 
-            return CreateGodotMesh(vertices, normals, uvs, indices);
+            var meshStopwatch = Stopwatch.StartNew();
+            var mesh = CreateGodotMesh(vertices, normals, uvs, indices);
+            meshStopwatch.Stop();
+            GD.Print($"  Godot mesh creation time: {meshStopwatch.ElapsedMilliseconds}ms");
+
+            totalStopwatch.Stop();
+            GD.Print($"  Total OBJ parse time: {totalStopwatch.ElapsedMilliseconds}ms");
+
+            return mesh;
         }
         catch (Exception ex)
         {

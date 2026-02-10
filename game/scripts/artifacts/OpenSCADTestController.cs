@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Civ.Artifacts;
@@ -224,11 +225,14 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
 
         try
         {
-            GD.Print("Starting OpenSCAD compilation...");
+            var totalStopwatch = Stopwatch.StartNew();
+            GD.Print("═══ Starting compilation pipeline ═══");
             GD.Print($"Bridge instance: {_openscadBridge != null}");
 
             // Step 1: Compile with OpenSCAD
+            var compileStopwatch = Stopwatch.StartNew();
             var compileResult = await _openscadBridge.CompileAsync(script, "Mortal");
+            compileStopwatch.Stop();
 
             if (!compileResult.Success)
             {
@@ -237,15 +241,20 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
                 return;
             }
 
-            GD.Print($"OpenSCAD compilation successful: {compileResult.MeshPath}");
+            GD.Print($"✓ OpenSCAD compilation: {compileStopwatch.ElapsedMilliseconds}ms");
+            GD.Print($"  Output: {compileResult.MeshPath}");
             GD.Print($"  Polygons: {compileResult.PolygonCount}");
 
             // Step 2: Parse OBJ to Godot mesh
+            var parseStopwatch = Stopwatch.StartNew();
             GD.Print("Starting OBJ parse...");
             _update_status($"Parsing OBJ ({compileResult.PolygonCount} polygons)...", false);
 
             var mesh = await OBJParser.ParseAsync(compileResult.MeshPath);
-            GD.Print($"OBJ parse complete, mesh is null: {mesh == null}");
+            parseStopwatch.Stop();
+
+            GD.Print($"✓ OBJ parsing: {parseStopwatch.ElapsedMilliseconds}ms");
+            GD.Print($"  Mesh is null: {mesh == null}");
 
             if (mesh == null)
             {
@@ -258,6 +267,8 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
             GD.Print("OBJ parsing successful - setting mesh to display");
 
             // Step 3: Display mesh in 3D viewport
+            var displayStopwatch = Stopwatch.StartNew();
+
             if (_meshDisplay == null)
             {
                 GD.PrintErr("_meshDisplay is null! Re-creating...");
@@ -266,12 +277,25 @@ Note: OpenSCAD binary must be in tools/openscad/ directory";
             }
 
             _meshDisplay.Mesh = mesh;
-            GD.Print("Mesh assigned to MeshInstance3D");
+            displayStopwatch.Stop();
+            GD.Print($"✓ Mesh display assignment: {displayStopwatch.ElapsedMilliseconds}ms");
 
             // Center the mesh
+            var centerStopwatch = Stopwatch.StartNew();
             _center_mesh();
+            centerStopwatch.Stop();
+            GD.Print($"✓ Mesh centering: {centerStopwatch.ElapsedMilliseconds}ms");
 
-            _update_status($"Success! Rendered {compileResult.PolygonCount} polygons.", false);
+            totalStopwatch.Stop();
+
+            GD.Print("═══ Pipeline complete ═══");
+            GD.Print($"Total time: {totalStopwatch.ElapsedMilliseconds}ms");
+            GD.Print($"  - OpenSCAD compilation: {compileStopwatch.ElapsedMilliseconds}ms ({100f * compileStopwatch.ElapsedMilliseconds / totalStopwatch.ElapsedMilliseconds:F1}%)");
+            GD.Print($"  - OBJ parsing: {parseStopwatch.ElapsedMilliseconds}ms ({100f * parseStopwatch.ElapsedMilliseconds / totalStopwatch.ElapsedMilliseconds:F1}%)");
+            GD.Print($"  - Mesh display: {displayStopwatch.ElapsedMilliseconds}ms ({100f * displayStopwatch.ElapsedMilliseconds / totalStopwatch.ElapsedMilliseconds:F1}%)");
+            GD.Print($"  - Mesh centering: {centerStopwatch.ElapsedMilliseconds}ms ({100f * centerStopwatch.ElapsedMilliseconds / totalStopwatch.ElapsedMilliseconds:F1}%)");
+
+            _update_status($"Success! {compileResult.PolygonCount} polys in {totalStopwatch.ElapsedMilliseconds}ms", false);
         }
         catch (Exception ex)
         {

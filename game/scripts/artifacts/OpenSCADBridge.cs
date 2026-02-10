@@ -182,6 +182,7 @@ public partial class OpenSCADBridge : Node
 
         // Execute OpenSCAD
         Process process = null;
+        var scadStopwatch = Stopwatch.StartNew();
         try
         {
             process = Process.Start(processInfo);
@@ -189,6 +190,9 @@ public partial class OpenSCADBridge : Node
             // Wait for completion (with timeout)
             if (process.WaitForExit(30000)) // 30 second timeout
             {
+                scadStopwatch.Stop();
+                GD.Print($"  OpenSCAD execution time: {scadStopwatch.ElapsedMilliseconds}ms");
+
                 string output = process.StandardOutput.ReadToEnd();
                 string error = process.StandardError.ReadToEnd();
 
@@ -197,10 +201,15 @@ public partial class OpenSCADBridge : Node
 
                 if (process.ExitCode == 0 && File.Exists(meshPath))
                 {
+                    // Count polygons
+                    var countStopwatch = Stopwatch.StartNew();
+                    result.PolygonCount = CountPolygons(meshPath);
+                    countStopwatch.Stop();
+                    GD.Print($"  Polygon counting time: {countStopwatch.ElapsedMilliseconds}ms");
+
                     // Success
                     result.Success = true;
                     result.MeshPath = meshPath;
-                    result.PolygonCount = CountPolygons(meshPath);
 
                     GD.Print($"OpenSCAD compilation successful: {meshPath}");
                     GD.Print($"  Polygons: {result.PolygonCount} / {polyBudget}");
