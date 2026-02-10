@@ -3,7 +3,8 @@
     "allow": [
       "Bash(dotnet build:*)",
       "Bash(git commit:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(\"J:\\\\workspace2\\\\llm\\\\civ\\\\game\\\\tools\\\\openscad\\\\openscad.exe\":*)"
     ]
   }
 }

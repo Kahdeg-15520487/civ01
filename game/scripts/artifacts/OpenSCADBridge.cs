@@ -168,10 +168,11 @@ public partial class OpenSCADBridge : Node
 
         // Build OpenSCAD command
         // Note: Output format is determined by file extension (.obj)
+        // Use Manifold backend for 5-30x faster CSG operations
         var processInfo = new ProcessStartInfo
         {
             FileName = _openscadPath,
-            Arguments = $"-o \"{meshPath}\" \"{scriptPath}\"",
+            Arguments = $"--backend Manifold -o \"{meshPath}\" \"{scriptPath}\"",
             RedirectStandardOutput = true,
             RedirectStandardError = true,
             UseShellExecute = false,
